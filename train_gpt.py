@@ -54,14 +54,14 @@ class Hyperparameters:
     iterations = int(os.environ.get("ITERATIONS", 20000))
     warmdown_iters = int(os.environ.get("WARMDOWN_ITERS", 1200))
     warmup_steps = int(os.environ.get("WARMUP_STEPS", 20))
-    train_batch_tokens = int(os.environ.get("TRAIN_BATCH_TOKENS", 524_288))
-    train_seq_len = int(os.environ.get("TRAIN_SEQ_LEN", 1024))
-    max_wallclock_seconds = float(os.environ.get("MAX_WALLCLOCK_SECONDS", 600.0))
+    train_batch_tokens = int(os.environ.get("TRAIN_BATCH_TOKENS", 262_144)) # 524_288
+    train_seq_len = int(os.environ.get("TRAIN_SEQ_LEN", 512)) #1024
+    max_wallclock_seconds = float(os.environ.get("MAX_WALLCLOCK_SECONDS", 3600)) # 600 for 10mins
     qk_gain_init = float(os.environ.get("QK_GAIN_INIT", 1.5))
 
     # Model shape.
     vocab_size = int(os.environ.get("VOCAB_SIZE", 1024))
-    num_layers = int(os.environ.get("NUM_LAYERS", 9))
+    num_layers = int(os.environ.get("NUM_LAYERS", 9)) # 4
     num_kv_heads = int(os.environ.get("NUM_KV_HEADS", 4))
     model_dim = int(os.environ.get("MODEL_DIM", 512))
     num_heads = int(os.environ.get("NUM_HEADS", 8))
@@ -289,7 +289,7 @@ CONTROL_TENSOR_NAME_PATTERNS = tuple(
     pattern
     for pattern in os.environ.get(
         "CONTROL_TENSOR_NAME_PATTERNS",
-        "attn_scale,attn_scales,mlp_scale,mlp_scales,resid_mix,resid_mixes,q_gain,skip_weight,skip_weights",
+        "attn_res_proj,mlp_res_proj,q_gain",
     ).split(",")
     if pattern
 )
@@ -617,6 +617,34 @@ class MLP(nn.Module):
         return self.proj(x.square())
 
 
+def attn_res(sources: list[Tensor], proj_weight: Tensor, norm_fn: nn.Module) -> Tensor:
+    # Full attention residual: attend over all prior layer outputs.
+    # Loop-based to avoid materializing [N, B, T, D] stack tensor.
+    logits = []
+    running_max = None
+    for src in sources:
+        s = torch.einsum('d, btd -> bt', proj_weight, norm_fn(src))
+        logits.append(s)
+        running_max = s if running_max is None else torch.maximum(running_max, s)
+    exp_sum = torch.zeros_like(running_max)
+    for s in logits:
+        exp_sum = exp_sum + torch.exp(s - running_max)
+    h = torch.zeros_like(sources[0])
+    for s, src in zip(logits, sources):
+        w = torch.exp(s - running_max) / exp_sum
+        h = h + w.unsqueeze(-1) * src
+    return h
+
+
+#def attn_res_stack(sources: list[Tensor], proj_weight: Tensor, norm_fn: nn.Module) -> Tensor:
+#    # Full attention residual: stack-based (faster but uses more memory).
+#    V = torch.stack(sources)  # [N, B, T, D]
+#    K = norm_fn(V)
+#    logits = torch.einsum('d, nbtd -> nbt', proj_weight.squeeze(), K)
+#    h = torch.einsum('nbt, nbtd -> btd', logits.softmax(0), V)
+#    return h
+
+
 class Block(nn.Module):
     def __init__(
         self,
@@ -630,19 +658,23 @@ class Block(nn.Module):
         super().__init__()
         self.attn_norm = RMSNorm()
         self.mlp_norm = RMSNorm()
+        self.attn_res_norm = RMSNorm()
+        self.mlp_res_norm = RMSNorm()
+        self.attn_res_proj = nn.Parameter(torch.randn(dim) * 0.02)
+        self.mlp_res_proj = nn.Parameter(torch.randn(dim) * 0.02)
         self.attn = CausalSelfAttention(dim, num_heads, num_kv_heads, rope_base, qk_gain_init)
         self.mlp = MLP(dim, mlp_mult)
-        self.attn_scale = nn.Parameter(torch.ones(dim, dtype=torch.float32))
-        self.mlp_scale = nn.Parameter(torch.ones(dim, dtype=torch.float32))
-        self.resid_mix = nn.Parameter(torch.stack((torch.ones(dim), torch.zeros(dim))).float())
 
-    def forward(self, x: Tensor, x0: Tensor) -> Tensor:
-        mix = self.resid_mix.to(dtype=x.dtype)
-        x = mix[0][None, None, :] * x + mix[1][None, None, :] * x0
-        attn_out = self.attn(self.attn_norm(x))
-        x = x + self.attn_scale.to(dtype=x.dtype)[None, None, :] * attn_out
-        x = x + self.mlp_scale.to(dtype=x.dtype)[None, None, :] * self.mlp(self.mlp_norm(x))
-        return x
+    def forward(self, sources: list[Tensor]) -> list[Tensor]:
+        # AttnRes before attention
+        h = attn_res(sources, self.attn_res_proj.to(dtype=sources[0].dtype), self.attn_res_norm)
+        h = h + self.attn(self.attn_norm(h))
+        sources = sources + [h]  # post-attn memory
+        # AttnRes before MLP
+        h = attn_res(sources, self.mlp_res_proj.to(dtype=sources[0].dtype), self.mlp_res_norm)
+        h = h + self.mlp(self.mlp_norm(h))
+        sources = sources + [h]  # post-MLP memory
+        return sources
 
 
 class GPT(nn.Module):
@@ -667,10 +699,6 @@ class GPT(nn.Module):
         self.tied_embed_init_std = tied_embed_init_std
         self.logit_softcap = logit_softcap
         self.tok_emb = nn.Embedding(vocab_size, model_dim)
-        self.num_encoder_layers = num_layers // 2
-        self.num_decoder_layers = num_layers - self.num_encoder_layers
-        self.num_skip_weights = min(self.num_encoder_layers, self.num_decoder_layers)
-        self.skip_weights = nn.Parameter(torch.ones(self.num_skip_weights, model_dim, dtype=torch.float32))
         self.blocks = nn.ModuleList(
             [
                 Block(
@@ -700,19 +728,13 @@ class GPT(nn.Module):
     def forward(self, input_ids: Tensor, target_ids: Tensor) -> Tensor:
         x = self.tok_emb(input_ids)
         x = F.rms_norm(x, (x.size(-1),))
-        x0 = x
-        skips: list[Tensor] = []
+        # Full AttnRes: 2 memory entries per block (post-attn, post-MLP)
+        sources: list[Tensor] = [x]
+        for block in self.blocks:
+            sources = block(sources)
+        x = sources[-1]  # last output
 
-        # First half stores skips; second half reuses them in reverse order.
-        for i in range(self.num_encoder_layers):
-            x = self.blocks[i](x, x0)
-            skips.append(x)
-        for i in range(self.num_decoder_layers):
-            if skips:
-                x = x + self.skip_weights[i].to(dtype=x.dtype)[None, None, :] * skips.pop()
-            x = self.blocks[self.num_encoder_layers + i](x, x0)
-
-        x = self.final_norm(x).reshape(-1, x.size(-1))
+        x = self.final_norm(x).reshape(-1, x.size(-1)) # ?
         targets = target_ids.reshape(-1)
         if self.tie_embeddings:
             logits_proj = F.linear(x, self.tok_emb.weight)
@@ -859,8 +881,6 @@ def main() -> None:
         for name, p in block_named_params
         if p.ndim < 2 or any(pattern in name for pattern in CONTROL_TENSOR_NAME_PATTERNS)
     ]
-    if base_model.skip_weights.numel() > 0:
-        scalar_params.append(base_model.skip_weights)
     token_lr = args.tied_embed_lr if args.tie_embeddings else args.embed_lr
     optimizer_tok = torch.optim.Adam(
         [{"params": [base_model.tok_emb.weight], "lr": token_lr, "base_lr": token_lr}],
@@ -897,6 +917,7 @@ def main() -> None:
     log0(f"world_size:{world_size} grad_accum_steps:{grad_accum_steps}")
     log0("sdp_backends:cudnn=False flash=True mem_efficient=False math=False")
     log0(f"attention_mode:gqa num_heads:{args.num_heads} num_kv_heads:{args.num_kv_heads}")
+    log0("architecture:decoder_only full_attnres")
     log0(
         f"tie_embeddings:{args.tie_embeddings} embed_lr:{token_lr} "
         f"head_lr:{args.head_lr if base_model.lm_head is not None else 0.0} "

@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:arxiv.org)",
+      "WebSearch",
+      "Bash(curl -s -L -o /tmp/paper.pdf \"https://arxiv.org/pdf/2603.15031\")",
+      "Read(//tmp/**)",
+      "Bash(pip install:*)",
+      "Bash(curl -s -L -o \"%TEMP%\\\\paper.pdf\" \"https://arxiv.org/pdf/2603.15031\")",
+      "Bash(dir \"%TEMP%\\\\paper.pdf\")"
+    ]
+  }
+}
