@@ -54,18 +54,19 @@ class Hyperparameters:
     iterations = int(os.environ.get("ITERATIONS", 20000))
     warmdown_iters = int(os.environ.get("WARMDOWN_ITERS", 1200))
     warmup_steps = int(os.environ.get("WARMUP_STEPS", 20))
-    train_batch_tokens = int(os.environ.get("TRAIN_BATCH_TOKENS", 524_288)) # 524_288
+    train_batch_tokens = int(os.environ.get("TRAIN_BATCH_TOKENS", 262_144)) # 524_288， 262_144
     train_seq_len = int(os.environ.get("TRAIN_SEQ_LEN", 1024)) #1024
     max_wallclock_seconds = float(os.environ.get("MAX_WALLCLOCK_SECONDS", 600)) # 600 for 10mins
     qk_gain_init = float(os.environ.get("QK_GAIN_INIT", 1.5))
 
     # Model shape.
     vocab_size = int(os.environ.get("VOCAB_SIZE", 1024))
-    num_layers = int(os.environ.get("NUM_LAYERS", 9)) # 4
+    num_layers = int(os.environ.get("NUM_LAYERS", 9)) # 9
     num_kv_heads = int(os.environ.get("NUM_KV_HEADS", 4))
     model_dim = int(os.environ.get("MODEL_DIM", 512))
     num_heads = int(os.environ.get("NUM_HEADS", 8))
     mlp_mult = int(os.environ.get("MLP_MULT", 2))
+    attn_res_impl = os.environ.get("ATTN_RES_IMPL", "loop").strip().lower()
     tie_embeddings = bool(int(os.environ.get("TIE_EMBEDDINGS", "1")))
     rope_base = float(os.environ.get("ROPE_BASE", 10000.0))
     logit_softcap = float(os.environ.get("LOGIT_SOFTCAP", 30.0))
@@ -73,13 +74,15 @@ class Hyperparameters:
     # Optimizer hyperparameters.
     embed_lr = float(os.environ.get("EMBED_LR", 0.6))
     head_lr = float(os.environ.get("HEAD_LR", 0.008))
-    tied_embed_lr = float(os.environ.get("TIED_EMBED_LR", 0.05))
+    tied_embed_lr = float(os.environ.get("TIED_EMBED_LR", 0.035))
     tied_embed_init_std = float(os.environ.get("TIED_EMBED_INIT_STD", 0.005))
-    matrix_lr = float(os.environ.get("MATRIX_LR", 0.04))
-    scalar_lr = float(os.environ.get("SCALAR_LR", 0.04))
+    matrix_optimizer = os.environ.get("MATRIX_OPTIMIZER", "muon").strip().lower()
+    matrix_lr = float(os.environ.get("MATRIX_LR", 0.0025))
+    matrix_weight_decay = float(os.environ.get("MATRIX_WEIGHT_DECAY", 0.01))
+    scalar_lr = float(os.environ.get("SCALAR_LR", 0.025))
     muon_momentum = float(os.environ.get("MUON_MOMENTUM", 0.95))
     muon_backend_steps = int(os.environ.get("MUON_BACKEND_STEPS", 5))
-    muon_momentum_warmup_start = float(os.environ.get("MUON_MOMENTUM_WARMUP_START", 0.85))
+    muon_momentum_warmup_start = float(os.environ.get("MUON_MOMENTUM_WARMUP_START", 0.92))
     muon_momentum_warmup_steps = int(os.environ.get("MUON_MOMENTUM_WARMUP_STEPS", 500))
     beta1 = float(os.environ.get("BETA1", 0.9))
     beta2 = float(os.environ.get("BETA2", 0.95))
@@ -552,6 +555,10 @@ def apply_rotary_emb(x: Tensor, cos: Tensor, sin: Tensor) -> Tensor:
     return torch.cat((x1 * cos + x2 * sin, x1 * (-sin) + x2 * cos), dim=-1)
 
 
+def normalize_source(x: Tensor) -> Tensor:
+    return F.rms_norm(x, (x.size(-1),))
+
+
 class CausalSelfAttention(nn.Module):
     def __init__(
         self,
@@ -617,32 +624,34 @@ class MLP(nn.Module):
         return self.proj(x.square())
 
 
-def attn_res(sources: list[Tensor], proj_weight: Tensor, norm_fn: nn.Module) -> Tensor:
+def attn_res(sources: list[tuple[Tensor, Tensor]], proj_weight: Tensor) -> Tensor:
     # Full attention residual: attend over all prior layer outputs.
     # Loop-based to avoid materializing [N, B, T, D] stack tensor.
+    # Each source carries a cached RMSNorm view so we do not renormalize history.
     logits = []
     running_max = None
-    for src in sources:
-        s = torch.einsum('d, btd -> bt', proj_weight, norm_fn(src))
+    for src, normed_src in sources:
+        s = torch.einsum('d, btd -> bt', proj_weight, normed_src)
         logits.append(s)
         running_max = s if running_max is None else torch.maximum(running_max, s)
     exp_sum = torch.zeros_like(running_max)
     for s in logits:
         exp_sum = exp_sum + torch.exp(s - running_max)
-    h = torch.zeros_like(sources[0])
-    for s, src in zip(logits, sources):
+    h = torch.zeros_like(sources[0][0])
+    for s, (src, _) in zip(logits, sources):
         w = torch.exp(s - running_max) / exp_sum
         h = h + w.unsqueeze(-1) * src
     return h
 
 
-# def attn_res_stack(sources: list[Tensor], proj_weight: Tensor, norm_fn: nn.Module) -> Tensor:
-#    # Full attention residual: stack-based (faster but uses more memory).
-#    V = torch.stack(sources)  # [N, B, T, D]
-#    K = norm_fn(V)
-#    logits = torch.einsum('d, nbtd -> nbt', proj_weight.squeeze(), K)
-#    h = torch.einsum('nbt, nbtd -> btd', logits.softmax(0), V)
-#    return h
+def attn_res_stack(sources: list[tuple[Tensor, Tensor]], proj_weight: Tensor) -> Tensor:
+    # Full attention residual: stack-based variant.
+    # Uses cached normalized sources for scores and raw sources for values.
+    values = torch.stack([src for src, _ in sources])
+    keys = torch.stack([normed_src for _, normed_src in sources])
+    logits = torch.einsum('d,nbtd->nbt', proj_weight, keys)
+    weights = logits.softmax(dim=0)
+    return torch.einsum('nbt,nbtd->btd', weights, values)
 
 
 class Block(nn.Module):
@@ -654,26 +663,35 @@ class Block(nn.Module):
         mlp_mult: int,
         rope_base: float,
         qk_gain_init: float,
+        attn_res_impl: str,
     ):
         super().__init__()
+        if attn_res_impl not in {"loop", "stack"}:
+            raise ValueError(f"Unsupported ATTN_RES_IMPL={attn_res_impl!r}; expected 'loop' or 'stack'")
+        self.attn_res_impl = attn_res_impl
         self.attn_norm = RMSNorm()
         self.mlp_norm = RMSNorm()
         self.attn_res_norm = RMSNorm()
         self.mlp_res_norm = RMSNorm()
-        self.attn_res_proj = nn.Parameter(torch.randn(dim) * 0.01)
-        self.mlp_res_proj = nn.Parameter(torch.randn(dim) * 0.01)
+        self.attn_res_proj = nn.Parameter(torch.zeros(dim))
+        self.mlp_res_proj = nn.Parameter(torch.zeros(dim))
         self.attn = CausalSelfAttention(dim, num_heads, num_kv_heads, rope_base, qk_gain_init)
         self.mlp = MLP(dim, mlp_mult)
 
-    def forward(self, sources: list[Tensor]) -> list[Tensor]:
+    def _attn_res(self, sources: list[tuple[Tensor, Tensor]], proj_weight: Tensor) -> Tensor:
+        if self.attn_res_impl == "stack":
+            return attn_res_stack(sources, proj_weight)
+        return attn_res(sources, proj_weight)
+
+    def forward(self, sources: list[tuple[Tensor, Tensor]]) -> list[tuple[Tensor, Tensor]]:
         # AttnRes before attention
-        h = attn_res(sources, self.attn_res_proj.to(dtype=sources[0].dtype), self.attn_res_norm)
+        h = self._attn_res(sources, self.attn_res_proj.to(dtype=sources[0][0].dtype))
         h = h + self.attn(self.attn_norm(h))
-        sources = sources + [h]  # post-attn memory
+        sources = sources + [(h, normalize_source(h))]  # post-attn memory
         # AttnRes before MLP
-        h = attn_res(sources, self.mlp_res_proj.to(dtype=sources[0].dtype), self.mlp_res_norm)
+        h = self._attn_res(sources, self.mlp_res_proj.to(dtype=sources[0][0].dtype))
         h = h + self.mlp(self.mlp_norm(h))
-        sources = sources + [h]  # post-MLP memory
+        sources = sources + [(h, normalize_source(h))]  # post-MLP memory
         return sources
 
 
@@ -691,6 +709,7 @@ class GPT(nn.Module):
         logit_softcap: float,
         rope_base: float,
         qk_gain_init: float,
+        attn_res_impl: str,
     ):
         super().__init__()
         if logit_softcap <= 0.0:
@@ -708,6 +727,7 @@ class GPT(nn.Module):
                     mlp_mult,
                     rope_base,
                     qk_gain_init,
+                    attn_res_impl,
                 )
                 for i in range(num_layers)
             ]
@@ -727,12 +747,12 @@ class GPT(nn.Module):
 
     def forward(self, input_ids: Tensor, target_ids: Tensor) -> Tensor:
         x = self.tok_emb(input_ids)
-        x = F.rms_norm(x, (x.size(-1),))
+        x = normalize_source(x)
         # Full AttnRes: 2 memory entries per block (post-attn, post-MLP)
-        sources: list[Tensor] = [x]
+        sources: list[tuple[Tensor, Tensor]] = [(x, x)]
         for block in self.blocks:
             sources = block(sources)
-        x = sources[-1]  # last output
+        x = sources[-1][0]  # last output
 
         x = self.final_norm(x).reshape(-1, x.size(-1))
         targets = target_ids.reshape(-1)
@@ -857,6 +877,7 @@ def main() -> None:
         logit_softcap=args.logit_softcap,
         rope_base=args.rope_base,
         qk_gain_init=args.qk_gain_init,
+        attn_res_impl=args.attn_res_impl,
     ).to(device).bfloat16()
     for module in base_model.modules():
         if isinstance(module, CastedLinear):
@@ -888,21 +909,32 @@ def main() -> None:
         eps=args.adam_eps,
         fused=True,
     )
-    optimizer_muon = Muon(
-        matrix_params,
-        lr=args.matrix_lr,
-        momentum=args.muon_momentum,
-        backend_steps=args.muon_backend_steps,
-    )
-    for group in optimizer_muon.param_groups:
-        group["base_lr"] = args.matrix_lr
+    if args.matrix_optimizer == "muon":
+        optimizer_matrix: torch.optim.Optimizer = Muon(
+            matrix_params,
+            lr=args.matrix_lr,
+            momentum=args.muon_momentum,
+            backend_steps=args.muon_backend_steps,
+        )
+    elif args.matrix_optimizer == "adamw":
+        optimizer_matrix = torch.optim.AdamW(
+            [{"params": matrix_params, "lr": args.matrix_lr, "base_lr": args.matrix_lr}],
+            betas=(args.beta1, args.beta2),
+            eps=args.adam_eps,
+            weight_decay=args.matrix_weight_decay,
+            fused=True,
+        )
+    else:
+        raise ValueError(f"Unsupported MATRIX_OPTIMIZER={args.matrix_optimizer!r}; expected 'muon' or 'adamw'")
+    for group in optimizer_matrix.param_groups:
+        group.setdefault("base_lr", args.matrix_lr)
     optimizer_scalar = torch.optim.Adam(
         [{"params": scalar_params, "lr": args.scalar_lr, "base_lr": args.scalar_lr}],
         betas=(args.beta1, args.beta2),
         eps=args.adam_eps,
         fused=True,
     )
-    optimizers: list[torch.optim.Optimizer] = [optimizer_tok, optimizer_muon, optimizer_scalar]
+    optimizers: list[torch.optim.Optimizer] = [optimizer_tok, optimizer_matrix, optimizer_scalar]
     if base_model.lm_head is not None:
         optimizer_head = torch.optim.Adam(
             [{"params": [base_model.lm_head.weight], "lr": args.head_lr, "base_lr": args.head_lr}],
@@ -917,11 +949,12 @@ def main() -> None:
     log0(f"world_size:{world_size} grad_accum_steps:{grad_accum_steps}")
     log0("sdp_backends:cudnn=False flash=True mem_efficient=False math=False")
     log0(f"attention_mode:gqa num_heads:{args.num_heads} num_kv_heads:{args.num_kv_heads}")
-    log0("architecture:decoder_only full_attnres")
+    log0(f"architecture:decoder_only full_attnres attn_res_impl:{args.attn_res_impl}")
     log0(
         f"tie_embeddings:{args.tie_embeddings} embed_lr:{token_lr} "
         f"head_lr:{args.head_lr if base_model.lm_head is not None else 0.0} "
-        f"matrix_lr:{args.matrix_lr} scalar_lr:{args.scalar_lr}"
+        f"matrix_optimizer:{args.matrix_optimizer} matrix_lr:{args.matrix_lr} "
+        f"matrix_weight_decay:{args.matrix_weight_decay} scalar_lr:{args.scalar_lr}"
     )
     log0(
         f"train_batch_tokens:{args.train_batch_tokens} train_seq_len:{args.train_seq_len} "
@@ -1039,10 +1072,11 @@ def main() -> None:
             (loss * grad_scale).backward()
         train_loss /= grad_accum_steps
 
-        frac = min(step / args.muon_momentum_warmup_steps, 1.0) if args.muon_momentum_warmup_steps > 0 else 1.0
-        muon_momentum = (1 - frac) * args.muon_momentum_warmup_start + frac * args.muon_momentum
-        for group in optimizer_muon.param_groups:
-            group["momentum"] = muon_momentum
+        if args.matrix_optimizer == "muon":
+            frac = min(step / args.muon_momentum_warmup_steps, 1.0) if args.muon_momentum_warmup_steps > 0 else 1.0
+            muon_momentum = (1 - frac) * args.muon_momentum_warmup_start + frac * args.muon_momentum
+            for group in optimizer_matrix.param_groups:
+                group["momentum"] = muon_momentum
 
         for opt in optimizers:
             for group in opt.param_groups:
