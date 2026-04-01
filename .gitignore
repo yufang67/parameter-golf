@@ -8,7 +8,7 @@ data/manifest.json
 data/docs_selected.jsonl
 .mypy_cache/
 .venv
-logs/
 CLAUDE.md
 results/
 scripts/
+.vscode

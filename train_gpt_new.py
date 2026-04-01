@@ -27,6 +27,8 @@ import torch.nn.functional as F
 from torch import Tensor, nn
 from torch.nn.parallel import DistributedDataParallel as DDP
 
+from mla import MultiHeadLatentAttention
+
 # -----------------------------
 # HYPERPARAMETERS
 # -----------------------------
@@ -52,10 +54,10 @@ class Hyperparameters:
 
     # Training length.
     iterations = int(os.environ.get("ITERATIONS", 20000))
-    warmdown_iters = int(os.environ.get("WARMDOWN_ITERS", 1200))
-    warmup_steps = int(os.environ.get("WARMUP_STEPS", 10))
-    train_batch_tokens = int(os.environ.get("TRAIN_BATCH_TOKENS", 524_288)) # 524_288， 262_144
-    train_seq_len = int(os.environ.get("TRAIN_SEQ_LEN", 1024)) #1024
+    warmdown_iters = int(os.environ.get("WARMDOWN_ITERS", 3500))
+    warmup_steps = int(os.environ.get("WARMUP_STEPS", 20))
+    train_batch_tokens = int(os.environ.get("TRAIN_BATCH_TOKENS", 786_432))
+    train_seq_len = int(os.environ.get("TRAIN_SEQ_LEN", 1024))
     max_wallclock_seconds = float(os.environ.get("MAX_WALLCLOCK_SECONDS", 600*6*5)) # 600 for 10mins
     qk_gain_init = float(os.environ.get("QK_GAIN_INIT", 1.5))
 
@@ -66,28 +68,32 @@ class Hyperparameters:
     model_dim = int(os.environ.get("MODEL_DIM", 512))
     num_heads = int(os.environ.get("NUM_HEADS", 8))
     mlp_mult = int(os.environ.get("MLP_MULT", 2))
-    attn_res_impl = os.environ.get("ATTN_RES_IMPL", "loop").strip().lower()
     tie_embeddings = bool(int(os.environ.get("TIE_EMBEDDINGS", "1")))
     rope_base = float(os.environ.get("ROPE_BASE", 10000.0))
     logit_softcap = float(os.environ.get("LOGIT_SOFTCAP", 30.0))
+    attn_type = os.environ.get("ATTN_TYPE", "gqa").strip().lower()  # "gqa", "mla", or "diff"
+    kv_latent_dim = int(os.environ.get("KV_LATENT_DIM", 192))  # MLA bottleneck dim
 
     # Optimizer hyperparameters.
-    embed_lr = float(os.environ.get("EMBED_LR", 0.6))
+    embed_lr = float(os.environ.get("EMBED_LR", 0.035))
     head_lr = float(os.environ.get("HEAD_LR", 0.008))
-    tied_embed_lr = float(os.environ.get("TIED_EMBED_LR", 0.05))
+    tied_embed_lr = float(os.environ.get("TIED_EMBED_LR", 0.035))
     tied_embed_init_std = float(os.environ.get("TIED_EMBED_INIT_STD", 0.005))
     matrix_optimizer = os.environ.get("MATRIX_OPTIMIZER", "muon").strip().lower()
-    matrix_lr = float(os.environ.get("MATRIX_LR", 0.04))
-    matrix_weight_decay = float(os.environ.get("MATRIX_WEIGHT_DECAY", 0.01))
-    scalar_lr = float(os.environ.get("SCALAR_LR", 0.04))
-    muon_momentum = float(os.environ.get("MUON_MOMENTUM", 0.95))
+    matrix_lr = float(os.environ.get("MATRIX_LR", 0.025))
+    matrix_weight_decay = float(os.environ.get("MATRIX_WEIGHT_DECAY", 0.04))
+    scalar_lr = float(os.environ.get("SCALAR_LR", 0.025))
+    muon_momentum = float(os.environ.get("MUON_MOMENTUM", 0.99))
     muon_backend_steps = int(os.environ.get("MUON_BACKEND_STEPS", 5))
     muon_momentum_warmup_start = float(os.environ.get("MUON_MOMENTUM_WARMUP_START", 0.92))
-    muon_momentum_warmup_steps = int(os.environ.get("MUON_MOMENTUM_WARMUP_STEPS", 500))
+    muon_momentum_warmup_steps = int(os.environ.get("MUON_MOMENTUM_WARMUP_STEPS", 1500))
     beta1 = float(os.environ.get("BETA1", 0.9))
     beta2 = float(os.environ.get("BETA2", 0.95))
     adam_eps = float(os.environ.get("ADAM_EPS", 1e-8))
-    grad_clip_norm = float(os.environ.get("GRAD_CLIP_NORM", 0.0))
+    adam_weight_decay = float(os.environ.get("ADAM_WEIGHT_DECAY", 0.04))
+    grad_clip_norm = float(os.environ.get("GRAD_CLIP_NORM", 0.3))
+    swa_every = int(os.environ.get("SWA_EVERY", 50))
+    swa_warmdown_frac = float(os.environ.get("SWA_WARMDOWN_FRAC", 0.2))  # SWA active in last 20% of warmdown
 
 # -----------------------------
 # MUON OPTIMIZER 
@@ -113,10 +119,10 @@ def zeropower_via_newtonschulz5(G: Tensor, steps: int = 10, eps: float = 1e-7) -
 
 
 class Muon(torch.optim.Optimizer):
-    def __init__(self, params, lr: float, momentum: float, backend_steps: int, nesterov: bool = True):
+    def __init__(self, params, lr: float, momentum: float, backend_steps: int, nesterov: bool = True, weight_decay: float = 0.0):
         super().__init__(
             params,
-            dict(lr=lr, momentum=momentum, backend_steps=backend_steps, nesterov=nesterov),
+            dict(lr=lr, momentum=momentum, backend_steps=backend_steps, nesterov=nesterov, weight_decay=weight_decay),
         )
 
     @torch.no_grad()
@@ -162,9 +168,12 @@ class Muon(torch.optim.Optimizer):
             if distributed:
                 dist.all_reduce(updates_flat, op=dist.ReduceOp.SUM)
 
+            weight_decay = group.get("weight_decay", 0.0)
             curr = 0
             for p in params:
                 g = updates_flat[curr : curr + p.numel()].view_as(p).to(dtype=p.dtype)
+                if weight_decay > 0.0:
+                    p.mul_(1.0 - lr * weight_decay)
                 p.add_(g, alpha=-lr)
                 curr += p.numel()
 
@@ -511,9 +520,12 @@ class RMSNorm(nn.Module):
 
 class CastedLinear(nn.Linear):
     # Keep weights in fp32 for optimizer/state quality, cast at matmul time for bf16 compute.
+    # All instances use bias=False, so we skip the bias path entirely.
+    def __init__(self, in_features: int, out_features: int, bias: bool = False):
+        super().__init__(in_features, out_features, bias=False)
+
     def forward(self, x: Tensor) -> Tensor:
-        bias = self.bias.to(x.dtype) if self.bias is not None else None
-        return F.linear(x, self.weight.to(x.dtype), bias)
+        return F.linear(x, self.weight.to(x.dtype))
 
 
 def restore_low_dim_params_to_fp32(module: nn.Module) -> None:
@@ -579,9 +591,11 @@ class CausalSelfAttention(nn.Module):
         if self.head_dim % 2 != 0:
             raise ValueError("head_dim must be even for RoPE")
         kv_dim = self.num_kv_heads * self.head_dim
-        self.c_q = CastedLinear(dim, dim, bias=False)
-        self.c_k = CastedLinear(dim, kv_dim, bias=False)
-        self.c_v = CastedLinear(dim, kv_dim, bias=False)
+        # Fused QKV: single matmul from x -> [Q, K, V]
+        self._q_dim = dim
+        self._k_dim = kv_dim
+        self._v_dim = kv_dim
+        self.c_qkv = CastedLinear(dim, self._q_dim + self._k_dim + self._v_dim, bias=False)
         self.proj = CastedLinear(dim, dim, bias=False)
         self.proj._zero_init = True
         self.q_gain = nn.Parameter(torch.full((num_heads,), qk_gain_init, dtype=torch.float32))
@@ -589,9 +603,11 @@ class CausalSelfAttention(nn.Module):
 
     def forward(self, x: Tensor) -> Tensor:
         bsz, seqlen, dim = x.shape
-        q = self.c_q(x).reshape(bsz, seqlen, self.num_heads, self.head_dim).transpose(1, 2)
-        k = self.c_k(x).reshape(bsz, seqlen, self.num_kv_heads, self.head_dim).transpose(1, 2)
-        v = self.c_v(x).reshape(bsz, seqlen, self.num_kv_heads, self.head_dim).transpose(1, 2)
+        # Fused QKV: 1 matmul instead of 3
+        qkv = self.c_qkv(x)
+        q = qkv[..., :self._q_dim].reshape(bsz, seqlen, self.num_heads, self.head_dim).transpose(1, 2)
+        k = qkv[..., self._q_dim:self._q_dim + self._k_dim].reshape(bsz, seqlen, self.num_kv_heads, self.head_dim).transpose(1, 2)
+        v = qkv[..., self._q_dim + self._k_dim:].reshape(bsz, seqlen, self.num_kv_heads, self.head_dim).transpose(1, 2)
         q = F.rms_norm(q, (q.size(-1),))
         k = F.rms_norm(k, (k.size(-1),))
         cos, sin = self.rotary(seqlen, x.device, q.dtype)
@@ -628,30 +644,34 @@ def attn_res(sources: list[tuple[Tensor, Tensor]], proj_weight: Tensor) -> Tenso
     # Full attention residual: attend over all prior layer outputs.
     # Loop-based to avoid materializing [N, B, T, D] stack tensor.
     # Each source carries a cached RMSNorm view so we do not renormalize history.
+    if len(sources) == 1:
+        return sources[0][0]
     logits = []
     running_max = None
     for src, normed_src in sources:
         s = torch.einsum('d, btd -> bt', proj_weight, normed_src)
         logits.append(s)
         running_max = s if running_max is None else torch.maximum(running_max, s)
+    # Fused: compute exp weights and weighted sum in a single pass (was 2 loops)
     exp_sum = torch.zeros_like(running_max)
-    for s in logits:
-        exp_sum = exp_sum + torch.exp(s - running_max)
     h = torch.zeros_like(sources[0][0])
     for s, (src, _) in zip(logits, sources):
-        w = torch.exp(s - running_max) / exp_sum
-        h = h + w.unsqueeze(-1) * src
-    return h
+        e = torch.exp(s - running_max)
+        exp_sum = exp_sum + e
+        h = h + e.unsqueeze(-1) * src
+    return h / exp_sum.unsqueeze(-1)
 
 
-def attn_res_stack(sources: list[tuple[Tensor, Tensor]], proj_weight: Tensor) -> Tensor:
-    # Full attention residual: stack-based variant.
-    # Uses cached normalized sources for scores and raw sources for values.
-    values = torch.stack([src for src, _ in sources])
-    keys = torch.stack([normed_src for _, normed_src in sources])
-    logits = torch.einsum('d,nbtd->nbt', proj_weight, keys)
-    weights = logits.softmax(dim=0)
-    return torch.einsum('nbt,nbtd->btd', weights, values)
+# def attn_res_stack(sources: list[tuple[Tensor, Tensor]], proj_weight: Tensor) -> Tensor:
+#     # Full attention residual: stack-based variant.
+#     # Uses cached normalized sources for scores and raw sources for values.
+#     if len(sources) == 1:
+#         return sources[0][0]
+#     values = torch.stack([src for src, _ in sources])
+#     keys = torch.stack([normed_src for _, normed_src in sources])
+#     logits = torch.einsum('d,nbtd->nbt', proj_weight, keys)
+#     weights = logits.softmax(dim=0)
+#     return torch.einsum('nbt,nbtd->btd', weights, values)
 
 
 class Block(nn.Module):
@@ -663,33 +683,29 @@ class Block(nn.Module):
         mlp_mult: int,
         rope_base: float,
         qk_gain_init: float,
-        attn_res_impl: str,
+        attn_type: str = "gqa",
+        kv_latent_dim: int = 192,
     ):
         super().__init__()
-        if attn_res_impl not in {"loop", "stack"}:
-            raise ValueError(f"Unsupported ATTN_RES_IMPL={attn_res_impl!r}; expected 'loop' or 'stack'")
-        self.attn_res_impl = attn_res_impl
         self.attn_norm = RMSNorm()
         self.mlp_norm = RMSNorm()
         self.attn_res_norm = RMSNorm()
         self.mlp_res_norm = RMSNorm()
         self.attn_res_proj = nn.Parameter(torch.zeros(dim))
         self.mlp_res_proj = nn.Parameter(torch.zeros(dim))
-        self.attn = CausalSelfAttention(dim, num_heads, num_kv_heads, rope_base, qk_gain_init)
+        if attn_type == "mla":
+            self.attn = MultiHeadLatentAttention(dim, num_heads, kv_latent_dim, rope_base, qk_gain_init)
+        else:
+            self.attn = CausalSelfAttention(dim, num_heads, num_kv_heads, rope_base, qk_gain_init)
         self.mlp = MLP(dim, mlp_mult)
-
-    def _attn_res(self, sources: list[tuple[Tensor, Tensor]], proj_weight: Tensor) -> Tensor:
-        if self.attn_res_impl == "stack":
-            return attn_res_stack(sources, proj_weight)
-        return attn_res(sources, proj_weight)
 
     def forward(self, sources: list[tuple[Tensor, Tensor]]) -> list[tuple[Tensor, Tensor]]:
         # AttnRes before attention
-        h = self._attn_res(sources, self.attn_res_proj.to(dtype=sources[0][0].dtype))
+        h = attn_res(sources, self.attn_res_proj.to(dtype=sources[0][0].dtype))
         h = h + self.attn(self.attn_norm(h))
         sources = sources + [(h, normalize_source(h))]  # post-attn memory
         # AttnRes before MLP
-        h = self._attn_res(sources, self.mlp_res_proj.to(dtype=sources[0][0].dtype))
+        h = attn_res(sources, self.mlp_res_proj.to(dtype=sources[0][0].dtype))
         h = h + self.mlp(self.mlp_norm(h))
         sources = sources + [(h, normalize_source(h))]  # post-MLP memory
         return sources
@@ -709,7 +725,8 @@ class GPT(nn.Module):
         logit_softcap: float,
         rope_base: float,
         qk_gain_init: float,
-        attn_res_impl: str,
+        attn_type: str = "gqa",
+        kv_latent_dim: int = 192,
     ):
         super().__init__()
         if logit_softcap <= 0.0:
@@ -727,7 +744,8 @@ class GPT(nn.Module):
                     mlp_mult,
                     rope_base,
                     qk_gain_init,
-                    attn_res_impl,
+                    attn_type=attn_type,
+                    kv_latent_dim=kv_latent_dim,
                 )
                 for i in range(num_layers)
             ]
@@ -877,7 +895,8 @@ def main() -> None:
         logit_softcap=args.logit_softcap,
         rope_base=args.rope_base,
         qk_gain_init=args.qk_gain_init,
-        attn_res_impl=args.attn_res_impl,
+        attn_type=args.attn_type,
+        kv_latent_dim=args.kv_latent_dim,
     ).to(device).bfloat16()
     for module in base_model.modules():
         if isinstance(module, CastedLinear):
@@ -903,10 +922,11 @@ def main() -> None:
         if p.ndim < 2 or any(pattern in name for pattern in CONTROL_TENSOR_NAME_PATTERNS)
     ]
     token_lr = args.tied_embed_lr if args.tie_embeddings else args.embed_lr
-    optimizer_tok = torch.optim.Adam(
+    optimizer_tok = torch.optim.AdamW(
         [{"params": [base_model.tok_emb.weight], "lr": token_lr, "base_lr": token_lr}],
         betas=(args.beta1, args.beta2),
         eps=args.adam_eps,
+        weight_decay=args.adam_weight_decay,
         fused=True,
     )
     if args.matrix_optimizer == "muon":
@@ -915,6 +935,7 @@ def main() -> None:
             lr=args.matrix_lr,
             momentum=args.muon_momentum,
             backend_steps=args.muon_backend_steps,
+            weight_decay=args.matrix_weight_decay,
         )
     elif args.matrix_optimizer == "adamw":
         optimizer_matrix = torch.optim.AdamW(
@@ -928,18 +949,20 @@ def main() -> None:
         raise ValueError(f"Unsupported MATRIX_OPTIMIZER={args.matrix_optimizer!r}; expected 'muon' or 'adamw'")
     for group in optimizer_matrix.param_groups:
         group.setdefault("base_lr", args.matrix_lr)
-    optimizer_scalar = torch.optim.Adam(
+    optimizer_scalar = torch.optim.AdamW(
         [{"params": scalar_params, "lr": args.scalar_lr, "base_lr": args.scalar_lr}],
         betas=(args.beta1, args.beta2),
         eps=args.adam_eps,
+        weight_decay=args.adam_weight_decay,
         fused=True,
     )
     optimizers: list[torch.optim.Optimizer] = [optimizer_tok, optimizer_matrix, optimizer_scalar]
     if base_model.lm_head is not None:
-        optimizer_head = torch.optim.Adam(
+        optimizer_head = torch.optim.AdamW(
             [{"params": [base_model.lm_head.weight], "lr": args.head_lr, "base_lr": args.head_lr}],
             betas=(args.beta1, args.beta2),
             eps=args.adam_eps,
+            weight_decay=args.adam_weight_decay,
             fused=True,
         )
         optimizers.insert(1, optimizer_head)
@@ -949,7 +972,7 @@ def main() -> None:
     log0(f"world_size:{world_size} grad_accum_steps:{grad_accum_steps}")
     log0("sdp_backends:cudnn=False flash=True mem_efficient=False math=False")
     log0(f"attention_mode:gqa num_heads:{args.num_heads} num_kv_heads:{args.num_kv_heads}")
-    log0(f"architecture:decoder_only full_attnres attn_res_impl:{args.attn_res_impl}")
+    log0(f"architecture:decoder_only full_attnres")
     log0(
         f"tie_embeddings:{args.tie_embeddings} embed_lr:{token_lr} "
         f"head_lr:{args.head_lr if base_model.lm_head is not None else 0.0} "
@@ -1020,6 +1043,11 @@ def main() -> None:
 
     training_time_ms = 0.0
     stop_after_step: int | None = None
+
+    # SWA (Stochastic Weight Averaging) state — averages weights during late warmdown
+    swa_state: dict[str, Tensor] | None = None
+    swa_count = 0
+
     torch.cuda.synchronize()
     t0 = time.perf_counter()
 
@@ -1088,6 +1116,17 @@ def main() -> None:
             opt.step()
         zero_grad_all()
 
+        # SWA: accumulate weight averages during late warmdown
+        if args.swa_every > 0 and scale < args.swa_warmdown_frac and step % args.swa_every == 0:
+            current_sd = base_model.state_dict()
+            if swa_state is None:
+                swa_state = {k: v.detach().cpu().clone().float() for k, v in current_sd.items()}
+                swa_count = 1
+            else:
+                swa_count += 1
+                for k in swa_state:
+                    swa_state[k].add_(current_sd[k].detach().cpu().float() - swa_state[k], alpha=1.0 / swa_count)
+
         step += 1
         approx_training_time_ms = training_time_ms + 1000.0 * (time.perf_counter() - t0)
         should_log_train = (
@@ -1113,6 +1152,17 @@ def main() -> None:
         f"peak memory allocated: {torch.cuda.max_memory_allocated() // 1024 // 1024} MiB "
         f"reserved: {torch.cuda.max_memory_reserved() // 1024 // 1024} MiB"
     )
+
+    # Apply SWA weights if collected
+    if swa_state is not None and swa_count > 1:
+        log0(f"swa: applying averaged weights from {swa_count} checkpoints")
+        # Cast back to model dtypes
+        model_sd = base_model.state_dict()
+        for k in swa_state:
+            swa_state[k] = swa_state[k].to(dtype=model_sd[k].dtype)
+        base_model.load_state_dict(swa_state, strict=True)
+    else:
+        log0("swa: no averaged weights collected (swa_count={})".format(swa_count))
 
     # -----------------------------
     # SERIALIZATION + ROUNDTRIP VALIDATION
