@@ -29,6 +29,12 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 
 from mla import MultiHeadLatentAttention
 
+try:
+    from gram_newton_schulz import GramNewtonSchulz, YOU_COEFFICIENTS
+    HAS_GRAM_NS = True
+except ImportError:
+    HAS_GRAM_NS = False
+
 # -----------------------------
 # HYPERPARAMETERS
 # -----------------------------
@@ -85,6 +91,7 @@ class Hyperparameters:
     scalar_lr = float(os.environ.get("SCALAR_LR", 0.025))
     muon_momentum = float(os.environ.get("MUON_MOMENTUM", 0.99))
     muon_backend_steps = int(os.environ.get("MUON_BACKEND_STEPS", 5))
+    ns_algorithm = os.environ.get("NS_ALGORITHM", "gram" if HAS_GRAM_NS else "standard").strip().lower()
     muon_momentum_warmup_start = float(os.environ.get("MUON_MOMENTUM_WARMUP_START", 0.92))
     muon_momentum_warmup_steps = int(os.environ.get("MUON_MOMENTUM_WARMUP_STEPS", 1500))
     beta1 = float(os.environ.get("BETA1", 0.9))
@@ -793,7 +800,17 @@ def main() -> None:
 
     code = Path(__file__).read_text(encoding="utf-8")
     args = Hyperparameters()
-    zeropower_via_newtonschulz5 = torch.compile(zeropower_via_newtonschulz5)
+    if args.ns_algorithm == "gram" and HAS_GRAM_NS:
+        _gram_ns = GramNewtonSchulz(
+            ns_coefficients=YOU_COEFFICIENTS,
+            gram_newton_schulz_reset_iterations=[2],
+            ns_use_kernels=True,
+        )
+        def _gram_ns_ortho(G: Tensor, steps: int = 10, eps: float = 1e-7) -> Tensor:
+            return _gram_ns(G.unsqueeze(0)).squeeze(0)
+        zeropower_via_newtonschulz5 = _gram_ns_ortho
+    else:
+        zeropower_via_newtonschulz5 = torch.compile(zeropower_via_newtonschulz5)
 
     # -----------------------------
     # DISTRIBUTED + CUDA SETUP
