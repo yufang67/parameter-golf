@@ -809,8 +809,10 @@ def main() -> None:
         def _gram_ns_ortho(G: Tensor, steps: int = 10, eps: float = 1e-7) -> Tensor:
             return _gram_ns(G.unsqueeze(0)).squeeze(0)
         zeropower_via_newtonschulz5 = _gram_ns_ortho
+        print("Using Gram Newton-Schulz orthogonalization")
     else:
         zeropower_via_newtonschulz5 = torch.compile(zeropower_via_newtonschulz5)
+        print("Using default Newton-Schulz orthogonalization")
 
     # -----------------------------
     # DISTRIBUTED + CUDA SETUP
