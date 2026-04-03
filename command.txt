@@ -1,0 +1,2 @@
+RUN_ID=l6_d768_M6 NUM_LAYERS=4 MODEL_DIM=768 MLP_MULT=6 \
+torchrun --standalone --nproc_per_node=4 train_gpt_new.py
