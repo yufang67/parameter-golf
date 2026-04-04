@@ -14,6 +14,7 @@ import os
 import random
 import subprocess
 import sys
+import sysconfig
 import time
 import uuid
 import zlib
@@ -79,6 +80,7 @@ class Hyperparameters:
     logit_softcap = float(os.environ.get("LOGIT_SOFTCAP", 30.0))
     attn_type = os.environ.get("ATTN_TYPE", "gqa").strip().lower()  # "gqa", "mla", or "diff"
     kv_latent_dim = int(os.environ.get("KV_LATENT_DIM", 192))  # MLA bottleneck dim
+    compile_mode = os.environ.get("COMPILE_MODE", "auto").strip().lower()  # auto, on, off
 
     # Optimizer hyperparameters.
     embed_lr = float(os.environ.get("EMBED_LR", 0.035))
@@ -578,6 +580,35 @@ def normalize_source(x: Tensor) -> Tensor:
     return F.rms_norm(x, (x.size(-1),))
 
 
+def has_python_dev_headers() -> bool:
+    version = f"python{sys.version_info.major}.{sys.version_info.minor}"
+    candidates: list[Path] = []
+    for key in ("include", "platinclude"):
+        include_dir = sysconfig.get_paths().get(key)
+        if include_dir:
+            candidates.append(Path(include_dir) / "Python.h")
+    candidates.append(Path("/usr/include") / version / "Python.h")
+    candidates.append(Path("/usr/local/include") / version / "Python.h")
+    return any(path.exists() for path in candidates)
+
+
+def should_enable_torch_compile(mode: str) -> tuple[bool, str]:
+    normalized = mode.strip().lower()
+    if normalized not in {"auto", "on", "off"}:
+        raise ValueError(f"COMPILE_MODE must be one of 'auto', 'on', or 'off', got {mode!r}")
+    if normalized == "off":
+        return False, "disabled by COMPILE_MODE=off"
+    if normalized == "on":
+        return True, "forced by COMPILE_MODE=on"
+    if not has_python_dev_headers():
+        return False, "Python.h not found; Triton/Inductor CUDA compilation requires Python development headers"
+    return True, "enabled"
+
+
+def maybe_compile(obj, *, enabled: bool, fullgraph: bool = False):
+    return torch.compile(obj, dynamic=False, fullgraph=fullgraph) if enabled else obj
+
+
 class CausalSelfAttention(nn.Module):
     def __init__(
         self,
@@ -692,13 +723,17 @@ class Block(nn.Module):
         qk_gain_init: float,
         attn_type: str = "gqa",
         kv_latent_dim: int = 192,
+        use_attn_res: bool = True,
     ):
         super().__init__()
         self.attn_norm = RMSNorm()
         self.mlp_norm = RMSNorm()
         self.attn_res_norm = RMSNorm()
         self.mlp_res_norm = RMSNorm()
-        self.attn_res_proj = nn.Parameter(torch.zeros(dim))
+        if use_attn_res:
+            self.attn_res_proj = nn.Parameter(torch.zeros(dim))
+        else:
+            self.register_parameter("attn_res_proj", None)
         self.mlp_res_proj = nn.Parameter(torch.zeros(dim))
         if attn_type == "mla":
             self.attn = MultiHeadLatentAttention(dim, num_heads, kv_latent_dim, rope_base, qk_gain_init)
@@ -708,7 +743,10 @@ class Block(nn.Module):
 
     def forward(self, sources: list[tuple[Tensor, Tensor]]) -> list[tuple[Tensor, Tensor]]:
         # AttnRes before attention
-        h = attn_res(sources, self.attn_res_proj.to(dtype=sources[0][0].dtype))
+        if self.attn_res_proj is None:
+            h = sources[0][0]
+        else:
+            h = attn_res(sources, self.attn_res_proj.to(dtype=sources[0][0].dtype))
         h = h + self.attn(self.attn_norm(h))
         sources = sources + [(h, normalize_source(h))]  # post-attn memory
         # AttnRes before MLP
@@ -753,6 +791,7 @@ class GPT(nn.Module):
                     qk_gain_init,
                     attn_type=attn_type,
                     kv_latent_dim=kv_latent_dim,
+                    use_attn_res=(i > 0),
                 )
                 for i in range(num_layers)
             ]
@@ -800,6 +839,7 @@ def main() -> None:
 
     code = Path(__file__).read_text(encoding="utf-8")
     args = Hyperparameters()
+    compile_enabled, compile_reason = should_enable_torch_compile(args.compile_mode)
     if args.ns_algorithm == "gram" and HAS_GRAM_NS:
         _gram_ns = GramNewtonSchulz(
             ns_coefficients=YOU_COEFFICIENTS,
@@ -811,8 +851,8 @@ def main() -> None:
         zeropower_via_newtonschulz5 = _gram_ns_ortho
         print("Using Gram Newton-Schulz orthogonalization")
     else:
-        zeropower_via_newtonschulz5 = torch.compile(zeropower_via_newtonschulz5)
-        print("Using default Newton-Schulz orthogonalization")
+        zeropower_via_newtonschulz5 = maybe_compile(zeropower_via_newtonschulz5, enabled=compile_enabled)
+        print(f"Using default Newton-Schulz orthogonalization (torch.compile={'on' if compile_enabled else 'off'}: {compile_reason})")
 
     # -----------------------------
     # DISTRIBUTED + CUDA SETUP
@@ -921,7 +961,7 @@ def main() -> None:
         if isinstance(module, CastedLinear):
             module.float()
     restore_low_dim_params_to_fp32(base_model)
-    compiled_model = torch.compile(base_model, dynamic=False, fullgraph=True)
+    compiled_model = maybe_compile(base_model, enabled=compile_enabled, fullgraph=True)
     model: nn.Module = DDP(compiled_model, device_ids=[local_rank], broadcast_buffers=False) if distributed else compiled_model
 
     # Optimizer split:
@@ -990,6 +1030,7 @@ def main() -> None:
     log0(f"model_params:{n_params}")
     log0(f"world_size:{world_size} grad_accum_steps:{grad_accum_steps}")
     log0("sdp_backends:cudnn=False flash=True mem_efficient=False math=False")
+    log0(f"torch_compile:{compile_enabled} reason:{compile_reason}")
     log0(f"attention_mode:gqa num_heads:{args.num_heads} num_kv_heads:{args.num_kv_heads}")
     log0(f"architecture:decoder_only full_attnres")
     log0(
