@@ -6,3 +6,5 @@ torchrun --standalone --nproc_per_node=8 train_gpt_new.py &
 
 RUN_ID=qat_yarn_l11_d512_m3_s2048 MAX_WALLCLOCK_SECONDS=3600 \
 torchrun --standalone --nproc_per_node=1 train_gpt_new.py &
+
+RUN_ID=s2048_l6_d768_mlp4 TRAIN_SEQ_LEN=2048 NUM_LAYERS=7 MODEL_DIM=768 MLP_MULT=4 torchrun --standalone --nproc_per_node=4 train_gpt_new.py
