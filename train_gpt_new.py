@@ -62,7 +62,7 @@ class Hyperparameters:
     warmdown_iters = int(os.environ.get("WARMDOWN_ITERS", 3500))
     warmup_steps = int(os.environ.get("WARMUP_STEPS", 20))
     train_batch_tokens = int(os.environ.get("TRAIN_BATCH_TOKENS", 786_432))
-    train_seq_len = int(os.environ.get("TRAIN_SEQ_LEN", 1024))
+    train_seq_len = int(os.environ.get("TRAIN_SEQ_LEN", 2048))
     eval_seq_len = int(os.environ.get("EVAL_SEQ_LEN", 2048))
     eval_stride = int(os.environ.get("EVAL_STRIDE", 64))
     max_wallclock_seconds = float(os.environ.get("MAX_WALLCLOCK_SECONDS", 600)) # 600 for 10mins
@@ -78,9 +78,8 @@ class Hyperparameters:
     tie_embeddings = bool(int(os.environ.get("TIE_EMBEDDINGS", "1")))
     rope_base = float(os.environ.get("ROPE_BASE", 10000.0))
     logit_softcap = float(os.environ.get("LOGIT_SOFTCAP", 30.0))
-    rope_type = os.environ.get("ROPE_TYPE", "yarn").strip().lower()  # "rope" or "yarn"
+    rope_type = os.environ.get("ROPE_TYPE", "rope").strip().lower()  # "rope" or "yarn"
     yarn_max_len = eval_seq_len
-    #int(os.environ.get("YARN_MAX_LEN", 2048))  # target context length for YaRN (match eval_seq_len)
     attn_type = os.environ.get("ATTN_TYPE", "gqa").strip().lower()  # "gqa", "mla", or "diff"
     kv_latent_dim = int(os.environ.get("KV_LATENT_DIM", 192))  # MLA bottleneck dim
     compile_mode = os.environ.get("COMPILE_MODE", "auto").strip().lower()  # auto, on, off
@@ -92,7 +91,7 @@ class Hyperparameters:
     tied_embed_init_std = float(os.environ.get("TIED_EMBED_INIT_STD", 0.005))
     matrix_optimizer = os.environ.get("MATRIX_OPTIMIZER", "muon").strip().lower()
     matrix_lr = float(os.environ.get("MATRIX_LR", 0.025))
-    matrix_weight_decay = float(os.environ.get("MATRIX_WEIGHT_DECAY", 0.04))
+    matrix_weight_decay = float(os.environ.get("MATRIX_WEIGHT_DECAY", 0.02))
     scalar_lr = float(os.environ.get("SCALAR_LR", 0.025))
     muon_momentum = float(os.environ.get("MUON_MOMENTUM", 0.99))
     muon_backend_steps = int(os.environ.get("MUON_BACKEND_STEPS", 5))
@@ -102,7 +101,7 @@ class Hyperparameters:
     beta1 = float(os.environ.get("BETA1", 0.9))
     beta2 = float(os.environ.get("BETA2", 0.95))
     adam_eps = float(os.environ.get("ADAM_EPS", 1e-8))
-    adam_weight_decay = float(os.environ.get("ADAM_WEIGHT_DECAY", 0.04))
+    adam_weight_decay = float(os.environ.get("ADAM_WEIGHT_DECAY", 0.01))
     grad_clip_norm = float(os.environ.get("GRAD_CLIP_NORM", 0.3))
     swa_every = int(os.environ.get("SWA_EVERY", 50))
     swa_warmdown_frac = float(os.environ.get("SWA_WARMDOWN_FRAC", 0.2))  # SWA active in last 20% of warmdown
@@ -392,6 +391,15 @@ def quantize_state_dict_int8(state_dict: dict[str, Tensor]):
             stats["num_nonfloat_tensors"] += 1
             passthrough[name] = t
             stats["int8_payload_bytes"] += tensor_nbytes(t)
+            continue
+
+        # Keep tied embedding in fp16 because export-time int8 error compounds
+        # through both the input embedding lookup and the tied output projection.
+        if name.endswith("tok_emb.weight"):
+            kept = t.to(dtype=torch.float16).contiguous()
+            passthrough[name] = kept
+            passthrough_orig_dtypes[name] = str(t.dtype).removeprefix("torch.")
+            stats["int8_payload_bytes"] += tensor_nbytes(kept)
             continue
 
         # Small float tensors are cheap enough to keep directly. We still downcast
@@ -887,6 +895,11 @@ class GPT(nn.Module):
     def _init_weights(self) -> None:
         if self.tie_embeddings:
             nn.init.normal_(self.tok_emb.weight, mean=0.0, std=self.tied_embed_init_std)
+            # overtone init
+            with torch.no_grad():
+                U, S, V = torch.linalg.svd(self.tok_emb.weight.data, full_matrices=False)
+                target_S = S[0] * (1.0 / torch.arange(1, S.shape[0] + 1, dtype=S.dtype)) ** 0.5
+                self.tok_emb.weight.data = (U * target_S[None, :]) @ V
         for module in self.modules():
             if isinstance(module, nn.Linear) and getattr(module, "_zero_init", False):
                 nn.init.zeros_(module.weight)
