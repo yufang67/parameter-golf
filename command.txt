@@ -38,6 +38,9 @@ torchrun --standalone --nproc_per_node=4 train_gpt_new.py &
 RUN_ID=s4096_l4_d768_mlp6 TRAIN_SEQ_LEN=4096 EVAL_SEQ_LEN=4096 NUM_LAYERS=4 MODEL_DIM=768 MLP_MULT=6 MAX_WALLCLOCK_SECONDS=3600 \
 torchrun --standalone --nproc_per_node=4 train_gpt_new.py &
 
+RUN_ID=s4096_l4_d768_mlp6_ema_lzma_pRope_LN TRAIN_SEQ_LEN=4096 EVAL_SEQ_LEN=4096 NUM_LAYERS=4 MODEL_DIM=768 MLP_MULT=6 MAX_WALLCLOCK_SECONDS=3600 \
+torchrun --standalone --nproc_per_node=4 train_gpt_new.py &
+
 # test 1311
 RUN_ID=baseline_1311 MAX_WALLCLOCK_SECONDS=1800 \
 torchrun --standalone --nproc_per_node=4 test_run_1311.py &
