@@ -1581,3 +1581,14 @@ step:3000/20000 val_loss:2.0743 val_bpb:1.2285 train_time:4385967ms step_avg:146
 step:3200/20000 train_loss:2.1200 train_time:4677687ms step_avg:1461.78ms
 step:3400/20000 train_loss:2.0628 train_time:4969480ms step_avg:1461.61ms
 step:3600/20000 train_loss:2.0586 train_time:5261318ms step_avg:1461.48ms
+step:3800/20000 train_loss:2.0417 train_time:5553110ms step_avg:1461.34ms
+step:4000/20000 train_loss:2.1003 train_time:5844887ms step_avg:1461.22ms
+step:4000/20000 val_loss:2.0330 val_bpb:1.2040 train_time:5844958ms step_avg:1461.24ms
+step:4200/20000 train_loss:2.0408 train_time:6136628ms step_avg:1461.10ms
+step:4400/20000 train_loss:1.9578 train_time:6428400ms step_avg:1461.00ms
+step:4600/20000 train_loss:1.9065 train_time:6720180ms step_avg:1460.91ms
+step:4800/20000 train_loss:2.2065 train_time:7011907ms step_avg:1460.81ms
+step:5000/20000 train_loss:1.9987 train_time:7303671ms step_avg:1460.73ms
+step:5000/20000 val_loss:1.9829 val_bpb:1.1744 train_time:7303740ms step_avg:1460.75ms
+step:5200/20000 train_loss:2.0065 train_time:7595981ms step_avg:1460.77ms
+step:5400/20000 train_loss:1.9375 train_time:7888189ms step_avg:1460.78ms
