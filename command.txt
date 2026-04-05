@@ -19,3 +19,15 @@ torchrun --standalone --nproc_per_node=8 train_gpt_new.py &
 
 RUN_ID=s2048_l6_d768_mlp4 TRAIN_SEQ_LEN=2048 NUM_LAYERS=7 MODEL_DIM=768 MLP_MULT=4 \
 torchrun --standalone --nproc_per_node=4 train_gpt_new.py
+
+
+# Downsize
+RUN_ID=s1024_l6_d512_mlp3_compile TRAIN_SEQ_LEN=1024 NUM_LAYERS=6 MODEL_DIM=512 MLP_MULT=3 MAX_WALLCLOCK_SECONDS=3600 \
+torchrun --standalone --nproc_per_node=4 train_gpt_new.py &
+
+RUN_ID=s1024_l6_d512_mlp3_muon3 MUON_BACKEND_STEPS=3 TRAIN_SEQ_LEN=1024 NUM_LAYERS=6 MODEL_DIM=512 MLP_MULT=3 MAX_WALLCLOCK_SECONDS=3600 \
+torchrun --standalone --nproc_per_node=4 train_gpt_new.py &
+
+
+RUN_ID=s4096_l18_d256_mlp3 TRAIN_SEQ_LEN=4096 EVAL_SEQ_LEN=8192 NUM_LAYERS=18 MODEL_DIM=256 MLP_MULT=4 MAX_WALLCLOCK_SECONDS=3600 \
+torchrun --standalone --nproc_per_node=4 train_gpt_new.py &

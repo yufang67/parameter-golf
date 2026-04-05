@@ -28,8 +28,6 @@ import torch.nn.functional as F
 from torch import Tensor, nn
 from torch.nn.parallel import DistributedDataParallel as DDP
 
-from mla import MultiHeadLatentAttention
-
 try:
     from gram_newton_schulz import GramNewtonSchulz, YOU_COEFFICIENTS
     HAS_GRAM_NS = True
@@ -64,8 +62,8 @@ class Hyperparameters:
     warmdown_iters = int(os.environ.get("WARMDOWN_ITERS", 3500))
     warmup_steps = int(os.environ.get("WARMUP_STEPS", 20))
     train_batch_tokens = int(os.environ.get("TRAIN_BATCH_TOKENS", 786_432))
-    train_seq_len = int(os.environ.get("TRAIN_SEQ_LEN", 2048))
-    eval_seq_len = int(os.environ.get("EVAL_SEQ_LEN", 4096))
+    train_seq_len = int(os.environ.get("TRAIN_SEQ_LEN", 1024))
+    eval_seq_len = int(os.environ.get("EVAL_SEQ_LEN", 2048))
     eval_stride = int(os.environ.get("EVAL_STRIDE", 64))
     max_wallclock_seconds = float(os.environ.get("MAX_WALLCLOCK_SECONDS", 600)) # 600 for 10mins
     qk_gain_init = float(os.environ.get("QK_GAIN_INIT", 1.5))
@@ -74,14 +72,15 @@ class Hyperparameters:
     vocab_size = int(os.environ.get("VOCAB_SIZE", 1024))
     num_layers = int(os.environ.get("NUM_LAYERS", 9)) # 9
     num_kv_heads = int(os.environ.get("NUM_KV_HEADS", 4))
-    model_dim = int(os.environ.get("MODEL_DIM", 768))
+    model_dim = int(os.environ.get("MODEL_DIM", 512))
     num_heads = int(os.environ.get("NUM_HEADS", 8))
     mlp_mult = int(os.environ.get("MLP_MULT", 4))
     tie_embeddings = bool(int(os.environ.get("TIE_EMBEDDINGS", "1")))
     rope_base = float(os.environ.get("ROPE_BASE", 10000.0))
     logit_softcap = float(os.environ.get("LOGIT_SOFTCAP", 30.0))
     rope_type = os.environ.get("ROPE_TYPE", "yarn").strip().lower()  # "rope" or "yarn"
-    yarn_max_len = int(os.environ.get("YARN_MAX_LEN", 4096))  # target context length for YaRN (match eval_seq_len)
+    yarn_max_len = eval_seq_len
+    #int(os.environ.get("YARN_MAX_LEN", 2048))  # target context length for YaRN (match eval_seq_len)
     attn_type = os.environ.get("ATTN_TYPE", "gqa").strip().lower()  # "gqa", "mla", or "diff"
     kv_latent_dim = int(os.environ.get("KV_LATENT_DIM", 192))  # MLA bottleneck dim
     compile_mode = os.environ.get("COMPILE_MODE", "auto").strip().lower()  # auto, on, off
@@ -646,6 +645,11 @@ def apply_rotary_emb(x: Tensor, cos: Tensor, sin: Tensor) -> Tensor:
     return torch.cat((x1 * cos + x2 * sin, x1 * (-sin) + x2 * cos), dim=-1)
 
 
+sys.modules.setdefault("train_gpt_new", sys.modules[__name__])
+
+from mla import MultiHeadLatentAttention
+
+
 def normalize_source(x: Tensor) -> Tensor:
     return F.rms_norm(x, (x.size(-1),))
 
@@ -863,9 +867,15 @@ class GPT(nn.Module):
         )
         # Replace default Rotary with YaRN-aware version and propagate temperature
         if rope_type == "yarn":
-            yarn_rotary = Rotary(head_dim, base=rope_base, rope_type="yarn",
-                                yarn_max_len=yarn_max_len, train_seq_len=train_seq_len)
             for block in self.blocks:
+                rope_dim = getattr(block.attn, "rope_dim", head_dim)
+                yarn_rotary = Rotary(
+                    rope_dim,
+                    base=rope_base,
+                    rope_type="yarn",
+                    yarn_max_len=yarn_max_len,
+                    train_seq_len=train_seq_len,
+                )
                 block.attn.rotary = yarn_rotary
                 block.attn.yarn_temp = yarn_rotary.yarn_temp
         self.final_norm = RMSNorm()
@@ -934,7 +944,7 @@ def eval_val_sliding(
     stride: int,
     eval_seq_len: int,
     batch_seqs: int = 32,
-    compile_enabled: bool = True,
+    compile_enabled: bool = False,
 ) -> tuple[float, float]:
     """Sliding window evaluation: each token scored with maximum context."""
     seq_len = eval_seq_len
