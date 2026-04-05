@@ -13,7 +13,7 @@ RUN_ID=qat_yarn_l12_d512_m6_s2048_4a100 NUM_LAYERS=12 MODEL_DIM=512 MLP_MULT=6 M
 torchrun --standalone --nproc_per_node=4 train_gpt_new.py &
 RUN_ID=qat_yarn_l9_d768_m4_s2048_4a100 MAX_WALLCLOCK_SECONDS=18000 \
 torchrun --standalone --nproc_per_node=4 train_gpt_new.py &
-RUN_ID=qat_yarn_l9_d768_m4_s2048_4a100_8H100 \
+RUN_ID=qat_yarn_l9_d768_m4_s2048_8H100 \
 torchrun --standalone --nproc_per_node=8 train_gpt_new.py &
 
 
