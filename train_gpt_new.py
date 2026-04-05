@@ -72,11 +72,11 @@ class Hyperparameters:
 
     # Model shape.
     vocab_size = int(os.environ.get("VOCAB_SIZE", 1024))
-    num_layers = int(os.environ.get("NUM_LAYERS", 11)) # 9
+    num_layers = int(os.environ.get("NUM_LAYERS", 9)) # 9
     num_kv_heads = int(os.environ.get("NUM_KV_HEADS", 4))
-    model_dim = int(os.environ.get("MODEL_DIM", 512))
+    model_dim = int(os.environ.get("MODEL_DIM", 768))
     num_heads = int(os.environ.get("NUM_HEADS", 8))
-    mlp_mult = int(os.environ.get("MLP_MULT", 3))
+    mlp_mult = int(os.environ.get("MLP_MULT", 4))
     tie_embeddings = bool(int(os.environ.get("TIE_EMBEDDINGS", "1")))
     rope_base = float(os.environ.get("ROPE_BASE", 10000.0))
     logit_softcap = float(os.environ.get("LOGIT_SOFTCAP", 30.0))
@@ -252,19 +252,21 @@ def eval_val(
     base_bytes_lut: Tensor,
     has_leading_space_lut: Tensor,
     is_boundary_token_lut: Tensor,
+    eval_seq_len: int | None = None,
 ) -> tuple[float, float]:
     # Validation computes two metrics:
     # - val_loss: token cross-entropy (natural log)
     # - val_bpb: tokenizer-agnostic compression metric used by the challenge
+    seq_len = eval_seq_len or args.train_seq_len
     local_batch_tokens = args.val_batch_size // (world_size * grad_accum_steps)
-    if local_batch_tokens < args.train_seq_len:
+    if local_batch_tokens < seq_len:
         raise ValueError(
             "VAL_BATCH_SIZE must provide at least one sequence per rank; "
             f"got VAL_BATCH_SIZE={args.val_batch_size}, WORLD_SIZE={world_size}, "
-            f"GRAD_ACCUM_STEPS={grad_accum_steps}, TRAIN_SEQ_LEN={args.train_seq_len}"
+            f"GRAD_ACCUM_STEPS={grad_accum_steps}, seq_len={seq_len}"
         )
-    local_batch_seqs = local_batch_tokens // args.train_seq_len
-    total_seqs = (val_tokens.numel() - 1) // args.train_seq_len
+    local_batch_seqs = local_batch_tokens // seq_len
+    total_seqs = (val_tokens.numel() - 1) // seq_len
     seq_start = (total_seqs * rank) // world_size
     seq_end = (total_seqs * (rank + 1)) // world_size
     val_loss_sum = torch.zeros((), device=device, dtype=torch.float64)
@@ -275,11 +277,11 @@ def eval_val(
     with torch.inference_mode():
         for batch_seq_start in range(seq_start, seq_end, local_batch_seqs):
             batch_seq_end = min(batch_seq_start + local_batch_seqs, seq_end)
-            raw_start = batch_seq_start * args.train_seq_len
-            raw_end = batch_seq_end * args.train_seq_len + 1
+            raw_start = batch_seq_start * seq_len
+            raw_end = batch_seq_end * seq_len + 1
             local = val_tokens[raw_start:raw_end].to(device=device, dtype=torch.int64, non_blocking=True)
-            x = local[:-1].reshape(-1, args.train_seq_len)
-            y = local[1:].reshape(-1, args.train_seq_len)
+            x = local[:-1].reshape(-1, seq_len)
+            y = local[1:].reshape(-1, seq_len)
             with torch.autocast(device_type="cuda", dtype=torch.bfloat16, enabled=True):
                 batch_loss = model(x, y).detach()
             batch_token_count = float(y.numel())
@@ -542,10 +544,12 @@ class RMSNorm(nn.Module):
     
 class CastedLinear(nn.Linear):
     # QAT
-    _qat_enabled: bool = True
+    def __init__(self, in_features: int, out_features: int, bias: bool = False):
+        super().__init__(in_features, out_features, bias=False)
+        self._qat_enabled: bool = True
     def forward(self, x: Tensor) -> Tensor:
         w = self.weight.to(x.dtype)
-        if CastedLinear._qat_enabled and self.training and w.ndim == 2:
+        if self._qat_enabled and self.training and w.ndim == 2:
             with torch.no_grad():
                 w32 = self.weight.float()
                 row_max = w32.abs().amax(dim=1)
@@ -742,8 +746,8 @@ class MLP(nn.Module):
 
     def forward(self, x: Tensor) -> Tensor:
         # LeakyReLU²
-        #x = torch.relu(self.fc(x))
-        x = F.leaky_relu(self.fc(x), negative_slope=0.5)
+        x = torch.relu(self.fc(x))
+        #x = F.leaky_relu(self.fc(x), negative_slope=0.5)
         return self.proj(x.square())
 
 
@@ -767,18 +771,6 @@ def attn_res(sources: list[tuple[Tensor, Tensor]], proj_weight: Tensor) -> Tenso
         exp_sum = exp_sum + e
         h = h + e.unsqueeze(-1) * src
     return h / exp_sum.unsqueeze(-1)
-
-
-# def attn_res_stack(sources: list[tuple[Tensor, Tensor]], proj_weight: Tensor) -> Tensor:
-#     # Full attention residual: stack-based variant.
-#     # Uses cached normalized sources for scores and raw sources for values.
-#     if len(sources) == 1:
-#         return sources[0][0]
-#     values = torch.stack([src for src, _ in sources])
-#     keys = torch.stack([normed_src for _, normed_src in sources])
-#     logits = torch.einsum('d,nbtd->nbt', proj_weight, keys)
-#     weights = logits.softmax(dim=0)
-#     return torch.einsum('nbt,nbtd->btd', weights, values)
 
 
 class Block(nn.Module):
@@ -1453,6 +1445,7 @@ def main() -> None:
         base_bytes_lut,
         has_leading_space_lut,
         is_boundary_token_lut,
+        eval_seq_len=effective_eval_seq_len,
     )
     torch.cuda.synchronize()
     log0(

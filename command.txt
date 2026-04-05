@@ -7,4 +7,15 @@ torchrun --standalone --nproc_per_node=8 train_gpt_new.py &
 RUN_ID=qat_yarn_l11_d512_m3_s2048 MAX_WALLCLOCK_SECONDS=3600 \
 torchrun --standalone --nproc_per_node=1 train_gpt_new.py &
 
-RUN_ID=s2048_l6_d768_mlp4 TRAIN_SEQ_LEN=2048 NUM_LAYERS=7 MODEL_DIM=768 MLP_MULT=4 torchrun --standalone --nproc_per_node=4 train_gpt_new.py
+RUN_ID=qat_yarn_l11_d512_m4_s2048_4a100 NUM_LAYERS=11 MODEL_DIM=512 MAX_WALLCLOCK_SECONDS=9000 \
+torchrun --standalone --nproc_per_node=4 train_gpt_new.py &
+RUN_ID=qat_yarn_l12_d512_m6_s2048_4a100 NUM_LAYERS=12 MODEL_DIM=512 MLP_MULT=6 MAX_WALLCLOCK_SECONDS=9000 \
+torchrun --standalone --nproc_per_node=4 train_gpt_new.py &
+RUN_ID=qat_yarn_l9_d768_m4_s2048_4a100 MAX_WALLCLOCK_SECONDS=18000 \
+torchrun --standalone --nproc_per_node=4 train_gpt_new.py &
+RUN_ID=qat_yarn_l9_d768_m4_s2048_4a100_8H100 \
+torchrun --standalone --nproc_per_node=8 train_gpt_new.py &
+
+
+RUN_ID=s2048_l6_d768_mlp4 TRAIN_SEQ_LEN=2048 NUM_LAYERS=7 MODEL_DIM=768 MLP_MULT=4 \
+torchrun --standalone --nproc_per_node=4 train_gpt_new.py
