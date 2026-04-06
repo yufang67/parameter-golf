@@ -75,6 +75,13 @@ class Hyperparameters:
     compile_mode = os.environ.get("COMPILE_MODE", "auto").strip().lower()  # auto, on, off
     rope_dims = int(os.environ.get("ROPE_DIMS", 16))
     ln_scale = bool(int(os.environ.get("LN_SCALE", "1")))
+    bigram_vocab_size = int(os.environ.get("BIGRAM_VOCAB_SIZE", 2048))
+    bigram_dim = int(os.environ.get("BIGRAM_DIM", 128))
+    trigram_vocab_size = int(os.environ.get("TRIGRAM_VOCAB_SIZE", 0))
+    trigram_dim = int(os.environ.get("TRIGRAM_DIM", 128))
+    ve_enabled = bool(int(os.environ.get("VE_ENABLED", "1")))
+    ve_dim = int(os.environ.get("VE_DIM", 128))
+    ve_layers = os.environ.get("VE_LAYERS", "")
 
     # Optimizer hyperparameters.
     embed_lr = float(os.environ.get("EMBED_LR", 0.035))
@@ -770,13 +777,16 @@ class CausalSelfAttention(nn.Module):
         self.rotary = Rotary(self.head_dim, base=rope_base, rope_dims=rope_dims)  # replaced by GPT.__init__ if YaRN
         self.yarn_temp = 1.0  # overwritten by GPT.__init__ from Rotary.yarn_temp
 
-    def forward(self, x: Tensor) -> Tensor:
+    def forward(self, x: Tensor, ve: Tensor | None = None) -> Tensor:
         bsz, seqlen, dim = x.shape
         # Fused QKV: 1 matmul instead of 3
         qkv = self.c_qkv(x)
         q = qkv[..., :self._q_dim].reshape(bsz, seqlen, self.num_heads, self.head_dim).transpose(1, 2)
         k = qkv[..., self._q_dim:self._q_dim + self._k_dim].reshape(bsz, seqlen, self.num_kv_heads, self.head_dim).transpose(1, 2)
-        v = qkv[..., self._q_dim + self._k_dim:].reshape(bsz, seqlen, self.num_kv_heads, self.head_dim).transpose(1, 2)
+        v_flat = qkv[..., self._q_dim + self._k_dim:]
+        if ve is not None:
+            v_flat = v_flat + ve
+        v = v_flat.reshape(bsz, seqlen, self.num_kv_heads, self.head_dim).transpose(1, 2)
         q = F.rms_norm(q, (q.size(-1),))
         k = F.rms_norm(k, (k.size(-1),))
         cos, sin = self.rotary(seqlen, x.device, q.dtype)
@@ -793,6 +803,73 @@ class CausalSelfAttention(nn.Module):
         )
         y = y.transpose(1, 2).contiguous().reshape(bsz, seqlen, dim)
         return self.proj(y)
+
+
+class BigramHash(nn.Module):
+    def __init__(self, bigram_vocab: int, bigram_dim: int, model_dim: int):
+        super().__init__()
+        self.bigram_vocab = bigram_vocab
+        self.emb = nn.Embedding(bigram_vocab, bigram_dim)
+        nn.init.zeros_(self.emb.weight)
+        self.proj = CastedLinear(bigram_dim, model_dim, bias=False) if bigram_dim != model_dim else None
+        if self.proj:
+            nn.init.zeros_(self.proj.weight)
+        self.scale = nn.Parameter(torch.tensor(0.05, dtype=torch.float32))
+
+    def forward(self, ids: Tensor) -> Tensor:
+        t = ids.to(torch.int32)
+        m = self.bigram_vocab - 1
+        out = torch.empty_like(t)
+        out[..., 0] = m
+        out[..., 1:] = torch.bitwise_xor(36313 * t[..., 1:], 27191 * t[..., :-1]) % m
+        h = self.emb(out.long())
+        if self.proj:
+            h = self.proj(h)
+        return h * self.scale.to(dtype=h.dtype)
+
+
+class TrigramHash(nn.Module):
+    def __init__(self, trigram_vocab: int, trigram_dim: int, model_dim: int):
+        super().__init__()
+        self.trigram_vocab = trigram_vocab
+        self.emb = nn.Embedding(trigram_vocab, trigram_dim)
+        nn.init.zeros_(self.emb.weight)
+        self.proj = CastedLinear(trigram_dim, model_dim, bias=False) if trigram_dim != model_dim else None
+        if self.proj:
+            nn.init.zeros_(self.proj.weight)
+        self.scale = nn.Parameter(torch.tensor(0.03, dtype=torch.float32))
+
+    def forward(self, ids: Tensor) -> Tensor:
+        t = ids.to(torch.int32)
+        m = self.trigram_vocab - 1
+        out = torch.empty_like(t)
+        out[..., 0] = m
+        out[..., 1] = torch.bitwise_xor(36313 * t[..., 1], 27191 * t[..., 0]) % m
+        out[..., 2:] = torch.bitwise_xor(
+            torch.bitwise_xor(48271 * t[..., 2:], 36313 * t[..., 1:-1]),
+            27191 * t[..., :-2],
+        ) % m
+        h = self.emb(out.long())
+        if self.proj:
+            h = self.proj(h)
+        return h * self.scale.to(dtype=h.dtype)
+
+
+class ValueEmbedding(nn.Module):
+    def __init__(self, vocab_size: int, ve_dim: int, kv_dim: int):
+        super().__init__()
+        self.emb = nn.Embedding(vocab_size, ve_dim)
+        nn.init.normal_(self.emb.weight, std=0.01)
+        self.proj = CastedLinear(ve_dim, kv_dim, bias=False) if ve_dim != kv_dim else None
+        if self.proj:
+            nn.init.zeros_(self.proj.weight)
+        self.scale = nn.Parameter(torch.tensor(0.1, dtype=torch.float32))
+
+    def forward(self, ids: Tensor) -> Tensor:
+        h = self.emb(ids)
+        if self.proj:
+            h = self.proj(h)
+        return h * self.scale.to(dtype=h.dtype)
 
 
 class MLP(nn.Module):
@@ -866,13 +943,13 @@ class Block(nn.Module):
             self.attn = CausalSelfAttention(dim, num_heads, num_kv_heads, rope_base, qk_gain_init, rope_dims=rope_dims)
         self.mlp = MLP(dim, mlp_mult)
 
-    def forward(self, sources: list[tuple[Tensor, Tensor]]) -> list[tuple[Tensor, Tensor]]:
+    def forward(self, sources: list[tuple[Tensor, Tensor]], ve: Tensor | None = None) -> list[tuple[Tensor, Tensor]]:
         # AttnRes before attention
         if self.attn_res_proj is None:
             h = sources[0][0]
         else:
             h = attn_res(sources, self.attn_res_proj.to(dtype=sources[0][0].dtype))
-        h = h + self.attn(self.attn_norm(h) * self.lsf)
+        h = h + self.attn(self.attn_norm(h) * self.lsf, ve=ve)
         sources = sources + [(h, normalize_source(h))]  # post-attn memory
         # AttnRes before MLP
         h = attn_res(sources, self.mlp_res_proj.to(dtype=sources[0][0].dtype))
@@ -902,6 +979,13 @@ class GPT(nn.Module):
         train_seq_len: int = 1024,
         rope_dims: int = 0,
         ln_scale: bool = False,
+        bigram_vocab_size: int = 0,
+        bigram_dim: int = 128,
+        trigram_vocab_size: int = 0,
+        trigram_dim: int = 128,
+        ve_enabled: bool = False,
+        ve_dim: int = 128,
+        ve_layers: str = "",
     ):
         super().__init__()
         if logit_softcap <= 0.0:
@@ -911,6 +995,22 @@ class GPT(nn.Module):
         self.logit_softcap = logit_softcap
         self.tok_emb = nn.Embedding(vocab_size, model_dim)
         head_dim = model_dim // num_heads
+        kv_dim = num_kv_heads * head_dim
+
+        # N-gram hash embeddings
+        self.bigram = BigramHash(bigram_vocab_size, bigram_dim, model_dim) if bigram_vocab_size > 0 else None
+        self.trigram = TrigramHash(trigram_vocab_size, trigram_dim, model_dim) if trigram_vocab_size > 0 else None
+
+        # Value embeddings
+        self.ve_layer_indices = [int(x) for x in ve_layers.split(",") if x.strip()] if ve_enabled else []
+        if self.ve_layer_indices:
+            self.ve_shared = ValueEmbedding(vocab_size, ve_dim, kv_dim)
+            self.ve_layer_scales = nn.ParameterList(
+                [nn.Parameter(torch.ones(1, dtype=torch.float32)) for _ in self.ve_layer_indices]
+            )
+        else:
+            self.ve_shared = None
+            self.ve_layer_scales = nn.ParameterList()
         self.blocks = nn.ModuleList(
             [
                 Block(
@@ -962,13 +1062,27 @@ class GPT(nn.Module):
             if isinstance(module, nn.Linear) and getattr(module, "_zero_init", False):
                 nn.init.zeros_(module.weight)
 
+    def _get_ve(self, layer_idx: int, input_ids: Tensor, ve_cache: dict) -> Tensor | None:
+        if self.ve_shared is None or layer_idx not in self.ve_layer_indices:
+            return None
+        if "ve" not in ve_cache:
+            ve_cache["ve"] = self.ve_shared(input_ids)
+        idx = self.ve_layer_indices.index(layer_idx)
+        return ve_cache["ve"] * self.ve_layer_scales[idx].to(dtype=ve_cache["ve"].dtype)
+
     def forward(self, input_ids: Tensor, target_ids: Tensor) -> Tensor:
         x = self.tok_emb(input_ids)
+        if self.bigram is not None:
+            x = x + self.bigram(input_ids)
+        if self.trigram is not None:
+            x = x + self.trigram(input_ids)
         x = normalize_source(x)
         # Full AttnRes: 2 memory entries per block (post-attn, post-MLP)
         sources: list[tuple[Tensor, Tensor]] = [(x, x)]
-        for block in self.blocks:
-            sources = block(sources)
+        ve_cache: dict = {}
+        for i, block in enumerate(self.blocks):
+            ve = self._get_ve(i, input_ids, ve_cache)
+            sources = block(sources, ve=ve)
         x = sources[-1][0]  # last output
 
         x = self.final_norm(x).reshape(-1, x.size(-1))
@@ -985,10 +1099,16 @@ class GPT(nn.Module):
     def forward_logits(self, input_ids: Tensor) -> Tensor:
         """Return logits (bsz, seq_len, vocab) without computing loss."""
         x = self.tok_emb(input_ids)
+        if self.bigram is not None:
+            x = x + self.bigram(input_ids)
+        if self.trigram is not None:
+            x = x + self.trigram(input_ids)
         x = normalize_source(x)
         sources: list[tuple[Tensor, Tensor]] = [(x, x)]
-        for block in self.blocks:
-            sources = block(sources)
+        ve_cache: dict = {}
+        for i, block in enumerate(self.blocks):
+            ve = self._get_ve(i, input_ids, ve_cache)
+            sources = block(sources, ve=ve)
         x = sources[-1][0]
         x = self.final_norm(x)
         if self.tie_embeddings:
@@ -1212,6 +1332,13 @@ def main() -> None:
         train_seq_len=args.train_seq_len,
         rope_dims=args.rope_dims,
         ln_scale=args.ln_scale,
+        bigram_vocab_size=args.bigram_vocab_size,
+        bigram_dim=args.bigram_dim,
+        trigram_vocab_size=args.trigram_vocab_size,
+        trigram_dim=args.trigram_dim,
+        ve_enabled=args.ve_enabled,
+        ve_dim=args.ve_dim,
+        ve_layers=args.ve_layers,
     ).to(device).bfloat16()
     for module in base_model.modules():
         if isinstance(module, CastedLinear):
@@ -1237,8 +1364,26 @@ def main() -> None:
         if p.ndim < 2 or any(pattern in name for pattern in CONTROL_TENSOR_NAME_PATTERNS)
     ]
     token_lr = args.tied_embed_lr if args.tie_embeddings else args.embed_lr
+    tok_param_groups = [{"params": [base_model.tok_emb.weight], "lr": token_lr, "base_lr": token_lr}]
+    if base_model.bigram is not None:
+        tok_param_groups.append({"params": [base_model.bigram.emb.weight], "lr": token_lr, "base_lr": token_lr})
+        if base_model.bigram.proj is not None:
+            scalar_params.append(base_model.bigram.proj.weight)
+        scalar_params.append(base_model.bigram.scale)
+    if base_model.trigram is not None:
+        tok_param_groups.append({"params": [base_model.trigram.emb.weight], "lr": token_lr, "base_lr": token_lr})
+        if base_model.trigram.proj is not None:
+            scalar_params.append(base_model.trigram.proj.weight)
+        scalar_params.append(base_model.trigram.scale)
+    if base_model.ve_shared is not None:
+        tok_param_groups.append({"params": [base_model.ve_shared.emb.weight], "lr": token_lr, "base_lr": token_lr})
+        if base_model.ve_shared.proj is not None:
+            scalar_params.append(base_model.ve_shared.proj.weight)
+        scalar_params.append(base_model.ve_shared.scale)
+        for s in base_model.ve_layer_scales:
+            scalar_params.append(s)
     optimizer_tok = torch.optim.AdamW(
-        [{"params": [base_model.tok_emb.weight], "lr": token_lr, "base_lr": token_lr}],
+        tok_param_groups,
         betas=(args.beta1, args.beta2),
         eps=args.adam_eps,
         weight_decay=args.adam_weight_decay,

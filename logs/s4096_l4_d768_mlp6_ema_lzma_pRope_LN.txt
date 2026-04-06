@@ -1745,3 +1745,5 @@ Serialized model int8+lzma: 28748376 bytes (payload:37045376 raw_torch:37058911 
 Total submission size int8+lzma: 28818590 bytes
 final_int8_zstd_roundtrip val_loss:2.0752 val_bpb:1.2291 eval_time:12423ms
 final_int8_zstd_roundtrip_exact val_loss:2.07521034 val_bpb:1.22905645
+final_sliding_window val_loss:2.0524 val_bpb:1.2155 seq_len:4096 stride:16 eval_time:3164583ms
+final_sliding_window_exact val_loss:2.05238798 val_bpb:1.21554792
