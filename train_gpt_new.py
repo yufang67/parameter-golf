@@ -83,7 +83,7 @@ class Hyperparameters:
     tied_embed_init_std = float(os.environ.get("TIED_EMBED_INIT_STD", 0.005))
     matrix_optimizer = os.environ.get("MATRIX_OPTIMIZER", "muon").strip().lower()
     matrix_lr = float(os.environ.get("MATRIX_LR", 0.025))
-    matrix_weight_decay = float(os.environ.get("MATRIX_WEIGHT_DECAY", 0.02))
+    matrix_weight_decay = float(os.environ.get("MATRIX_WEIGHT_DECAY", 0.04))
     scalar_lr = float(os.environ.get("SCALAR_LR", 0.025))
     muon_momentum = float(os.environ.get("MUON_MOMENTUM", 0.99))
     muon_backend_steps = int(os.environ.get("MUON_BACKEND_STEPS", 5))
@@ -93,13 +93,14 @@ class Hyperparameters:
     beta1 = float(os.environ.get("BETA1", 0.9))
     beta2 = float(os.environ.get("BETA2", 0.95))
     adam_eps = float(os.environ.get("ADAM_EPS", 1e-8))
-    adam_weight_decay = float(os.environ.get("ADAM_WEIGHT_DECAY", 0.01))
+    adam_weight_decay = float(os.environ.get("ADAM_WEIGHT_DECAY", 0.04))
     grad_clip_norm = float(os.environ.get("GRAD_CLIP_NORM", 0.3))
     swa_every = int(os.environ.get("SWA_EVERY", 50))
     swa_warmdown_frac = float(os.environ.get("SWA_WARMDOWN_FRAC", 0.2))  # SWA active in last 20% of warmdown
     ema_start_frac = float(os.environ.get("EMA_START_FRAC", 0.4))
     ema_decay = float(os.environ.get("EMA_DECAY", 0.997))
     late_qat_threshold = float(os.environ.get("LATE_QAT_THRESHOLD", 0.15))
+    eval_temperature = float(os.environ.get("EVAL_TEMPERATURE", 0.90))
 
 # -----------------------------
 # MUON OPTIMIZER 
@@ -445,6 +446,91 @@ def dequantize_state_dict_int8(obj: dict[str, object]) -> dict[str, Tensor]:
         if isinstance(orig_dtype, str):
             out_t = out_t.to(dtype=getattr(torch, orig_dtype)).contiguous()
         out[name] = out_t
+    return out
+
+
+# -----------------------------
+# INT6 MIXED QUANTIZATION
+# -----------------------------
+
+def q6_row(t: Tensor, clip_range: int = 31) -> tuple[Tensor, Tensor]:
+    """Per-row int6 quantization with MSE-optimal clipping percentile search."""
+    t32 = t.float()
+    if t32.ndim == 2:
+        best_q = best_s = None
+        best_err = float('inf')
+        for p in [0.999, 0.9995, 0.9999, 0.99999, 1.0]:
+            row_clip = (
+                torch.quantile(t32.abs(), p, dim=1) if p < 1.0
+                else t32.abs().amax(dim=1)
+            )
+            s = (row_clip / clip_range).clamp_min(1.0 / clip_range).to(torch.float16)
+            q = torch.clamp(torch.round(t32 / s.float()[:, None]), -clip_range, clip_range).to(torch.int8)
+            err = (t32 - q.float() * s.float()[:, None]).pow(2).mean().item()
+            if err < best_err:
+                best_q, best_s, best_err = q, s, err
+        return best_q, best_s
+    am = t32.abs().max().item()
+    s = torch.tensor(am / clip_range if am > 0 else 1.0, dtype=torch.float16)
+    return torch.clamp(torch.round(t32 / s.float()), -clip_range, clip_range).to(torch.int8), s
+
+
+def _tensor_category(name: str) -> str:
+    if ".mlp." in name:
+        return "mlp"
+    if ".attn." in name or ".proj." in name:
+        return "attn"
+    if "tok_emb" in name or "lm_head" in name:
+        return "embed"
+    return "other"
+
+
+def quantize_mixed_int6(state_dict: dict[str, Tensor], int6_categories: set[str] = {"mlp", "attn"}) -> tuple[dict, dict]:
+    """Mixed int6/int8: int6 for mlp+attn weights, int8 for the rest."""
+    raw_tensors: dict[str, Tensor] = {}
+    meta: dict[str, str] = {}
+    for name, tensor in state_dict.items():
+        t = tensor.detach().cpu().contiguous()
+        cat = _tensor_category(name)
+        if not t.is_floating_point() or t.numel() <= INT8_KEEP_FLOAT_MAX_NUMEL:
+            raw_tensors[name] = t.to(torch.float16) if t.is_floating_point() else t
+            meta[name] = "pt"
+            continue
+        if any(p in name for p in CONTROL_TENSOR_NAME_PATTERNS):
+            raw_tensors[name] = t.float()
+            meta[name] = "ctrl"
+            continue
+        if cat in int6_categories and t.ndim >= 1:
+            q, s = q6_row(t)
+            raw_tensors[name + ".q"] = q
+            raw_tensors[name + ".s"] = s
+            meta[name] = "q6"
+        else:
+            q, s = quantize_float_tensor(t)
+            raw_tensors[name + ".q"] = q
+            raw_tensors[name + ".s"] = s
+            meta[name] = "q8"
+    return raw_tensors, meta
+
+
+def dequantize_mixed_int6(raw_tensors: dict[str, Tensor], meta: dict[str, str], template_sd: dict[str, Tensor]) -> dict[str, Tensor]:
+    out: dict[str, Tensor] = {}
+    for name, orig in template_sd.items():
+        info = meta.get(name)
+        if info is None:
+            continue
+        od = orig.dtype
+        if info in ("pt", "ctrl"):
+            t = raw_tensors[name]
+            if t.dtype == torch.float16 and od in (torch.float32, torch.bfloat16):
+                t = t.to(od)
+            out[name] = t
+            continue
+        q, s = raw_tensors[name + ".q"], raw_tensors[name + ".s"]
+        if s.ndim > 0:
+            out[name] = (q.float() * s.float().view(q.shape[0], *([1] * (q.ndim - 1)))).to(od)
+        else:
+            out[name] = (q.float() * float(s.item())).to(od)
     return out
 
 
@@ -961,6 +1047,8 @@ def eval_val_sliding(
                 y_batch[i, :wlen] = chunk[1:]
             with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
                 logits = compiled_logits(x_batch)
+            if args.eval_temperature != 1.0:
+                logits = logits / args.eval_temperature
             nll = F.cross_entropy(
                 logits.reshape(-1, logits.size(-1)).float(),
                 y_batch.reshape(-1),
@@ -1258,8 +1346,7 @@ def main() -> None:
             if args.warmup_steps <= 20 or (warmup_step + 1) % 10 == 0 or warmup_step + 1 == args.warmup_steps:
                 log0(f"warmup_step:{warmup_step + 1}/{args.warmup_steps}")
         base_model.load_state_dict(initial_model_state, strict=True)
-        for opt, state in zip(optimizers, initial_optimizer_states, strict=True):
-            opt.load_state_dict(state)
+        # Keep optimizer momentum buffers from warmup (don't restore optimizer state)
         zero_grad_all()
         if distributed:
             model.require_backward_grad_sync = True
@@ -1368,15 +1455,16 @@ def main() -> None:
                     ema_state[n].mul_(args.ema_decay).add_(t.detach().float(), alpha=1.0 - args.ema_decay)
 
         # SWA: accumulate weight averages during late warmdown
-        if args.swa_every > 0 and scale < args.swa_warmdown_frac and step % args.swa_every == 0:
+        if args.swa_every > 0 and scale < 0.2 and step % args.swa_every == 0:
             current_sd = base_model.state_dict()
             if swa_state is None:
-                swa_state = {k: v.detach().cpu().clone().float() for k, v in current_sd.items()}
+                swa_state = {k: v.detach().cpu().clone() for k, v in current_sd.items()}
                 swa_count = 1
+                log0(f"swa:start step:{step}")
             else:
-                swa_count += 1
                 for k in swa_state:
-                    swa_state[k].add_(current_sd[k].detach().cpu().float() - swa_state[k], alpha=1.0 / swa_count)
+                    swa_state[k] += current_sd[k].detach().cpu()
+                swa_count += 1
 
         step += 1
         approx_training_time_ms = training_time_ms + 1000.0 * (time.perf_counter() - t0)
@@ -1441,7 +1529,7 @@ def main() -> None:
     if swa_state is not None and swa_count > 1:
         pre_swa_sd = {n: t.detach().cpu().clone() for n, t in base_model.state_dict().items()}
         model_sd = base_model.state_dict()
-        swa_avg = {k: swa_state[k].to(dtype=model_sd[k].dtype) for k in swa_state}
+        swa_avg = {k: (swa_state[k] / swa_count).to(dtype=model_sd[k].dtype) for k in swa_state}
         base_model.load_state_dict(swa_avg, strict=True)
         torch.cuda.synchronize()
         t_swa = time.perf_counter()
@@ -1478,61 +1566,74 @@ def main() -> None:
     quant_obj, quant_stats = quantize_state_dict_int8(base_model.state_dict())
     quant_buf = io.BytesIO()
     torch.save(quant_obj, quant_buf)
-    quant_raw = quant_buf.getvalue()
+    int8_raw = quant_buf.getvalue()
 
-    # Compress with both zstd and lzma, pick whichever is smaller and fits
+    # Int6 mixed quantization
+    sd_cpu = {k: v.detach().cpu() for k, v in base_model.state_dict().items()}
+    int6_tensors, int6_meta = quantize_mixed_int6(sd_cpu)
+    int6_buf = io.BytesIO()
+    torch.save({"w": int6_tensors, "m": int6_meta}, int6_buf)
+    int6_raw = int6_buf.getvalue()
+
+    # Compress all combinations
     _zstd_compressor = zstandard.ZstdCompressor(level=22)
-    zstd_blob = _zstd_compressor.compress(quant_raw)
-    lzma_blob = lzma.compress(quant_raw, preset=9 | lzma.PRESET_EXTREME)
+    blobs = {
+        "int8_zstd": _zstd_compressor.compress(int8_raw),
+        "int8_lzma": lzma.compress(int8_raw, preset=9 | lzma.PRESET_EXTREME),
+        "int6_zstd": _zstd_compressor.compress(int6_raw),
+        "int6_lzma": lzma.compress(int6_raw, preset=9 | lzma.PRESET_EXTREME),
+    }
     code_bytes = len(code.encode("utf-8"))
-    zstd_total = code_bytes + len(zstd_blob)
-    lzma_total = code_bytes + len(lzma_blob)
-    log0(
-        f"int8_zstd code:{code_bytes} model:{len(zstd_blob)} total:{zstd_total} "
-        f"limit:16000000 {'OK' if zstd_total <= 16_000_000 else 'OVER!'}"
-    )
-    log0(
-        f"int8_lzma code:{code_bytes} model:{len(lzma_blob)} total:{lzma_total} "
-        f"limit:16000000 {'OK' if lzma_total <= 16_000_000 else 'OVER!'}"
-    )
-    # Pick: prefer fit within 16MB, then prefer smaller
-    if zstd_total <= 16_000_000 and lzma_total <= 16_000_000:
-        use_blob = zstd_blob if len(zstd_blob) <= len(lzma_blob) else lzma_blob
-        use_fmt = "zstd" if len(zstd_blob) <= len(lzma_blob) else "lzma"
-        log0(f"both fit, using {use_fmt} (smaller)")
-    elif zstd_total <= 16_000_000:
-        use_blob = zstd_blob; use_fmt = "zstd"
-        log0("using zstd (lzma over limit)")
-    elif lzma_total <= 16_000_000:
-        use_blob = lzma_blob; use_fmt = "lzma"
-        log0("using lzma (zstd over limit)")
+
+    # Log all sizes
+    for fmt_name, blob in blobs.items():
+        total = code_bytes + len(blob)
+        log0(
+            f"{fmt_name} code:{code_bytes} model:{len(blob)} total:{total} "
+            f"limit:16000000 {'OK' if total <= 16_000_000 else 'OVER!'}"
+        )
+
+    # Pick: prefer fit within 16MB, then prefer smallest
+    fitting = {k: v for k, v in blobs.items() if code_bytes + len(v) <= 16_000_000}
+    if fitting:
+        use_fmt = min(fitting, key=lambda k: len(fitting[k]))
+        use_blob = fitting[use_fmt]
+        log0(f"using {use_fmt} (smallest that fits)")
     else:
-        use_blob = zstd_blob if len(zstd_blob) <= len(lzma_blob) else lzma_blob
-        use_fmt = "zstd" if len(zstd_blob) <= len(lzma_blob) else "lzma"
-        log0(f"WARNING: both over 16MB! using {use_fmt}")
+        use_fmt = min(blobs, key=lambda k: len(blobs[k]))
+        use_blob = blobs[use_fmt]
+        log0(f"WARNING: all over 16MB! using {use_fmt} (smallest)")
+    use_quant_type = "int6" if "int6" in use_fmt else "int8"
+    use_compression = "lzma" if "lzma" in use_fmt else "zstd"
 
     if master_process:
         with open("final_model.int8.ptz", "wb") as f:
             f.write(use_blob)
         ratio = quant_stats["baseline_tensor_bytes"] / max(quant_stats["int8_payload_bytes"], 1)
         log0(
-            f"Serialized model int8+{use_fmt}: {len(use_blob)} bytes "
-            f"(payload:{quant_stats['int8_payload_bytes']} raw_torch:{len(quant_raw)} payload_ratio:{ratio:.2f}x)"
+            f"Serialized model {use_fmt}: {len(use_blob)} bytes "
+            f"(payload_ratio:{ratio:.2f}x)"
         )
-        log0(f"Total submission size int8+{use_fmt}: {len(use_blob) + code_bytes} bytes")
+        log0(f"Total submission size {use_fmt}: {len(use_blob) + code_bytes} bytes")
 
     if distributed:
         dist.barrier()
     with open("final_model.int8.ptz", "rb") as f:
         quant_blob_disk = f.read()
-    # Decompress with whichever format was used
-    if use_fmt == "zstd":
+    # Decompress
+    if use_compression == "zstd":
         _zstd_decompressor = zstandard.ZstdDecompressor()
         quant_decompressed = _zstd_decompressor.decompress(quant_blob_disk)
     else:
         quant_decompressed = lzma.decompress(quant_blob_disk)
-    quant_state = torch.load(io.BytesIO(quant_decompressed), map_location="cpu", weights_only=False)
-    base_model.load_state_dict(dequantize_state_dict_int8(quant_state), strict=True)
+    # Dequantize
+    if use_quant_type == "int6":
+        int6_loaded = torch.load(io.BytesIO(quant_decompressed), map_location="cpu", weights_only=False)
+        roundtrip_sd = dequantize_mixed_int6(int6_loaded["w"], int6_loaded["m"], sd_cpu)
+    else:
+        quant_state = torch.load(io.BytesIO(quant_decompressed), map_location="cpu", weights_only=False)
+        roundtrip_sd = dequantize_state_dict_int8(quant_state)
+    base_model.load_state_dict(roundtrip_sd, strict=True)
     torch.cuda.synchronize()
     t_qeval = time.perf_counter()
     q_val_loss, q_val_bpb = eval_val(
