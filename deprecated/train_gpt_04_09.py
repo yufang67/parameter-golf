@@ -7,9 +7,10 @@ from flash_attn_interface import flash_attn_func as flash_attn_3_func
 
 
 class Hyperparameters:
-    data_dir = os.environ.get("DATA_DIR", "./data/")
+    data_dir = os.environ.get("DATA_DIR", "./data2/")
     seed = int(os.environ.get("SEED", 1337))
     run_id = os.environ.get("RUN_ID", str(uuid.uuid4()))
+    quantizer = os.environ.get("QUANTIZER", "gptq").strip().lower()
     iterations = int(os.environ.get("ITERATIONS", 20000))
     warmdown_frac = float(os.environ.get("WARMDOWN_FRAC", 0.72))
     warmup_steps = int(os.environ.get("WARMUP_STEPS", 20))
@@ -42,9 +43,6 @@ class Hyperparameters:
     loop_end = int(os.environ.get("LOOP_END", 5))
     enable_looping_at = float(os.environ.get("ENABLE_LOOPING_AT", 0.35))
     parallel_residual_start = int(os.environ.get("PARALLEL_RESIDUAL_START", 7))
-    linear_attn_ratio = float(os.environ.get("LINEAR_ATTN_RATIO", 0.75))
-    conv_kernel_size = int(os.environ.get("CONV_KERNEL_SIZE", 4))
-    delta_chunk_size = int(os.environ.get("DELTA_CHUNK_SIZE", 64))
     min_lr = float(os.environ.get("MIN_LR", 0.0))
     embed_lr = float(os.environ.get("EMBED_LR", 0.6))
     head_lr = float(os.environ.get("HEAD_LR", 0.008))
@@ -77,12 +75,21 @@ class Hyperparameters:
     etlb_steps = int(os.environ.get("ETLB_STEPS", 5))
     etlb_clip = float(os.environ.get("ETLB_CLIP", 3.0))
     compressor = os.environ.get("COMPRESSOR", "brotli")
+    quantize_reserve_seconds = float(os.environ.get("QUANTIZE_RESERVE_SECONDS", os.environ.get("GPTQ_RESERVE_SECONDS", 12.0)))
     gptq_calibration_batches = int(os.environ.get("GPTQ_CALIBRATION_BATCHES", 64))
     gptq_reserve_seconds = float(os.environ.get("GPTQ_RESERVE_SECONDS", 12.0))
     matrix_bits = int(os.environ.get("MATRIX_BITS", 6))
     embed_bits = int(os.environ.get("EMBED_BITS", 8))
     matrix_clip_sigmas = float(os.environ.get("MATRIX_CLIP_SIGMAS", 12.85))
     embed_clip_sigmas = float(os.environ.get("EMBED_CLIP_SIGMAS", 2e1))
+    turboquant_mode = os.environ.get("TURBOQUANT_MODE", "mse").strip().lower()
+    turboquant_bits = int(os.environ.get("TURBOQUANT_BITS", 4))
+    turboquant_embed_bits = int(os.environ.get("TURBOQUANT_EMBED_BITS", 8))
+    turboquant_seed = int(os.environ.get("TURBOQUANT_SEED", 42))
+    turboquant_norm_correction = bool(int(os.environ.get("TURBOQUANT_NORM_CORRECTION", "1")))
+    turboquant_quantize_embeddings = bool(int(os.environ.get("TURBOQUANT_QUANTIZE_EMBEDDINGS", "1")))
+    turboquant_norm_dtype = os.environ.get("TURBOQUANT_NORM_DTYPE", "float32").strip().lower()
+    turboquant_min_elements = int(os.environ.get("TURBOQUANT_MIN_ELEMENTS", 65536))
     distributed = "RANK" in os.environ and "WORLD_SIZE" in os.environ
     rank = int(os.environ.get("RANK", "0"))
     world_size = int(os.environ.get("WORLD_SIZE", "1"))
@@ -95,7 +102,7 @@ class Hyperparameters:
     tokenizer_path = os.path.join(data_dir, "tokenizers", f"fineweb_{vocab_size}_bpe.model")
     logfile = f"logs/{run_id}.txt"
     model_path = "final_model.pt"
-    quantized_model_path = "final_model.int6.ptz"
+    quantized_model_path = f"final_model.{quantizer}.ptz"
 
 
 _logger_hparams = None
@@ -324,123 +331,7 @@ def apply_rotary_emb(x, cos, sin, rope_dims=0):
     return torch.cat((x1 * cos + x2 * sin, x1 * -sin + x2 * cos), dim=-1)
 
 
-def l2norm(x, dim=-1, eps=1e-6):
-    return x * torch.rsqrt((x * x).sum(dim=dim, keepdim=True) + eps)
-
-
-class RMSNormGated(nn.Module):
-    def __init__(self, dim, eps=1e-6):
-        super().__init__()
-        self.weight = nn.Parameter(torch.ones(dim))
-        self.eps = eps
-
-    def forward(self, x, gate):
-        x = x.float()
-        x = x * torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + self.eps)
-        x = self.weight.float() * x
-        return (x * F.silu(gate.float())).to(gate.dtype)
-
-
-def torch_chunk_gated_delta_rule(query, key, value, g, beta, chunk_size=64, use_qk_l2norm_in_kernel=True):
-    initial_dtype = query.dtype
-    if use_qk_l2norm_in_kernel:
-        query = l2norm(query, dim=-1)
-        key = l2norm(key, dim=-1)
-    query, key, value, beta, g = [x.transpose(1, 2).contiguous().float() for x in (query, key, value, beta, g)]
-    B, H, T, Dk = key.shape
-    Dv = value.shape[-1]
-    pad = (chunk_size - T % chunk_size) % chunk_size
-    if pad > 0:
-        query = F.pad(query, (0, 0, 0, pad))
-        key = F.pad(key, (0, 0, 0, pad))
-        value = F.pad(value, (0, 0, 0, pad))
-        beta = F.pad(beta, (0, pad))
-        g = F.pad(g, (0, pad))
-    T_total = T + pad
-    scale = Dk ** -0.5
-    query = query * scale
-    v_beta = value * beta.unsqueeze(-1)
-    k_beta = key * beta.unsqueeze(-1)
-    query, key, value, k_beta, v_beta = [
-        x.reshape(B, H, -1, chunk_size, x.shape[-1]) for x in (query, key, value, k_beta, v_beta)
-    ]
-    g = g.reshape(B, H, -1, chunk_size)
-    mask = torch.triu(torch.ones(chunk_size, chunk_size, dtype=torch.bool, device=query.device), diagonal=0)
-    g = g.cumsum(dim=-1)
-    decay_mask = ((g.unsqueeze(-1) - g.unsqueeze(-2)).tril().exp()).tril()
-    attn = -((k_beta @ key.transpose(-1, -2)) * decay_mask).masked_fill(mask, 0)
-    for i in range(1, chunk_size):
-        row = attn[..., i, :i].clone()
-        sub = attn[..., :i, :i].clone()
-        attn[..., i, :i] = row + (row.unsqueeze(-1) * sub).sum(-2)
-    attn = attn + torch.eye(chunk_size, dtype=attn.dtype, device=attn.device)
-    value = attn @ v_beta
-    k_cumdecay = attn @ (k_beta * g.exp().unsqueeze(-1))
-    state = torch.zeros(B, H, Dk, Dv, device=query.device, dtype=query.dtype)
-    out = torch.zeros_like(value)
-    mask2 = torch.triu(torch.ones(chunk_size, chunk_size, dtype=torch.bool, device=query.device), diagonal=1)
-    n_chunks = T_total // chunk_size
-    for ci in range(n_chunks):
-        q_i, k_i, v_i = query[:, :, ci], key[:, :, ci], value[:, :, ci]
-        attn_c = q_i @ k_i.transpose(-1, -2) * decay_mask[:, :, ci]
-        v_prime = k_cumdecay[:, :, ci] @ state
-        v_new = v_i - v_prime
-        attn_inter = (q_i * g[:, :, ci, :, None].exp()) @ state
-        out[:, :, ci] = attn_inter + attn_c @ v_new
-        state = (
-            state * g[:, :, ci, -1, None, None].exp()
-            + (k_i * (g[:, :, ci, -1, None] - g[:, :, ci]).exp()[..., None]).transpose(-1, -2) @ v_new
-        )
-    out = out.reshape(B, H, -1, out.shape[-1])[:, :, :T]
-    return out.transpose(1, 2).contiguous().to(initial_dtype)
-
-
-class GatedDeltaNet(nn.Module):
-    def __init__(self, dim, num_heads, num_kv_heads, conv_kernel_size=4, chunk_size=64):
-        super().__init__()
-        self.num_heads = num_heads
-        self.num_kv_heads = num_kv_heads
-        self.head_dim = dim // num_heads
-        self.key_dim = self.num_kv_heads * self.head_dim
-        self.value_dim = self.num_heads * self.head_dim
-        self.chunk_size = chunk_size
-        conv_dim = self.key_dim * 2 + self.value_dim
-        self.in_proj_qkv = CastedLinear(dim, conv_dim, bias=False)
-        self.conv1d = nn.Conv1d(conv_dim, conv_dim, kernel_size=conv_kernel_size,
-                                groups=conv_dim, padding=conv_kernel_size - 1, bias=False)
-        self.in_proj_z = CastedLinear(dim, self.value_dim, bias=False)
-        self.in_proj_b = CastedLinear(dim, self.num_heads, bias=False)
-        self.in_proj_a = CastedLinear(dim, self.num_heads, bias=False)
-        A = torch.empty(self.num_heads).uniform_(0, 16)
-        self.A_log = nn.Parameter(torch.log(A))
-        self.dt_bias = nn.Parameter(torch.ones(self.num_heads))
-        self.norm = RMSNormGated(self.head_dim)
-        self.out_proj = CastedLinear(self.value_dim, dim, bias=False)
-        self.out_proj._zero_init = True
-
-    def forward(self, x):
-        B, T, D = x.shape
-        mixed_qkv = self.in_proj_qkv(x).transpose(1, 2)  # (B, conv_dim, T)
-        mixed_qkv = F.silu(self.conv1d(mixed_qkv)[:, :, :T]).transpose(1, 2)  # (B, T, conv_dim)
-        z = self.in_proj_z(x).reshape(B, T, -1, self.head_dim)  # (B, T, H, D)
-        b = self.in_proj_b(x)  # (B, T, H)
-        a = self.in_proj_a(x)  # (B, T, H)
-        query, key, value = torch.split(mixed_qkv, [self.key_dim, self.key_dim, self.value_dim], dim=-1)
-        query = query.reshape(B, T, self.num_kv_heads, self.head_dim)
-        key = key.reshape(B, T, self.num_kv_heads, self.head_dim)
-        value = value.reshape(B, T, self.num_heads, self.head_dim)
-        beta = b.sigmoid()
-        g = -self.A_log.float().exp() * F.softplus(a.float() + self.dt_bias)
-        if self.num_heads > self.num_kv_heads:
-            query = query.repeat_interleave(self.num_heads // self.num_kv_heads, dim=2)
-            key = key.repeat_interleave(self.num_heads // self.num_kv_heads, dim=2)
-        out = torch_chunk_gated_delta_rule(query, key, value, g=g, beta=beta, chunk_size=self.chunk_size)
-        out = self.norm(out.reshape(-1, self.head_dim), z.reshape(-1, self.head_dim))
-        out = out.reshape(B, T, -1)
-        return self.out_proj(out)
-
-
-class GatedAttention(nn.Module):
+class CausalSelfAttention(nn.Module):
     def __init__(self, dim, num_heads, num_kv_heads, rope_base, qk_gain_init, train_seq_len):
         super().__init__()
         if dim % num_heads != 0:
@@ -453,7 +344,7 @@ class GatedAttention(nn.Module):
         if self.head_dim % 2 != 0:
             raise ValueError("head_dim must be even for RoPE")
         kv_dim = self.num_kv_heads * self.head_dim
-        self.c_q = CastedLinear(dim, dim * 2, bias=False)  # 2x for Q + gate
+        self.c_q = CastedLinear(dim, dim, bias=False)
         self.c_k = CastedLinear(dim, kv_dim, bias=False)
         self.c_v = CastedLinear(dim, kv_dim, bias=False)
         self.proj = CastedLinear(dim, dim, bias=False)
@@ -474,9 +365,7 @@ class GatedAttention(nn.Module):
 
     def forward(self, x):
         bsz, seqlen, dim = x.shape
-        qg = self.c_q(x).reshape(bsz, seqlen, self.num_heads, self.head_dim * 2)
-        q, gate = qg[..., :self.head_dim], qg[..., self.head_dim:]
-        gate = gate.reshape(bsz, seqlen, -1)  # (B, T, dim)
+        q = self.c_q(x).reshape(bsz, seqlen, self.num_heads, self.head_dim)
         k = self.c_k(x).reshape(bsz, seqlen, self.num_kv_heads, self.head_dim)
         v = self.c_v(x).reshape(bsz, seqlen, self.num_kv_heads, self.head_dim)
         q = F.rms_norm(q, (q.size(-1),))
@@ -489,7 +378,6 @@ class GatedAttention(nn.Module):
         if self.use_xsa:
             y = self._xsa_efficient(y, v)
         y = y.reshape(bsz, seqlen, dim)
-        y = y * torch.sigmoid(gate)
         return self.proj(y)
 
 
@@ -517,18 +405,11 @@ class Block(nn.Module):
         train_seq_len,
         layer_idx=0,
         ln_scale=False,
-        layer_type="full",
-        conv_kernel_size=4,
-        delta_chunk_size=64,
     ):
         super().__init__()
         self.attn_norm = RMSNorm()
         self.mlp_norm = RMSNorm()
-        self.layer_type = layer_type
-        if layer_type == "linear":
-            self.attn = GatedDeltaNet(dim, num_heads, num_kv_heads, conv_kernel_size, delta_chunk_size)
-        else:
-            self.attn = GatedAttention(dim, num_heads, num_kv_heads, rope_base, qk_gain_init, train_seq_len)
+        self.attn = CausalSelfAttention(dim, num_heads, num_kv_heads, rope_base, qk_gain_init, train_seq_len)
         self.mlp = MLP(dim, mlp_mult)
         self.attn_scale = nn.Parameter(torch.ones(dim, dtype=torch.float32))
         self.mlp_scale = nn.Parameter(torch.ones(dim, dtype=torch.float32))
@@ -570,21 +451,6 @@ class GPT(nn.Module):
         else:
             self.embed_proj = None
             self.head_proj = None
-        # Compute layer types: 3:1 linear-to-full ratio (parameterizable)
-        n_full = max(1, round(h.num_layers * (1.0 - h.linear_attn_ratio)))
-        layer_types_env = os.environ.get("LAYER_TYPES", "")
-        if layer_types_env:
-            self.layer_types = layer_types_env.split(",")
-        else:
-            # Spread full-attention layers evenly, always include last layer
-            full_positions = set()
-            if n_full >= h.num_layers:
-                full_positions = set(range(h.num_layers))
-            else:
-                step = h.num_layers / n_full
-                for j in range(n_full):
-                    full_positions.add(min(h.num_layers - 1, round((j + 1) * step - 1)))
-            self.layer_types = ["full" if i in full_positions else "linear" for i in range(h.num_layers)]
         self.num_encoder_layers = h.num_layers // 2
         self.num_decoder_layers = h.num_layers - self.num_encoder_layers
         self.blocks = nn.ModuleList(
@@ -599,9 +465,6 @@ class GPT(nn.Module):
                     h.train_seq_len,
                     layer_idx=i,
                     ln_scale=h.ln_scale,
-                    layer_type=self.layer_types[i],
-                    conv_kernel_size=h.conv_kernel_size,
-                    delta_chunk_size=h.delta_chunk_size,
                 )
                 for i in range(h.num_layers)
             ]
@@ -609,19 +472,17 @@ class GPT(nn.Module):
         if h.rope_dims > 0:
             head_dim = h.model_dim // h.num_heads
             for block in self.blocks:
-                if block.layer_type == "full":
-                    block.attn.rope_dims = h.rope_dims
-                    block.attn.rotary = Rotary(
-                        head_dim, base=h.rope_base, train_seq_len=h.train_seq_len, rope_dims=h.rope_dims
-                    )
+                block.attn.rope_dims = h.rope_dims
+                block.attn.rotary = Rotary(
+                    head_dim, base=h.rope_base, train_seq_len=h.train_seq_len, rope_dims=h.rope_dims
+                )
         self.final_norm = RMSNorm()
         self.lm_head = None if h.tie_embeddings else CastedLinear(h.embedding_dim, h.vocab_size, bias=False)
         if self.lm_head is not None:
             self.lm_head._zero_init = True
         if h.xsa_last_n > 0:
             for i in range(max(0, h.num_layers - h.xsa_last_n), h.num_layers):
-                if self.layer_types[i] == "full":
-                    self.blocks[i].attn.use_xsa = True
+                self.blocks[i].attn.use_xsa = True
         if h.parallel_residual_start >= 0:
             for i in range(h.parallel_residual_start, h.num_layers):
                 self.blocks[i].parallel = True
@@ -651,11 +512,7 @@ class GPT(nn.Module):
         if self.tie_embeddings:
             nn.init.normal_(self.tok_emb.weight, mean=0.0, std=self.tied_embed_init_std)
         for name, module in self.named_modules():
-            if isinstance(module, GatedDeltaNet):
-                nn.init.ones_(module.dt_bias)
-                with torch.no_grad():
-                    module.A_log.copy_(torch.empty_like(module.A_log).uniform_(0, 16).log_())
-            elif isinstance(module, nn.Linear):
+            if isinstance(module, nn.Linear):
                 if getattr(module, "_zero_init", False):
                     nn.init.zeros_(module.weight)
                 elif module.weight.ndim == 2 and module.weight.shape[0] >= 64 and module.weight.shape[1] >= 64:
@@ -793,10 +650,106 @@ CONTROL_TENSOR_NAME_PATTERNS = tuple(
     pattern
     for pattern in os.environ.get(
         "CONTROL_TENSOR_NAME_PATTERNS",
-        "attn_scale,attn_scales,mlp_scale,mlp_scales,resid_mix,resid_mixes,q_gain,skip_weight,skip_weights,skip_gates,A_log,dt_bias,conv1d,norm.weight",
+        "attn_scale,attn_scales,mlp_scale,mlp_scales,resid_mix,resid_mixes,q_gain,skip_weight,skip_weights,skip_gates",
     ).split(",")
     if pattern
 )
+
+_TURBOQUANT_ROOT = Path(__file__).resolve().parent / "backup" / "turboquant_plus"
+
+
+def _torch_dtype_name(dtype):
+    return str(dtype).replace("torch.", "")
+
+
+def _torch_dtype_from_name(name):
+    try:
+        return getattr(torch, name)
+    except AttributeError as exc:
+        raise ValueError(f"Unsupported dtype name: {name}") from exc
+
+
+def _load_turboquant_symbols():
+    if not _TURBOQUANT_ROOT.exists():
+        raise RuntimeError(f"TurboQuant repo not found at {_TURBOQUANT_ROOT}")
+    turboquant_root = str(_TURBOQUANT_ROOT)
+    if turboquant_root not in sys.path:
+        sys.path.insert(0, turboquant_root)
+    try:
+        from turboquant import CompressedVector, TurboQuant, TurboQuantMSE
+    except ImportError as exc:
+        raise RuntimeError("Failed to import TurboQuant from backup/turboquant_plus") from exc
+    return TurboQuant, TurboQuantMSE, CompressedVector
+
+
+def _pack_lowbit_array(values, bit_width):
+    arr = np.asarray(values, dtype=np.uint8).reshape(-1)
+    if bit_width < 1 or bit_width > 8:
+        raise ValueError(f"bit_width must be in [1, 8], got {bit_width}")
+    if arr.size == 0:
+        return np.zeros((0,), dtype=np.uint8)
+    limit = 1 << bit_width
+    if arr.max(initial=0) >= limit:
+        raise ValueError(f"Cannot pack values >= {limit} into {bit_width} bits")
+    shifts = np.arange(bit_width, dtype=np.uint8)
+    bits = ((arr[:, None] >> shifts) & 1).astype(np.uint8).reshape(-1)
+    return np.packbits(bits, bitorder="little")
+
+
+def _unpack_lowbit_array(packed, bit_width, shape):
+    packed_arr = np.asarray(packed, dtype=np.uint8).reshape(-1)
+    total_values = int(np.prod(shape))
+    if total_values == 0:
+        return np.zeros(shape, dtype=np.uint8)
+    bits = np.unpackbits(packed_arr, bitorder="little")[: total_values * bit_width]
+    shifts = (1 << np.arange(bit_width, dtype=np.uint8)).astype(np.uint16)
+    values = (bits.reshape(total_values, bit_width).astype(np.uint16) * shifts[None, :]).sum(axis=1)
+    return values.astype(np.uint8).reshape(shape)
+
+
+def _turboquant_should_quantize(name, tensor, h):
+    if not tensor.is_floating_point() or tensor.ndim != 2 or tensor.numel() < h.turboquant_min_elements:
+        return False
+    if "tok_emb" in name and not h.turboquant_quantize_embeddings:
+        return False
+    return True
+
+
+def _turboquant_quantizer_for_dim(dim, bit_width, h, cache):
+    key = (h.turboquant_mode, dim, bit_width, h.turboquant_seed, h.turboquant_norm_correction)
+    quantizer = cache.get(key)
+    if quantizer is not None:
+        return quantizer
+    TurboQuant, TurboQuantMSE, _ = _load_turboquant_symbols()
+    if h.turboquant_mode == "full":
+        quantizer = TurboQuant(dim, bit_width=bit_width, seed=h.turboquant_seed, norm_correction=h.turboquant_norm_correction)
+    elif h.turboquant_mode == "mse":
+        quantizer = TurboQuantMSE(dim, bit_width=bit_width, seed=h.turboquant_seed, norm_correction=h.turboquant_norm_correction)
+    else:
+        raise ValueError(f"Unsupported TURBOQUANT_MODE={h.turboquant_mode!r}; expected 'mse' or 'full'")
+    cache[key] = quantizer
+    return quantizer
+
+
+def _format_quant_meta(info):
+    if isinstance(info, str):
+        return info
+    kind = info.get("kind", "unknown")
+    if kind == "passthrough":
+        return f"passthrough ({info.get('storage_dtype', 'native')})"
+    if kind.startswith("turboquant"):
+        return f"{kind} (int{info['bit_width']})"
+    return kind
+
+
+def _log_quantized_weights(meta):
+    categories = collections.defaultdict(set)
+    for name, info in meta.items():
+        short = re.sub("\\.\\d+$", "", re.sub("blocks\\.\\d+", "blocks", name))
+        categories[_format_quant_meta(info)].add(short)
+    log("Quantized weights:")
+    for cat in sorted(categories):
+        log(f"  {cat}: {', '.join(sorted(categories[cat]))}")
 
 
 class Optimizers:
@@ -872,6 +825,53 @@ def restore_fp32_params(model):
             param.ndim < 2 or any(pattern in name for pattern in CONTROL_TENSOR_NAME_PATTERNS)
         ) and param.dtype != torch.float32:
             param.data = param.data.float()
+
+
+def turboquant_mixed_quantize(state_dict, h):
+    result = {}
+    meta = {}
+    quantizer_cache = {}
+    for name, tensor in state_dict.items():
+        t = tensor.detach().cpu().contiguous()
+        if not _turboquant_should_quantize(name, t, h):
+            storage = t.to(torch.float16) if t.is_floating_point() else t
+            result[name] = storage
+            meta[name] = {
+                "kind": "passthrough",
+                "storage_dtype": _torch_dtype_name(storage.dtype),
+                "dtype": _torch_dtype_name(t.dtype),
+            }
+            continue
+        is_embed = "tok_emb" in name
+        bits = h.turboquant_embed_bits if is_embed else h.turboquant_bits
+        quantizer = _turboquant_quantizer_for_dim(t.shape[1], bits, h, quantizer_cache)
+        rows = t.float().numpy()
+        norm_dtype_str = h.turboquant_norm_dtype
+        norms_dtype = np.float32 if norm_dtype_str == "float32" else np.float16
+        base_meta = {
+            "bit_width": bits,
+            "seed": h.turboquant_seed,
+            "shape": list(t.shape),
+            "dtype": _torch_dtype_name(t.dtype),
+            "norm_dtype": norm_dtype_str,
+            "norm_correction": h.turboquant_norm_correction,
+        }
+        if h.turboquant_mode == "full":
+            compressed = quantizer.quantize(rows)
+            mse_indices = np.asarray(compressed.mse_indices, dtype=np.uint8)
+            qjl_bits = np.asarray(compressed.qjl_signs > 0, dtype=np.uint8)
+            result[name + ".mse_indices_packed"] = torch.from_numpy(_pack_lowbit_array(mse_indices, bits - 1))
+            result[name + ".vector_norms"] = torch.from_numpy(np.asarray(compressed.vector_norms, dtype=norms_dtype))
+            result[name + ".qjl_signs_packed"] = torch.from_numpy(_pack_lowbit_array(qjl_bits, 1))
+            result[name + ".residual_norms"] = torch.from_numpy(np.asarray(compressed.residual_norms, dtype=norms_dtype))
+            meta[name] = {**base_meta, "kind": "turboquant_full"}
+        else:
+            indices, norms = quantizer.quantize(rows)
+            result[name + ".indices_packed"] = torch.from_numpy(_pack_lowbit_array(indices, bits))
+            result[name + ".norms"] = torch.from_numpy(np.asarray(norms, dtype=norms_dtype))
+            meta[name] = {**base_meta, "kind": "turboquant_mse"}
+    _log_quantized_weights(meta)
+    return result, meta
 
 
 def collect_hessians(model, train_loader, h, device, n_calibration_batches=64):
@@ -968,19 +968,17 @@ def gptq_mixed_quantize(state_dict, hessians, h):
             result[name] = t.to(torch.float16) if t.is_floating_point() else t
             meta[name] = "passthrough (float16)"
             continue
+        if name not in hessians:
+            result[name] = t.to(torch.float16)
+            meta[name] = "passthrough (float16)"
+            continue
         cs = h.embed_clip_sigmas if "tok_emb" in name else h.matrix_clip_sigmas
         bits = h.embed_bits if "tok_emb" in name else h.matrix_bits
         q, s = gptq_quantize_weight(t, hessians[name], clip_sigmas=cs, clip_range=2 ** (bits - 1) - 1)
         result[name + ".q"] = q
         result[name + ".scale"] = s
         meta[name] = f"gptq (int{bits})"
-    categories = collections.defaultdict(set)
-    for name, cat in meta.items():
-        short = re.sub("\\.\\d+$", "", re.sub("blocks\\.\\d+", "blocks", name))
-        categories[cat].add(short)
-    log("Quantized weights:")
-    for cat in sorted(categories):
-        log(f"  {cat}: {", ".join(sorted(categories[cat]))}")
+    _log_quantized_weights(meta)
     return result, meta
 
 
@@ -991,6 +989,48 @@ def dequantize_mixed(result, meta, template_sd):
         if info is None:
             continue
         orig_dtype = orig.dtype
+        if isinstance(info, dict):
+            kind = info.get("kind")
+            if kind == "passthrough":
+                t = result[name]
+                if t.dtype != orig_dtype:
+                    t = t.to(orig_dtype)
+                out[name] = t
+                continue
+            if kind in ("turboquant_mse", "turboquant_full"):
+                shape = tuple(info["shape"])
+                bit_width = int(info["bit_width"])
+                quantizer_cache = getattr(dequantize_mixed, "_turboquant_cache", None)
+                if quantizer_cache is None:
+                    quantizer_cache = {}
+                    dequantize_mixed._turboquant_cache = quantizer_cache
+                quantizer = _turboquant_quantizer_for_dim(shape[1], bit_width, type("Q", (), info | {
+                    "turboquant_mode": "full" if kind == "turboquant_full" else "mse",
+                    "turboquant_bits": bit_width,
+                    "turboquant_seed": int(info["seed"]),
+                    "turboquant_norm_correction": bool(info.get("norm_correction", True)),
+                })(), quantizer_cache)
+                if kind == "turboquant_full":
+                    _, _, CompressedVector = _load_turboquant_symbols()
+                    mse_indices = _unpack_lowbit_array(result[name + ".mse_indices_packed"].cpu().numpy(), bit_width - 1, shape)
+                    qjl_bits = _unpack_lowbit_array(result[name + ".qjl_signs_packed"].cpu().numpy(), 1, shape)
+                    qjl_signs = np.where(qjl_bits > 0, 1, -1).astype(np.int8)
+                    compressed = CompressedVector(
+                        mse_indices=mse_indices,
+                        vector_norms=result[name + ".vector_norms"].cpu().numpy().astype(np.float32),
+                        qjl_signs=qjl_signs,
+                        residual_norms=result[name + ".residual_norms"].cpu().numpy().astype(np.float32),
+                        bit_width=bit_width,
+                    )
+                    restored = quantizer.dequantize(compressed)
+                else:
+                    indices = _unpack_lowbit_array(result[name + ".indices_packed"].cpu().numpy(), bit_width, shape)
+                    norm_dt = info.get("norm_dtype", "float32")
+                    norms = result[name + ".norms"].cpu().numpy().astype(np.float32)
+                    restored = quantizer.dequantize(indices, norms)
+                out[name] = torch.from_numpy(np.asarray(restored, dtype=np.float32)).to(orig_dtype)
+                continue
+            raise ValueError(f"Unsupported quantization metadata for {name}: {info}")
         if "passthrough" in info:
             t = result[name]
             if t.dtype == torch.float16 and orig_dtype in (torch.float32, torch.bfloat16):
@@ -1071,13 +1111,19 @@ def serialize(h, base_model, code):
         log(f"Serialized model: {model_bytes} bytes")
         log(f"Code size: {code_bytes} bytes")
     sd_cpu = {k: v.detach().cpu() for (k, v) in base_model.state_dict().items()}
-    device = torch.device("cuda", h.local_rank)
-    log("GPTQ:collecting Hessians from calibration data...")
-    t0 = time.perf_counter()
-    calib_loader = ShuffledSequenceLoader(h, device)
-    hessians = collect_hessians(base_model, calib_loader, h, device, n_calibration_batches=h.gptq_calibration_batches)
-    log(f"GPTQ:collected {len(hessians)} Hessians in {time.perf_counter()-t0:.1f}s")
-    quant_result, quant_meta = gptq_mixed_quantize(sd_cpu, hessians, h)
+    if h.quantizer == "gptq":
+        device = torch.device("cuda", h.local_rank)
+        log("GPTQ:collecting Hessians from calibration data...")
+        t0 = time.perf_counter()
+        calib_loader = ShuffledSequenceLoader(h, device)
+        hessians = collect_hessians(base_model, calib_loader, h, device, n_calibration_batches=h.gptq_calibration_batches)
+        log(f"GPTQ:collected {len(hessians)} Hessians in {time.perf_counter()-t0:.1f}s")
+        quant_result, quant_meta = gptq_mixed_quantize(sd_cpu, hessians, h)
+    elif h.quantizer == "turboquant":
+        log(f"TurboQuant:{h.turboquant_mode} matrix_bits={h.turboquant_bits} embed_bits={h.turboquant_embed_bits} norms={h.turboquant_norm_dtype}")
+        quant_result, quant_meta = turboquant_mixed_quantize(sd_cpu, h)
+    else:
+        raise ValueError(f"Unsupported QUANTIZER={h.quantizer!r}")
     quant_buf = io.BytesIO()
     torch.save({"w": quant_result, "m": quant_meta}, quant_buf)
     quant_raw = quant_buf.getvalue()
@@ -1087,8 +1133,8 @@ def serialize(h, base_model, code):
     if h.is_main_process:
         with open(h.quantized_model_path, "wb") as f:
             f.write(quant_blob)
-        log(f"Serialized model quantized+{h.compressor}: {quant_file_bytes} bytes")
-        log(f"Total submission size quantized+{h.compressor}: {bytes_total} bytes")
+        log(f"Serialized model {h.quantizer}+{h.compressor}: {quant_file_bytes} bytes")
+        log(f"Total submission size {h.quantizer}+{h.compressor}: {bytes_total} bytes")
     return bytes_total, quant_file_bytes
 
 
@@ -1334,13 +1380,12 @@ def train_model(h, device, val_data):
     else:
         model = compiled_model
     log(f"model_params:{sum(p.numel()for p in base_model.parameters())}")
-    log(f"layer_types:{base_model.layer_types}")
     optimizers = Optimizers(h, base_model)
     train_loader = ShuffledSequenceLoader(h, device)
     max_wallclock_ms = 1e3 * h.max_wallclock_seconds if h.max_wallclock_seconds > 0 else None
     if max_wallclock_ms is not None:
-        max_wallclock_ms -= h.gptq_reserve_seconds * 1e3
-        log(f"gptq:reserving {h.gptq_reserve_seconds:.0f}s, effective={max_wallclock_ms:.0f}ms")
+        max_wallclock_ms -= h.quantize_reserve_seconds * 1e3
+        log(f"quantize:reserving {h.quantize_reserve_seconds:.0f}s, effective={max_wallclock_ms:.0f}ms")
 
     def training_frac(step, elapsed_ms):
         if max_wallclock_ms is None:
@@ -1469,7 +1514,7 @@ def train_and_eval(h, device):
     torch.manual_seed(h.seed)
     torch.cuda.manual_seed_all(h.seed)
     val_data = ValidationData(h, device)
-    log(f"train_shards: {len(list(Path(h.datasets_dir).resolve().glob("fineweb_train_*.bin")))}")
+    log(f"train_shards: {len(list(Path(h.datasets_dir).resolve().glob('fineweb_train_*.bin')))}")
     log(f"val_tokens: {val_data.val_tokens.numel()-1}")
     base_model, compiled_model = train_model(h, device, val_data)
     torch._dynamo.reset()

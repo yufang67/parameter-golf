@@ -83,6 +83,7 @@ class Hyperparameters():
     adam_eps = float(os.environ.get('ADAM_EPS', 1e-8))
     grad_clip_norm = float(os.environ.get('GRAD_CLIP_NORM', 0.3))
     eval_stride = int(os.environ.get('EVAL_STRIDE', 64))
+    eval_sliding_batch_seqs = int(os.environ.get('EVAL_SLIDING_BATCH_SEQS', 128))
     muon_beta2 = float(os.environ.get('MUON_BETA2', 0.95))
     adam_wd = float(os.environ.get('ADAM_WD', 0.02))
     muon_wd = float(os.environ.get('MUON_WD', 0.085))
@@ -1051,8 +1052,10 @@ def eval_val_sliding(
     device: torch.device,
     val_data: ValidationData,
     base_model: nn.Module,
-    batch_seqs: int = 32
+    batch_seqs: int | None = None,
 ) -> tuple[float, float]:
+    if batch_seqs is None:
+        batch_seqs = h.eval_sliding_batch_seqs
     base_model.eval()
     logits_fn = torch.compile(base_model.forward_logits, dynamic=False, fullgraph=True)
 

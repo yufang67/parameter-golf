@@ -42,9 +42,6 @@ class Hyperparameters:
     loop_end = int(os.environ.get("LOOP_END", 5))
     enable_looping_at = float(os.environ.get("ENABLE_LOOPING_AT", 0.35))
     parallel_residual_start = int(os.environ.get("PARALLEL_RESIDUAL_START", 7))
-    linear_attn_ratio = float(os.environ.get("LINEAR_ATTN_RATIO", 0.75))
-    conv_kernel_size = int(os.environ.get("CONV_KERNEL_SIZE", 4))
-    delta_chunk_size = int(os.environ.get("DELTA_CHUNK_SIZE", 64))
     min_lr = float(os.environ.get("MIN_LR", 0.0))
     embed_lr = float(os.environ.get("EMBED_LR", 0.6))
     head_lr = float(os.environ.get("HEAD_LR", 0.008))
@@ -324,123 +321,7 @@ def apply_rotary_emb(x, cos, sin, rope_dims=0):
     return torch.cat((x1 * cos + x2 * sin, x1 * -sin + x2 * cos), dim=-1)
 
 
-def l2norm(x, dim=-1, eps=1e-6):
-    return x * torch.rsqrt((x * x).sum(dim=dim, keepdim=True) + eps)
-
-
-class RMSNormGated(nn.Module):
-    def __init__(self, dim, eps=1e-6):
-        super().__init__()
-        self.weight = nn.Parameter(torch.ones(dim))
-        self.eps = eps
-
-    def forward(self, x, gate):
-        x = x.float()
-        x = x * torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + self.eps)
-        x = self.weight.float() * x
-        return (x * F.silu(gate.float())).to(gate.dtype)
-
-
-def torch_chunk_gated_delta_rule(query, key, value, g, beta, chunk_size=64, use_qk_l2norm_in_kernel=True):
-    initial_dtype = query.dtype
-    if use_qk_l2norm_in_kernel:
-        query = l2norm(query, dim=-1)
-        key = l2norm(key, dim=-1)
-    query, key, value, beta, g = [x.transpose(1, 2).contiguous().float() for x in (query, key, value, beta, g)]
-    B, H, T, Dk = key.shape
-    Dv = value.shape[-1]
-    pad = (chunk_size - T % chunk_size) % chunk_size
-    if pad > 0:
-        query = F.pad(query, (0, 0, 0, pad))
-        key = F.pad(key, (0, 0, 0, pad))
-        value = F.pad(value, (0, 0, 0, pad))
-        beta = F.pad(beta, (0, pad))
-        g = F.pad(g, (0, pad))
-    T_total = T + pad
-    scale = Dk ** -0.5
-    query = query * scale
-    v_beta = value * beta.unsqueeze(-1)
-    k_beta = key * beta.unsqueeze(-1)
-    query, key, value, k_beta, v_beta = [
-        x.reshape(B, H, -1, chunk_size, x.shape[-1]) for x in (query, key, value, k_beta, v_beta)
-    ]
-    g = g.reshape(B, H, -1, chunk_size)
-    mask = torch.triu(torch.ones(chunk_size, chunk_size, dtype=torch.bool, device=query.device), diagonal=0)
-    g = g.cumsum(dim=-1)
-    decay_mask = ((g.unsqueeze(-1) - g.unsqueeze(-2)).tril().exp()).tril()
-    attn = -((k_beta @ key.transpose(-1, -2)) * decay_mask).masked_fill(mask, 0)
-    for i in range(1, chunk_size):
-        row = attn[..., i, :i].clone()
-        sub = attn[..., :i, :i].clone()
-        attn[..., i, :i] = row + (row.unsqueeze(-1) * sub).sum(-2)
-    attn = attn + torch.eye(chunk_size, dtype=attn.dtype, device=attn.device)
-    value = attn @ v_beta
-    k_cumdecay = attn @ (k_beta * g.exp().unsqueeze(-1))
-    state = torch.zeros(B, H, Dk, Dv, device=query.device, dtype=query.dtype)
-    out = torch.zeros_like(value)
-    mask2 = torch.triu(torch.ones(chunk_size, chunk_size, dtype=torch.bool, device=query.device), diagonal=1)
-    n_chunks = T_total // chunk_size
-    for ci in range(n_chunks):
-        q_i, k_i, v_i = query[:, :, ci], key[:, :, ci], value[:, :, ci]
-        attn_c = q_i @ k_i.transpose(-1, -2) * decay_mask[:, :, ci]
-        v_prime = k_cumdecay[:, :, ci] @ state
-        v_new = v_i - v_prime
-        attn_inter = (q_i * g[:, :, ci, :, None].exp()) @ state
-        out[:, :, ci] = attn_inter + attn_c @ v_new
-        state = (
-            state * g[:, :, ci, -1, None, None].exp()
-            + (k_i * (g[:, :, ci, -1, None] - g[:, :, ci]).exp()[..., None]).transpose(-1, -2) @ v_new
-        )
-    out = out.reshape(B, H, -1, out.shape[-1])[:, :, :T]
-    return out.transpose(1, 2).contiguous().to(initial_dtype)
-
-
-class GatedDeltaNet(nn.Module):
-    def __init__(self, dim, num_heads, num_kv_heads, conv_kernel_size=4, chunk_size=64):
-        super().__init__()
-        self.num_heads = num_heads
-        self.num_kv_heads = num_kv_heads
-        self.head_dim = dim // num_heads
-        self.key_dim = self.num_kv_heads * self.head_dim
-        self.value_dim = self.num_heads * self.head_dim
-        self.chunk_size = chunk_size
-        conv_dim = self.key_dim * 2 + self.value_dim
-        self.in_proj_qkv = CastedLinear(dim, conv_dim, bias=False)
-        self.conv1d = nn.Conv1d(conv_dim, conv_dim, kernel_size=conv_kernel_size,
-                                groups=conv_dim, padding=conv_kernel_size - 1, bias=False)
-        self.in_proj_z = CastedLinear(dim, self.value_dim, bias=False)
-        self.in_proj_b = CastedLinear(dim, self.num_heads, bias=False)
-        self.in_proj_a = CastedLinear(dim, self.num_heads, bias=False)
-        A = torch.empty(self.num_heads).uniform_(0, 16)
-        self.A_log = nn.Parameter(torch.log(A))
-        self.dt_bias = nn.Parameter(torch.ones(self.num_heads))
-        self.norm = RMSNormGated(self.head_dim)
-        self.out_proj = CastedLinear(self.value_dim, dim, bias=False)
-        self.out_proj._zero_init = True
-
-    def forward(self, x):
-        B, T, D = x.shape
-        mixed_qkv = self.in_proj_qkv(x).transpose(1, 2)  # (B, conv_dim, T)
-        mixed_qkv = F.silu(self.conv1d(mixed_qkv)[:, :, :T]).transpose(1, 2)  # (B, T, conv_dim)
-        z = self.in_proj_z(x).reshape(B, T, -1, self.head_dim)  # (B, T, H, D)
-        b = self.in_proj_b(x)  # (B, T, H)
-        a = self.in_proj_a(x)  # (B, T, H)
-        query, key, value = torch.split(mixed_qkv, [self.key_dim, self.key_dim, self.value_dim], dim=-1)
-        query = query.reshape(B, T, self.num_kv_heads, self.head_dim)
-        key = key.reshape(B, T, self.num_kv_heads, self.head_dim)
-        value = value.reshape(B, T, self.num_heads, self.head_dim)
-        beta = b.sigmoid()
-        g = -self.A_log.float().exp() * F.softplus(a.float() + self.dt_bias)
-        if self.num_heads > self.num_kv_heads:
-            query = query.repeat_interleave(self.num_heads // self.num_kv_heads, dim=2)
-            key = key.repeat_interleave(self.num_heads // self.num_kv_heads, dim=2)
-        out = torch_chunk_gated_delta_rule(query, key, value, g=g, beta=beta, chunk_size=self.chunk_size)
-        out = self.norm(out.reshape(-1, self.head_dim), z.reshape(-1, self.head_dim))
-        out = out.reshape(B, T, -1)
-        return self.out_proj(out)
-
-
-class GatedAttention(nn.Module):
+class CausalSelfAttention(nn.Module):
     def __init__(self, dim, num_heads, num_kv_heads, rope_base, qk_gain_init, train_seq_len):
         super().__init__()
         if dim % num_heads != 0:
@@ -453,7 +334,7 @@ class GatedAttention(nn.Module):
         if self.head_dim % 2 != 0:
             raise ValueError("head_dim must be even for RoPE")
         kv_dim = self.num_kv_heads * self.head_dim
-        self.c_q = CastedLinear(dim, dim * 2, bias=False)  # 2x for Q + gate
+        self.c_q = CastedLinear(dim, dim, bias=False)
         self.c_k = CastedLinear(dim, kv_dim, bias=False)
         self.c_v = CastedLinear(dim, kv_dim, bias=False)
         self.proj = CastedLinear(dim, dim, bias=False)
@@ -474,9 +355,7 @@ class GatedAttention(nn.Module):
 
     def forward(self, x):
         bsz, seqlen, dim = x.shape
-        qg = self.c_q(x).reshape(bsz, seqlen, self.num_heads, self.head_dim * 2)
-        q, gate = qg[..., :self.head_dim], qg[..., self.head_dim:]
-        gate = gate.reshape(bsz, seqlen, -1)  # (B, T, dim)
+        q = self.c_q(x).reshape(bsz, seqlen, self.num_heads, self.head_dim)
         k = self.c_k(x).reshape(bsz, seqlen, self.num_kv_heads, self.head_dim)
         v = self.c_v(x).reshape(bsz, seqlen, self.num_kv_heads, self.head_dim)
         q = F.rms_norm(q, (q.size(-1),))
@@ -489,7 +368,6 @@ class GatedAttention(nn.Module):
         if self.use_xsa:
             y = self._xsa_efficient(y, v)
         y = y.reshape(bsz, seqlen, dim)
-        y = y * torch.sigmoid(gate)
         return self.proj(y)
 
 
@@ -517,18 +395,11 @@ class Block(nn.Module):
         train_seq_len,
         layer_idx=0,
         ln_scale=False,
-        layer_type="full",
-        conv_kernel_size=4,
-        delta_chunk_size=64,
     ):
         super().__init__()
         self.attn_norm = RMSNorm()
         self.mlp_norm = RMSNorm()
-        self.layer_type = layer_type
-        if layer_type == "linear":
-            self.attn = GatedDeltaNet(dim, num_heads, num_kv_heads, conv_kernel_size, delta_chunk_size)
-        else:
-            self.attn = GatedAttention(dim, num_heads, num_kv_heads, rope_base, qk_gain_init, train_seq_len)
+        self.attn = CausalSelfAttention(dim, num_heads, num_kv_heads, rope_base, qk_gain_init, train_seq_len)
         self.mlp = MLP(dim, mlp_mult)
         self.attn_scale = nn.Parameter(torch.ones(dim, dtype=torch.float32))
         self.mlp_scale = nn.Parameter(torch.ones(dim, dtype=torch.float32))
@@ -570,21 +441,6 @@ class GPT(nn.Module):
         else:
             self.embed_proj = None
             self.head_proj = None
-        # Compute layer types: 3:1 linear-to-full ratio (parameterizable)
-        n_full = max(1, round(h.num_layers * (1.0 - h.linear_attn_ratio)))
-        layer_types_env = os.environ.get("LAYER_TYPES", "")
-        if layer_types_env:
-            self.layer_types = layer_types_env.split(",")
-        else:
-            # Spread full-attention layers evenly, always include last layer
-            full_positions = set()
-            if n_full >= h.num_layers:
-                full_positions = set(range(h.num_layers))
-            else:
-                step = h.num_layers / n_full
-                for j in range(n_full):
-                    full_positions.add(min(h.num_layers - 1, round((j + 1) * step - 1)))
-            self.layer_types = ["full" if i in full_positions else "linear" for i in range(h.num_layers)]
         self.num_encoder_layers = h.num_layers // 2
         self.num_decoder_layers = h.num_layers - self.num_encoder_layers
         self.blocks = nn.ModuleList(
@@ -599,9 +455,6 @@ class GPT(nn.Module):
                     h.train_seq_len,
                     layer_idx=i,
                     ln_scale=h.ln_scale,
-                    layer_type=self.layer_types[i],
-                    conv_kernel_size=h.conv_kernel_size,
-                    delta_chunk_size=h.delta_chunk_size,
                 )
                 for i in range(h.num_layers)
             ]
@@ -609,19 +462,17 @@ class GPT(nn.Module):
         if h.rope_dims > 0:
             head_dim = h.model_dim // h.num_heads
             for block in self.blocks:
-                if block.layer_type == "full":
-                    block.attn.rope_dims = h.rope_dims
-                    block.attn.rotary = Rotary(
-                        head_dim, base=h.rope_base, train_seq_len=h.train_seq_len, rope_dims=h.rope_dims
-                    )
+                block.attn.rope_dims = h.rope_dims
+                block.attn.rotary = Rotary(
+                    head_dim, base=h.rope_base, train_seq_len=h.train_seq_len, rope_dims=h.rope_dims
+                )
         self.final_norm = RMSNorm()
         self.lm_head = None if h.tie_embeddings else CastedLinear(h.embedding_dim, h.vocab_size, bias=False)
         if self.lm_head is not None:
             self.lm_head._zero_init = True
         if h.xsa_last_n > 0:
             for i in range(max(0, h.num_layers - h.xsa_last_n), h.num_layers):
-                if self.layer_types[i] == "full":
-                    self.blocks[i].attn.use_xsa = True
+                self.blocks[i].attn.use_xsa = True
         if h.parallel_residual_start >= 0:
             for i in range(h.parallel_residual_start, h.num_layers):
                 self.blocks[i].parallel = True
@@ -651,11 +502,7 @@ class GPT(nn.Module):
         if self.tie_embeddings:
             nn.init.normal_(self.tok_emb.weight, mean=0.0, std=self.tied_embed_init_std)
         for name, module in self.named_modules():
-            if isinstance(module, GatedDeltaNet):
-                nn.init.ones_(module.dt_bias)
-                with torch.no_grad():
-                    module.A_log.copy_(torch.empty_like(module.A_log).uniform_(0, 16).log_())
-            elif isinstance(module, nn.Linear):
+            if isinstance(module, nn.Linear):
                 if getattr(module, "_zero_init", False):
                     nn.init.zeros_(module.weight)
                 elif module.weight.ndim == 2 and module.weight.shape[0] >= 64 and module.weight.shape[1] >= 64:
@@ -793,7 +640,7 @@ CONTROL_TENSOR_NAME_PATTERNS = tuple(
     pattern
     for pattern in os.environ.get(
         "CONTROL_TENSOR_NAME_PATTERNS",
-        "attn_scale,attn_scales,mlp_scale,mlp_scales,resid_mix,resid_mixes,q_gain,skip_weight,skip_weights,skip_gates,A_log,dt_bias,conv1d,norm.weight",
+        "attn_scale,attn_scales,mlp_scale,mlp_scales,resid_mix,resid_mixes,q_gain,skip_weight,skip_weights,skip_gates",
     ).split(",")
     if pattern
 )
@@ -1334,7 +1181,6 @@ def train_model(h, device, val_data):
     else:
         model = compiled_model
     log(f"model_params:{sum(p.numel()for p in base_model.parameters())}")
-    log(f"layer_types:{base_model.layer_types}")
     optimizers = Optimizers(h, base_model)
     train_loader = ShuffledSequenceLoader(h, device)
     max_wallclock_ms = 1e3 * h.max_wallclock_seconds if h.max_wallclock_seconds > 0 else None
