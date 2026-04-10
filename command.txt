@@ -48,3 +48,21 @@ torchrun --standalone --nproc_per_node=4 train_gpt_new.py &
 # test 1311
 RUN_ID=baseline_1311 MAX_WALLCLOCK_SECONDS=1800 \
 torchrun --standalone --nproc_per_node=4 test_run_1311.py &
+
+# compare to 2026-03-23
+RUN_ID=compare_03_23_s2048 NUM_LAYERS=11 BIGRAM_VOCAB_SIZE=1536 VE_ENABLED=1 VE_DIM=128 VE_LAYERS=9,10 MAX_WALLCLOCK_SECONDS=3600 \
+torchrun --standalone --nproc_per_node=4 train_gpt_new.py &
+
+RUN_ID=compare_03_23_s2048_l4_d768_mpl6 NUM_LAYERS=4 BIGRAM_VOCAB_SIZE=1536 NUM_LAYERS=4 MODEL_DIM=768 MLP_MULT=6 MAX_WALLCLOCK_SECONDS=3600 \
+torchrun --standalone --nproc_per_node=4 train_gpt_new.py
+
+# compare to 2026-04-05
+RUN_ID=compare_04_04  MAX_WALLCLOCK_SECONDS=3600 \ 
+torchrun --standalone --nproc_per_node=4 train_gpt_2026-04-05.py
+
+# tuboquant
+#SEED=42 QK_GAIN_INIT=5.25 TTT_ENABLED=1 TTT_LR=0.005 TTT_EPOCHS=3 \
+#torchrun --standalone --nproc_per_node=4 train_gpt_04_09.py
+
+QUANTIZER=turboquant TURBOQUANT_MODE=mse TURBOQUANT_BITS=4 RUN_ID=turboquant_smoke ITERATIONS=200 VAL_LOSS_EVERY=200 \
+torchrun --standalone --nproc_per_node=4 train_gpt_04_09.py

@@ -8,5 +8,7 @@ typing-extensions==4.15.0
 datasets
 tiktoken
 sentencepiece
+scipy
 zstandard
 gram-newton-schulz @ git+https://github.com/Dao-AILab/gram-newton-schulz
+brotli
