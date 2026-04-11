@@ -12,3 +12,5 @@ scipy
 zstandard
 gram-newton-schulz @ git+https://github.com/Dao-AILab/gram-newton-schulz
 brotli
+#causal-conv1d
+#flash-linear-attention

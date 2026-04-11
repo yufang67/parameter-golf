@@ -44,6 +44,12 @@ RUN_ID=s4096_l4_d768_mlp6_ema_lzma_pRope_LN_q6_decay_wp TRAIN_SEQ_LEN=4096 EVAL_
 torchrun --standalone --nproc_per_node=4 train_gpt_new.py &
 RUN_ID=s4096_l4_d768_mlp6_ema_lzma_pRope_LN_q6_decay_wp_BiTr_ve TRAIN_SEQ_LEN=4096 EVAL_SEQ_LEN=4096 NUM_LAYERS=4 MODEL_DIM=768 MLP_MULT=6 MAX_WALLCLOCK_SECONDS=3600 \
 torchrun --standalone --nproc_per_node=4 train_gpt_new.py &
+RUN_ID=s4096_l4_d768_mlp6_s8192 TRAIN_SEQ_LEN=4096 EVAL_SEQ_LEN=4096 NUM_LAYERS=4 MODEL_DIM=768 MLP_MULT=6 MAX_WALLCLOCK_SECONDS=3600 \
+torchrun --standalone --nproc_per_node=4 train_gpt_new.py &
+
+# deep
+RUN_ID=s2048_l11_d512_mlp6_v8192 NUM_LAYERS=11 MAX_WALLCLOCK_SECONDS=3600 \
+torchrun --standalone --nproc_per_node=4 train_gpt_new.py &
 
 # test 1311
 RUN_ID=baseline_1311 MAX_WALLCLOCK_SECONDS=1800 \
@@ -69,3 +75,11 @@ torchrun --standalone --nproc_per_node=4 train_gpt_2026-04-05.py
 #DATA_DIR=./data2/ RUN_ID=turboquant_6bit \
 #ITERATIONS=200 VAL_LOSS_EVERY=200 \
 #torchrun --standalone --nproc_per_node=4 train_gpt_04_09.py
+
+# compare to 04-09
+RUN_ID=compare_04_09_mixLiGate MAX_WALLCLOCK_SECONDS=3600 \
+torchrun --standalone --nproc_per_node=4 train_gpt_04_09.py
+
+# improved
+RUN_ID=improved MAX_WALLCLOCK_SECONDS=3600 \
+torchrun --standalone --nproc_per_node=4 train_gpt_improved.py
