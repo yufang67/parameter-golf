@@ -1,0 +1,12 @@
+commit	run_id	val_metric	memory_gb num_steps num_epochs	status	description
+-	gqa_baseline	1.0800/1.0908	44.3	4990	-	keep	Baseline: 11L×512d SP8192 GQA, QK5.25, depth recur, parallel resid, EMA0.9965, 4xA100 3600s. Pre-quant/post-quant BPB.
+-	qk_gain_7	1.0797/1.0905	44.3	4991	-	discard	QK_GAIN_INIT=7.0 vs 5.25 baseline. Within noise (~0.0003). QK gain saturated.
+-	loops3	1.0820/1.0924	51.8	4554	-	discard	NUM_LOOPS=3 (20 virtual layers). Slower (1.0M tok/s), fewer steps, worse BPB than 2-loop baseline.
+-	warmdown_050	1.0825/1.0924	44.3	4986	-	discard	WARMDOWN_FRAC=0.50 vs 0.72 baseline. Later warmdown start hurts convergence by +0.0025 pre-quant BPB.
+-	mlr_030	1.0803/1.0902	44.3	4988	-	discard	MATRIX_LR=0.030 vs 0.022 baseline. Within noise. Post-quant slightly better but pre-quant slightly worse.
+-	warmdown_080	1.0794/1.0905	44.3	4990	-	keep	WARMDOWN_FRAC=0.80. New best pre-quant! -0.0006 vs baseline. Trend: 0.50 < 0.72 < 0.80.
+-	warmdown_085	1.0793/1.0906	44.3	4989	-	keep	WARMDOWN_FRAC=0.85. Best pre-quant yet! Trend continues: 0.50 < 0.72 < 0.80 < 0.85.
+-	warmdown_090	1.0794/1.0908	44.3	4990	-	discard	WARMDOWN_FRAC=0.90. Tied with 0.85. Plateau reached — 0.85 is the sweet spot.
+-	wd085_muonwd060	1.0802/1.0927	44.3	4981	-	discard	WARMDOWN=0.85+MUON_WD=0.06. Trains faster mid-run but worse final: less regularization hurts convergence.
+-	wd085_loop_early	1.0800/1.0913	44.3	4641	-	discard	WARMDOWN=0.85+ENABLE_LOOPING_AT=0.20. Fewer steps (4641 vs 4989) due to longer slow phase. Worse by +0.0007.
+-	wd085_ema998	1.0816/1.0911	44.3	4991	-	discard	WARMDOWN=0.85+EMA_DECAY=0.998. Slower EMA hurts pre-quant by +0.0023. 0.9965 is better.

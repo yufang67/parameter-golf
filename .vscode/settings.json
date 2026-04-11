@@ -1,3 +1,26 @@
 {
-    "python-envs.defaultEnvManager": "ms-python.python:system"
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "files.readonlyInclude": {
+
+        // Project Infrastructure
+        ".gitignore": true,
+        ".python-version": true,
+        //"pyproject.toml": true,
+        //"uv.lock": true,
+
+        // Project Documentation
+        //"assets/**": true,
+        "README.md": true,
+
+        // Program files
+        "program.md": true,
+        //"prepare.py": true,
+
+        // Project data and training results
+        "data/**": true,
+        "data2/**": true,
+        "run.log": true,
+        "records/**": true,
+
+    },
 }
