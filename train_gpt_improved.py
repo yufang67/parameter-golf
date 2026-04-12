@@ -63,6 +63,171 @@ try:
             _lrelu_sq_bwd[((N + BLK - 1) // BLK,)](x, dy.contiguous(), dx, N, BLK)
             return dx
     fused_leaky_relu_sq = _FusedLReluSq.apply
+
+    # ── Fused QK-norm + partial-RoPE + Q-gain kernel (2D all-heads) ──
+    # Grid: (N,) where N=B*T. Each program processes ALL heads for one row.
+    # Uses 2D [H, D] indexing so H independent RMS norms run in parallel.
+    # Input x: [N, H, D] contiguous; cos/sin: [T, RH]; gain: [H].
+    @triton.jit
+    def _norm_rope_gain_fwd(
+        X, Y, COS, SIN, GAIN,
+        stride_xn, stride_cn,
+        N, H: tl.constexpr, D: tl.constexpr,
+        RH: tl.constexpr, T,
+        HAS_GAIN: tl.constexpr,
+    ):
+        row = tl.program_id(0)
+        base = row * stride_xn
+        # 2D indices: [H, D] and [H, RH]
+        h_idx = tl.arange(0, H)
+        d_idx = tl.arange(0, D)
+        r_idx = tl.arange(0, RH)
+        hd = h_idx[:, None] * D + d_idx[None, :]   # [H, D]
+        hr = h_idx[:, None] * D + r_idx[None, :]    # [H, RH]
+        hr2 = h_idx[:, None] * D + RH + r_idx[None, :]  # [H, RH] second half
+        # Load all heads [H, D]
+        x = tl.load(X + base + hd).to(tl.float32)
+        # Per-head RMS norm: reduce over D (axis=1)
+        var = tl.sum(x * x, axis=1) / D  # [H]
+        rrms = 1.0 / tl.sqrt(var + 1e-6)  # [H]
+        xn = x * rrms[:, None]  # [H, D]
+        # Extract rope halves from normed x [H, RH]
+        xn1 = tl.load(X + base + hr).to(tl.float32) * rrms[:, None]
+        xn2 = tl.load(X + base + hr2).to(tl.float32) * rrms[:, None]
+        # cos/sin: [RH] broadcast to [H, RH]
+        t_idx = row % T
+        c = tl.load(COS + t_idx * stride_cn + r_idx).to(tl.float32)  # [RH]
+        s = tl.load(SIN + t_idx * stride_cn + r_idx).to(tl.float32)  # [RH]
+        r1 = xn1 * c[None, :] + xn2 * s[None, :]       # [H, RH]
+        r2 = xn1 * (-s[None, :]) + xn2 * c[None, :]     # [H, RH]
+        # Apply gain [H] -> [H, 1]
+        if HAS_GAIN:
+            g = tl.load(GAIN + h_idx).to(tl.float32)  # [H]
+            r1 = r1 * g[:, None]
+            r2 = r2 * g[:, None]
+        # Store rope parts [H, RH]
+        tl.store(Y + base + hr, r1.to(tl.bfloat16))
+        tl.store(Y + base + hr2, r2.to(tl.bfloat16))
+        # Store passthrough [H, D] masked for dims >= 2*RH
+        if D > 2 * RH:
+            xn_out = xn
+            if HAS_GAIN:
+                xn_out = xn_out * g[:, None]
+            pmask = d_idx[None, :] >= 2 * RH  # [1, D] broadcast
+            tl.store(Y + base + hd, xn_out.to(tl.bfloat16), mask=pmask)
+
+    @triton.jit
+    def _norm_rope_gain_bwd(
+        X, DY, DX, COS, SIN, GAIN, DGAIN,
+        stride_xn, stride_cn,
+        N, H: tl.constexpr, D: tl.constexpr,
+        RH: tl.constexpr, T,
+        HAS_GAIN: tl.constexpr,
+    ):
+        row = tl.program_id(0)
+        base = row * stride_xn
+        h_idx = tl.arange(0, H)
+        d_idx = tl.arange(0, D)
+        r_idx = tl.arange(0, RH)
+        hd = h_idx[:, None] * D + d_idx[None, :]
+        hr = h_idx[:, None] * D + r_idx[None, :]
+        hr2 = h_idx[:, None] * D + RH + r_idx[None, :]
+        # Reload x, recompute norm
+        x = tl.load(X + base + hd).to(tl.float32)
+        var = tl.sum(x * x, axis=1) / D
+        rrms = 1.0 / tl.sqrt(var + 1e-6)
+        xn = x * rrms[:, None]
+        xn1 = tl.load(X + base + hr).to(tl.float32) * rrms[:, None]
+        xn2 = tl.load(X + base + hr2).to(tl.float32) * rrms[:, None]
+        t_idx = row % T
+        c = tl.load(COS + t_idx * stride_cn + r_idx).to(tl.float32)
+        s = tl.load(SIN + t_idx * stride_cn + r_idx).to(tl.float32)
+        # Load upstream grads
+        dy_full = tl.load(DY + base + hd).to(tl.float32)  # [H, D]
+        dy1 = tl.load(DY + base + hr).to(tl.float32)      # [H, RH]
+        dy2 = tl.load(DY + base + hr2).to(tl.float32)     # [H, RH]
+        # Gain backward
+        if HAS_GAIN:
+            g = tl.load(GAIN + h_idx).to(tl.float32)  # [H]
+            r1 = xn1 * c[None, :] + xn2 * s[None, :]
+            r2 = xn1 * (-s[None, :]) + xn2 * c[None, :]
+            dg = tl.sum(dy1 * r1, axis=1) + tl.sum(dy2 * r2, axis=1)  # [H]
+            if D > 2 * RH:
+                pmask = d_idx[None, :] >= 2 * RH
+                dg += tl.sum(tl.where(pmask, dy_full * xn, 0.0), axis=1)
+            # Store dgain directly (no atomics needed - one program per row)
+            tl.atomic_add(DGAIN + h_idx, dg)
+            dy1 = dy1 * g[:, None]
+            dy2 = dy2 * g[:, None]
+        # RoPE backward
+        dxn1 = dy1 * c[None, :] + dy2 * (-s[None, :])   # [H, RH]
+        dxn2 = dy1 * s[None, :] + dy2 * c[None, :]       # [H, RH]
+        # dot = sum(dxn * xn) per head
+        dot = tl.sum(dxn1 * xn1, axis=1) + tl.sum(dxn2 * xn2, axis=1)  # [H]
+        if D > 2 * RH:
+            if HAS_GAIN:
+                dy_pass = dy_full * g[:, None]
+            else:
+                dy_pass = dy_full
+            pmask2 = d_idx[None, :] >= 2 * RH
+            dot += tl.sum(tl.where(pmask2, dy_pass * xn, 0.0), axis=1)
+        # Build full dxn via store/reload
+        tl.store(DX + base + hr, dxn1.to(tl.bfloat16))
+        tl.store(DX + base + hr2, dxn2.to(tl.bfloat16))
+        if D > 2 * RH:
+            if HAS_GAIN:
+                dp = tl.load(DY + base + hd).to(tl.float32) * g[:, None]
+            else:
+                dp = tl.load(DY + base + hd).to(tl.float32)
+            tl.store(DX + base + hd, dp.to(tl.bfloat16), mask=pmask2)
+        dxn_full = tl.load(DX + base + hd).to(tl.float32)
+        dx = (dxn_full - xn * dot[:, None] / D) * rrms[:, None]
+        tl.store(DX + base + hd, dx.to(tl.bfloat16))
+
+    class _FusedNormRopeGain(torch.autograd.Function):
+        @staticmethod
+        def forward(ctx, x, cos, sin, gain, rope_half, has_gain):
+            B, T, H, D = x.shape
+            N = B * T
+            x_flat = x.reshape(N, H, D).contiguous()
+            y = torch.empty_like(x_flat)
+            cos_2d = cos.reshape(T, rope_half).contiguous()
+            sin_2d = sin.reshape(T, rope_half).contiguous()
+            gain_c = gain.contiguous().float() if gain is not None else torch.empty(1, device=x.device)
+            _norm_rope_gain_fwd[(N,)](
+                x_flat, y, cos_2d, sin_2d, gain_c,
+                H * D, rope_half,
+                N, H, D, rope_half, T, has_gain,
+            )
+            ctx.save_for_backward(x_flat, cos_2d, sin_2d, gain_c if has_gain else torch.empty(0, device=x.device))
+            ctx.has_gain = has_gain
+            ctx.shape_info = (B, T, H, D, rope_half)
+            return y.reshape(B, T, H, D)
+
+        @staticmethod
+        def backward(ctx, dy):
+            x_flat, cos_2d, sin_2d, gain_saved = ctx.saved_tensors
+            has_gain = ctx.has_gain
+            B, T, H, D, rope_half = ctx.shape_info
+            N = B * T
+            dy_flat = dy.reshape(N, H, D).contiguous()
+            dx = torch.empty_like(x_flat)
+            dgain = torch.zeros(H, dtype=torch.float32, device=x_flat.device) if has_gain else None
+            _norm_rope_gain_bwd[(N,)](
+                x_flat, dy_flat, dx, cos_2d, sin_2d,
+                gain_saved if has_gain else torch.empty(1, device=x_flat.device),
+                dgain if dgain is not None else torch.empty(1, device=x_flat.device),
+                H * D, rope_half,
+                N, H, D, rope_half, T, has_gain,
+            )
+            return dx.reshape(B, T, H, D), None, None, dgain, None, None
+
+    def fused_norm_rope_gain(x, cos, sin, gain, rope_half):
+        return _FusedNormRopeGain.apply(x, cos, sin, gain, rope_half, True)
+    def fused_norm_rope(x, cos, sin, rope_half):
+        return _FusedNormRopeGain.apply(x, cos, sin, None, rope_half, False)
+
+    fused_leaky_relu_sq = _FusedLReluSq.apply
 except ImportError:
     pass
 class Hyperparameters():
@@ -130,6 +295,8 @@ class Hyperparameters():
     ema_decay = float(os.environ.get('EMA_DECAY', 0.9965))
     # Quantization & Compression
     compressor = os.environ.get('COMPRESSOR', 'brotli')
+    compress_ans = bool(int(os.environ.get('COMPRESS_ANS', '1')))
+    compress_lzma = bool(int(os.environ.get('COMPRESS_LZMA', '0')))
     gptq_calibration_batches = int(os.environ.get('GPTQ_CALIBRATION_BATCHES', 64))
     gptq_reserve_seconds = float(os.environ.get('GPTQ_RESERVE_SECONDS', 12.0))
     matrix_bits = int(os.environ.get('MATRIX_BITS', 6))
@@ -153,6 +320,8 @@ class Hyperparameters():
     gated_attention = bool(int(os.environ.get('GATED_ATTENTION', '0')))
     # Fused Triton MLP kernel
     fused_mlp = bool(int(os.environ.get('FUSED_MLP', '1')))
+    # Fused Triton QK-norm + RoPE + gain kernel
+    fused_rope = bool(int(os.environ.get('FUSED_ROPE', '1')))
     # VarLen attention (within-document-only)
     varlen_attention = bool(int(os.environ.get('VARLEN_ATTENTION', '0')))
 
@@ -367,30 +536,24 @@ class Rotary(nn.Module):
         self.rope_dims = rope_dims if rope_dims > 0 else dim
         inv_freq = 1.0 / (base ** (torch.arange(0, self.rope_dims, 2, dtype=torch.float32) / self.rope_dims))
         self.register_buffer("inv_freq", inv_freq, persistent=False)
-        self._seq_len_cached = 0
-        self._cos_cached: Tensor | None = None
-        self._sin_cached: Tensor | None = None
+        # Precompute for train_seq_len; registered as buffers so dispatch keys stay
+        # stable across train/eval transitions (avoids dynamo recompilation).
+        t = torch.arange(train_seq_len, dtype=torch.float32)
+        freqs = torch.outer(t, inv_freq)
+        self.register_buffer("_cos_cached", freqs.cos()[None, :, None, :].clone(), persistent=False)
+        self.register_buffer("_sin_cached", freqs.sin()[None, :, None, :].clone(), persistent=False)
     def forward(self, seq_len: int, device: torch.device, dtype: torch.dtype) -> tuple[Tensor, Tensor]:
-        if (
-            self._cos_cached is None
-            or self._sin_cached is None
-            or self._seq_len_cached != seq_len
-            or self._cos_cached.device != device
-        ):
-            rd = self.rope_dims
-            if seq_len > self.train_seq_len:
-                scale = seq_len / self.train_seq_len
-                new_base = self.base * (scale ** (rd / (rd - 2)))
-                inv_freq = 1.0 / (new_base ** (torch.arange(
-                    0, rd, 2, dtype=torch.float32, device=device) / rd))
-            else:
-                inv_freq = self.inv_freq.to(device)
-            t = torch.arange(seq_len, device=device, dtype=inv_freq.dtype)
-            freqs = torch.outer(t, inv_freq)
-            self._cos_cached = freqs.cos()[None, :, None, :]
-            self._sin_cached = freqs.sin()[None, :, None, :]
-            self._seq_len_cached = seq_len
-        return self._cos_cached.to(dtype=dtype), self._sin_cached.to(dtype=dtype)
+        if seq_len <= self.train_seq_len:
+            return self._cos_cached[:, :seq_len].to(dtype=dtype), self._sin_cached[:, :seq_len].to(dtype=dtype)
+        # NTK-aware RoPE for sequences longer than train_seq_len
+        rd = self.rope_dims
+        scale = seq_len / self.train_seq_len
+        new_base = self.base * (scale ** (rd / (rd - 2)))
+        inv_freq = 1.0 / (new_base ** (torch.arange(
+            0, rd, 2, dtype=torch.float32, device=device) / rd))
+        t = torch.arange(seq_len, device=device, dtype=inv_freq.dtype)
+        freqs = torch.outer(t, inv_freq)
+        return freqs.cos()[None, :, None, :].to(dtype=dtype), freqs.sin()[None, :, None, :].to(dtype=dtype)
 def apply_rotary_emb(x: Tensor, cos: Tensor, sin: Tensor, rope_dims: int = 0) -> Tensor:
     if rope_dims > 0 and rope_dims < x.size(-1):
         x_rope, x_pass = x[..., :rope_dims], x[..., rope_dims:]
@@ -426,6 +589,7 @@ class CausalSelfAttention(nn.Module):
         self.rotary = Rotary(self.head_dim, base=rope_base, train_seq_len=train_seq_len)
         self.use_xsa = False
         self.use_varlen = False
+        self.use_fused_rope = False  # set by GPT.__init__
         self.window_size = 0  # 0 = full causal, >0 = sliding window attention
         # Gated attention: sigmoid gate per head
         self.gated = gated
@@ -447,12 +611,17 @@ class CausalSelfAttention(nn.Module):
         q = self.c_q(x).reshape(bsz, seqlen, self.num_heads, self.head_dim)
         k = self.c_k(x).reshape(bsz, seqlen, self.num_kv_heads, self.head_dim)
         v = self.c_v(x).reshape(bsz, seqlen, self.num_kv_heads, self.head_dim)
-        q = F.rms_norm(q, (q.size(-1),))
-        k = F.rms_norm(k, (k.size(-1),))
         cos, sin = self.rotary(seqlen, x.device, q.dtype)
-        q = apply_rotary_emb(q, cos, sin, self.rope_dims)
-        k = apply_rotary_emb(k, cos, sin, self.rope_dims)
-        q = q * self.q_gain.to(dtype=q.dtype)[None, None, :, None]
+        rope_half = (self.rope_dims // 2) if self.rope_dims > 0 else (self.head_dim // 2)
+        if self.use_fused_rope:
+            q = fused_norm_rope_gain(q, cos, sin, self.q_gain, rope_half)
+            k = fused_norm_rope(k, cos, sin, rope_half)
+        else:
+            q = F.rms_norm(q, (q.size(-1),))
+            k = F.rms_norm(k, (k.size(-1),))
+            q = apply_rotary_emb(q, cos, sin, self.rope_dims)
+            k = apply_rotary_emb(k, cos, sin, self.rope_dims)
+            q = q * self.q_gain.to(dtype=q.dtype)[None, None, :, None]
         if self.use_varlen and cu_seqlens is not None and _HAS_VARLEN:
             q_flat = q.reshape(-1, self.num_heads, self.head_dim)
             k_flat = k.reshape(-1, self.num_kv_heads, self.head_dim)
@@ -592,6 +761,9 @@ class GPT(nn.Module):
             for block in self.blocks:
                 block.attn.rope_dims = h.rope_dims
                 block.attn.rotary = Rotary(head_dim, base=h.rope_base, train_seq_len=h.train_seq_len, rope_dims=h.rope_dims)
+        if h.fused_rope and _HAS_TRITON:
+            for block in self.blocks:
+                block.attn.use_fused_rope = True
         self.final_norm = RMSNorm()
         self.lm_head = None if h.tie_embeddings else CastedLinear(h.embedding_dim, h.vocab_size, bias=False)
         if self.lm_head is not None:
@@ -1272,13 +1444,27 @@ def serialize(h: Hyperparameters, base_model: torch.nn.Module, code: str) -> tup
     )
     log(f"GPTQ:collected {len(hessians)} Hessians in {time.perf_counter() - t0:.1f}s")
     quant_result, quant_meta = gptq_mixed_quantize(sd_cpu, hessians, h)
-    if h.compressor == "ans":
-        quant_blob = _ans_compress_quant(quant_result, quant_meta)
-    else:
-        quant_buf = io.BytesIO()
-        torch.save({"w": quant_result, "m": quant_meta}, quant_buf)
-        quant_raw = quant_buf.getvalue()
-        quant_blob = _compress(quant_raw, h.compressor)
+    # Compare all compressors and pick the smallest
+    quant_buf = io.BytesIO()
+    torch.save({"w": quant_result, "m": quant_meta}, quant_buf)
+    quant_raw = quant_buf.getvalue()
+    candidates: dict[str, bytes] = {}
+    t1 = time.perf_counter()
+    candidates["brotli"] = _compress(quant_raw, "brotli")
+    log(f"compress:brotli {len(candidates['brotli'])} bytes ({time.perf_counter()-t1:.1f}s)")
+    if h.compress_ans:
+        t1 = time.perf_counter()
+        candidates["ans"] = _ans_compress_quant(quant_result, quant_meta)
+        log(f"compress:ans {len(candidates['ans'])} bytes ({time.perf_counter()-t1:.1f}s)")
+    if h.compress_lzma:
+        t1 = time.perf_counter()
+        candidates["lzma"] = _compress(quant_raw, "lzma")
+        log(f"compress:lzma {len(candidates['lzma'])} bytes ({time.perf_counter()-t1:.1f}s)")
+    for name, blob in sorted(candidates.items(), key=lambda kv: len(kv[1])):
+        log(f"  {name}: model={len(blob)} total={len(blob)+code_bytes}")
+    chosen = min(candidates, key=lambda k: len(candidates[k]))
+    quant_blob = candidates[chosen]
+    log(f"compress:using {chosen} ({len(quant_blob)} bytes)")
     quant_file_bytes = len(quant_blob)
     bytes_total = quant_file_bytes + code_bytes
     if h.is_main_process:
@@ -1293,14 +1479,17 @@ def deserialize(h: Hyperparameters, device: torch.device) -> GPT:
     sd_cpu = {k: v.detach().cpu() for k, v in eval_model.state_dict().items()}
     with open(h.quantized_model_path, "rb") as f:
         quant_blob_disk = f.read()
-    if h.compressor == "ans":
+    # Auto-detect format from magic bytes
+    if quant_blob_disk[:4] == b'ANSW':
         quant_w, quant_m = _ans_decompress_quant(quant_blob_disk)
         quant_state = {"w": quant_w, "m": quant_m}
     else:
-        quant_state = torch.load(
-            io.BytesIO(_decompress(quant_blob_disk, h.compressor)),
-            map_location="cpu",
-        )
+        # Try brotli first, fall back to lzma
+        try:
+            raw = _decompress(quant_blob_disk, "brotli")
+        except Exception:
+            raw = _decompress(quant_blob_disk, "lzma")
+        quant_state = torch.load(io.BytesIO(raw), map_location="cpu")
     deq_state = dequantize_mixed(quant_state["w"], quant_state["m"], sd_cpu)
     eval_model.load_state_dict(deq_state, strict=True)
     return eval_model
