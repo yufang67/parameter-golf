@@ -170,3 +170,36 @@ loop_warmup_step: 20/20
 4/20000 train_loss: 8.0477 train_time: 0.0m tok/s: 1598964
 5/20000 train_loss: 7.1899 train_time: 0.0m tok/s: 1592333
 500/20000 train_loss: 3.3608 train_time: 4.3m tok/s: 1530664
+1000/20000 train_loss: 3.2014 train_time: 8.6m tok/s: 1531629
+1500/20000 train_loss: 3.1723 train_time: 12.8m tok/s: 1532108
+2000/20000 train_loss: 3.1462 train_time: 17.1m tok/s: 1532348
+layer_loop:enabled step:2448 frac:0.350 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+2500/20000 train_loss: 3.0721 train_time: 21.6m tok/s: 1515816
+3000/20000 train_loss: 2.9860 train_time: 28.2m tok/s: 1396591
+3500/20000 train_loss: 3.0341 train_time: 34.7m tok/s: 1322494
+4000/20000 train_loss: 2.9881 train_time: 41.2m tok/s: 1272034
+4000/20000 val_loss: 2.9601 val_bpb: 1.1460
+4500/20000 train_loss: 2.8920 train_time: 47.8m tok/s: 1234907
+5000/20000 train_loss: 2.8788 train_time: 54.3m tok/s: 1207048
+5419/20000 val_loss: 2.7990 val_bpb: 1.0836
+stopping_early: wallclock_cap train_time: 3588089ms step: 5419/20000
+peak memory allocated: 38151 MiB reserved: 38246 MiB
+ema:applying EMA weights
+pre-quantization post-ema val_loss:2.79724263 val_bpb:1.08289979 eval_time:31646ms
+Serialized model: 135625319 bytes
+Code size: 87573 bytes
+GPTQ:collecting Hessians from calibration data...
+GPTQ:collected 67 Hessians in 24.0s
+Quantized weights:
+  gptq (int6): blocks.attn.c_k.weight, blocks.attn.c_q.weight, blocks.attn.c_v.weight, blocks.attn.proj.weight, blocks.mlp.fc.weight, blocks.mlp.proj.weight
+  gptq (int8): tok_emb.weight
+  passthrough (float16): blocks.attn.gate_proj.bias, blocks.attn.gate_proj.weight, blocks.attn.q_gain, blocks.attn_scale, blocks.mlp_scale, blocks.resid_mix, loop_embs, skip_gates, skip_weights
+compress:brotli 16062706 bytes (64.8s)
+compress:ans 15953697 bytes (15.2s)
+  ans: model=15953697 total=16041270
+  brotli: model=16062706 total=16150279
+compress:using ans (15953697 bytes)
+Serialized model quantized+brotli: 15953697 bytes
+Total submission size quantized+brotli: 16041270 bytes
+quantized val_loss:2.82262599 val_bpb:1.09272648 eval_time:12030ms
+quantized_sliding_window val_loss:2.78003101 val_bpb:1.07623664 eval_time:481246ms
