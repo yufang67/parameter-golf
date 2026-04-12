@@ -1592,7 +1592,8 @@ def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
     base_model, compiled_model = train_model(h, device, val_data)
     torch._dynamo.reset()
     timed_eval("pre-quantization post-ema", eval_val, h, device, val_data, compiled_model)
-    serialize(h, base_model, Path(__file__).read_text(encoding="utf-8"))
+    _code_file = os.environ.get("_ORIG_SCRIPT", __file__)
+    serialize(h, base_model, Path(_code_file).read_text(encoding="utf-8"))
     if h.distributed:
         dist.barrier()
     eval_model = deserialize(h, device)
