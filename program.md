@@ -104,11 +104,12 @@ Run a disciplined loop:
 1. **Read state**
    - Check `strategy.md`, `journal.md`, and `results.tsv`.
    - Check the strongest relevant results under the `records` folder, because they are validated reference points and practical baselines.
+   - Identify the potential improvements.
    - Identify the best-known tradeoff among `val_bpb`, artifact size, and runtime.
 
 2. **Write one hypothesis**
    - State one concrete change and why it might help.
-   - Prefer one dominant variable per run when possible.
+   - Prefer one dominant variable or implementation per run when possible.
 
 3. **Implement**
    - Create a new file or edit the smallest set of existing files necessary.

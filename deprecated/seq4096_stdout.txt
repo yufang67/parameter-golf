@@ -1,0 +1,715 @@
+nohup: ignoring input
+W0411 11:01:06.490000 92443 torch/distributed/run.py:851] 
+W0411 11:01:06.490000 92443 torch/distributed/run.py:851] *****************************************
+W0411 11:01:06.490000 92443 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0411 11:01:06.490000 92443 torch/distributed/run.py:851] *****************************************
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Bootstrap: Using eth0:10.0.0.5<0>
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO cudaDriverVersion 13020
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO NCCL version 2.28.9+cuda13.0
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO cudaDriverVersion 13020
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO cudaDriverVersion 13020
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO cudaDriverVersion 13020
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Bootstrap: Using eth0:10.0.0.5<0>
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO NCCL version 2.28.9+cuda13.0
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Comm config Blocking set to 1
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Bootstrap: Using eth0:10.0.0.5<0>
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Bootstrap: Using eth0:10.0.0.5<0>
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO NCCL version 2.28.9+cuda13.0
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO NCCL version 2.28.9+cuda13.0
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Comm config Blocking set to 1
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Comm config Blocking set to 1
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Comm config Blocking set to 1
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO transport/net_ib.cc:852 -> 3
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Failed to initialize NET plugin IB
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO transport/net_ib.cc:852 -> 3
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Failed to initialize NET plugin IB
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO transport/net_ib.cc:852 -> 3
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Failed to initialize NET plugin IB
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.5<0>
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.5<0>
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.5<0>
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Initialized NET plugin Socket
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Initialized NET plugin Socket
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Initialized NET plugin Socket
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Assigned NET plugin Socket to comm
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Assigned NET plugin Socket to comm
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Assigned NET plugin Socket to comm
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Using network Socket
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Using network Socket
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Using network Socket
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO transport/net_ib.cc:852 -> 3
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Failed to initialize NET plugin IB
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.5<0>
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Initialized NET plugin Socket
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Assigned NET plugin Socket to comm
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Using network Socket
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO ncclCommInitRankConfig comm 0x15716490 rank 2 nranks 4 cudaDev 2 nvmlDev 2 busId 300000 commId 0x412c65a0b7773839 - Init START
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO ncclCommInitRankConfig comm 0x46c77660 rank 3 nranks 4 cudaDev 3 nvmlDev 3 busId 400000 commId 0x412c65a0b7773839 - Init START
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO ncclCommInitRankConfig comm 0x3d6fb350 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 100000 commId 0x412c65a0b7773839 - Init START
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO ncclCommInitRankConfig comm 0x2e371670 rank 1 nranks 4 cudaDev 1 nvmlDev 1 busId 200000 commId 0x412c65a0b7773839 - Init START
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Bootstrap timings total 0.005912 (create 0.000046, send 0.000164, recv 0.005001, ring 0.000242, delay 0.000001)
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Bootstrap timings total 0.005960 (create 0.000037, send 0.000162, recv 0.000511, ring 0.004785, delay 0.000001)
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Bootstrap timings total 0.001149 (create 0.000044, send 0.000169, recv 0.000317, ring 0.000175, delay 0.000001)
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Bootstrap timings total 0.005979 (create 0.000046, send 0.000174, recv 0.000286, ring 0.000088, delay 0.000001)
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 3 is 72-95. (GPU affinity = 72-95 ; CPU affinity = 0-95).
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO NVLS multicast support is not available on dev 3 (NVLS_NCHANNELS 0)
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 0 is 0-23. (GPU affinity = 0-23 ; CPU affinity = 0-95).
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO NVLS multicast support is not available on dev 0 (NVLS_NCHANNELS 0)
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 1 is 24-47. (GPU affinity = 24-47 ; CPU affinity = 0-95).
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO NVLS multicast support is not available on dev 1 (NVLS_NCHANNELS 0)
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 2 is 48-71. (GPU affinity = 48-71 ; CPU affinity = 0-95).
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO NVLS multicast support is not available on dev 2 (NVLS_NCHANNELS 0)
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO comm 0x2e371670 rank 1 nRanks 4 nNodes 1 localRanks 4 localRank 1 MNNVL 0
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO comm 0x15716490 rank 2 nRanks 4 nNodes 1 localRanks 4 localRank 2 MNNVL 0
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO comm 0x46c77660 rank 3 nRanks 4 nNodes 1 localRanks 4 localRank 3 MNNVL 0
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO comm 0x3d6fb350 rank 0 nRanks 4 nNodes 1 localRanks 4 localRank 0 MNNVL 0
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Trees [0] 2/-1/-1->1->0 [1] 2/-1/-1->1->0 [2] 2/-1/-1->1->0 [3] 2/-1/-1->1->0 [4] 2/-1/-1->1->0 [5] 2/-1/-1->1->0 [6] 2/-1/-1->1->0 [7] 2/-1/-1->1->0
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Trees [0] 3/-1/-1->2->1 [1] 3/-1/-1->2->1 [2] 3/-1/-1->2->1 [3] 3/-1/-1->2->1 [4] 3/-1/-1->2->1 [5] 3/-1/-1->2->1 [6] 3/-1/-1->2->1 [7] 3/-1/-1->2->1
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Trees [0] -1/-1/-1->3->2 [1] -1/-1/-1->3->2 [2] -1/-1/-1->3->2 [3] -1/-1/-1->3->2 [4] -1/-1/-1->3->2 [5] -1/-1/-1->3->2 [6] -1/-1/-1->3->2 [7] -1/-1/-1->3->2
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO P2P Chunksize set to 131072
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Channel 00/08 : 0 1 2 3
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO P2P Chunksize set to 131072
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO P2P Chunksize set to 131072
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Channel 01/08 : 0 1 2 3
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Channel 02/08 : 0 1 2 3
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Channel 03/08 : 0 1 2 3
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Channel 04/08 : 0 1 2 3
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Channel 05/08 : 0 1 2 3
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Channel 06/08 : 0 1 2 3
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Channel 07/08 : 0 1 2 3
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1 [2] 1/-1/-1->0->-1 [3] 1/-1/-1->0->-1 [4] 1/-1/-1->0->-1 [5] 1/-1/-1->0->-1 [6] 1/-1/-1->0->-1 [7] 1/-1/-1->0->-1
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO P2P Chunksize set to 131072
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+027ffb5017964723bac512bf427add6d000002:92513:92540 [0] NCCL INFO [Proxy Service] Device 2 CPU core 63
+027ffb5017964723bac512bf427add6d000002:92514:92542 [0] NCCL INFO [Proxy Service] Device 3 CPU core 74
+027ffb5017964723bac512bf427add6d000002:92513:92543 [0] NCCL INFO [Proxy Service UDS] Device 2 CPU core 49
+027ffb5017964723bac512bf427add6d000002:92514:92544 [0] NCCL INFO [Proxy Service UDS] Device 3 CPU core 84
+027ffb5017964723bac512bf427add6d000002:92512:92541 [0] NCCL INFO [Proxy Service] Device 1 CPU core 32
+027ffb5017964723bac512bf427add6d000002:92511:92545 [0] NCCL INFO [Proxy Service] Device 0 CPU core 22
+027ffb5017964723bac512bf427add6d000002:92512:92547 [0] NCCL INFO [Proxy Service UDS] Device 1 CPU core 46
+027ffb5017964723bac512bf427add6d000002:92511:92546 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 11
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO CC Off, workFifoBytes 1048576
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO ncclCommInitRankConfig comm 0x15716490 rank 2 nranks 4 cudaDev 2 nvmlDev 2 busId 300000 commId 0x412c65a0b7773839 - Init COMPLETE
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO ncclCommInitRankConfig comm 0x3d6fb350 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 100000 commId 0x412c65a0b7773839 - Init COMPLETE
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO ncclCommInitRankConfig comm 0x2e371670 rank 1 nranks 4 cudaDev 1 nvmlDev 1 busId 200000 commId 0x412c65a0b7773839 - Init COMPLETE
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Init timings - ncclCommInitRankConfig: rank 2 nranks 4 total 0.18 (kernels 0.12, alloc 0.01, bootstrap 0.01, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Init timings - ncclCommInitRankConfig: rank 0 nranks 4 total 0.18 (kernels 0.12, alloc 0.01, bootstrap 0.01, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Init timings - ncclCommInitRankConfig: rank 1 nranks 4 total 0.18 (kernels 0.13, alloc 0.01, bootstrap 0.00, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO ncclCommInitRankConfig comm 0x46c77660 rank 3 nranks 4 cudaDev 3 nvmlDev 3 busId 400000 commId 0x412c65a0b7773839 - Init COMPLETE
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Init timings - ncclCommInitRankConfig: rank 3 nranks 4 total 0.18 (kernels 0.12, alloc 0.01, bootstrap 0.01, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Channel 00 : 3[3] -> 0[0] via SHM/direct/direct
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Channel 00 : 1[1] -> 2[2] via SHM/direct/direct
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Channel 01 : 3[3] -> 0[0] via SHM/direct/direct
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Channel 01 : 1[1] -> 2[2] via SHM/direct/direct
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Channel 02 : 3[3] -> 0[0] via SHM/direct/direct
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Channel 02 : 1[1] -> 2[2] via SHM/direct/direct
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Channel 03 : 3[3] -> 0[0] via SHM/direct/direct
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Channel 03 : 1[1] -> 2[2] via SHM/direct/direct
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Channel 04 : 3[3] -> 0[0] via SHM/direct/direct
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Channel 04 : 1[1] -> 2[2] via SHM/direct/direct
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Channel 00/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Channel 00/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Channel 01/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Channel 01/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Channel 05 : 3[3] -> 0[0] via SHM/direct/direct
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Channel 05 : 1[1] -> 2[2] via SHM/direct/direct
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Channel 02/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Channel 02/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Channel 03/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Channel 06 : 1[1] -> 2[2] via SHM/direct/direct
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Channel 06 : 3[3] -> 0[0] via SHM/direct/direct
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Channel 03/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Channel 04/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Channel 07 : 3[3] -> 0[0] via SHM/direct/direct
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Channel 05/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Channel 04/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Channel 07 : 1[1] -> 2[2] via SHM/direct/direct
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Channel 06/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Channel 05/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Channel 07/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Channel 06/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Channel 07/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+027ffb5017964723bac512bf427add6d000002:92512:92512 [1] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+027ffb5017964723bac512bf427add6d000002:92514:92514 [3] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+Hyperparameters:
+  adam_eps: 1e-08
+  adam_wd: 0.02
+  beta1: 0.9
+  beta2: 0.95
+  compressor: brotli
+  conv_kernel_size: 4
+  data_dir: ./data2/
+  datasets_dir: ./data2/datasets/fineweb10B_sp8192
+  delta_chunk_size: 64
+  distributed: True
+  ema_decay: 0.9965
+  embed_bits: 8
+  embed_clip_sigmas: 20.0
+  embed_lr: 0.6
+  embed_wd: 0.085
+  embedding_dim: 512
+  enable_looping_at: 0.35
+  etlb_clip: 3.0
+  etlb_enabled: False
+  etlb_lr: 0.05
+  etlb_steps: 5
+  eval_seq_len: 2048
+  eval_stride: 64
+  gptq_calibration_batches: 64
+  gptq_reserve_seconds: 12.0
+  grad_accum_steps: 2
+  grad_clip_norm: 0.3
+  head_lr: 0.008
+  is_main_process: True
+  iterations: 20000
+  linear_attn_ratio: 0.0
+  ln_scale: True
+  local_rank: 0
+  logfile: logs/seq4096.txt
+  logit_softcap: 30.0
+  loop_end: 5
+  loop_start: 3
+  matrix_bits: 6
+  matrix_clip_sigmas: 12.85
+  matrix_lr: 0.022
+  max_wallclock_seconds: 1800.0
+  min_lr: 0.0
+  mlp_mult: 4.0
+  model_dim: 512
+  model_path: final_model.pt
+  muon_backend_steps: 5
+  muon_beta2: 0.95
+  muon_momentum: 0.99
+  muon_momentum_warmup_start: 0.92
+  muon_momentum_warmup_steps: 1500
+  muon_row_normalize: True
+  muon_wd: 0.095
+  num_heads: 8
+  num_kv_heads: 4
+  num_layers: 11
+  num_loops: 2
+  parallel_residual_start: 7
+  qk_gain_init: 5.25
+  quantized_model_path: final_model.int6.ptz
+  rank: 0
+  rope_base: 10000.0
+  rope_dims: 16
+  rope_train_seq_len: 2048
+  run_id: seq4096
+  scalar_lr: 0.02
+  seed: 1337
+  skip_gates_enabled: True
+  sliding_window_enabled: True
+  tie_embeddings: True
+  tied_embed_init_std: 0.005
+  tied_embed_lr: 0.03
+  tokenizer_path: ./data2/tokenizers/fineweb_8192_bpe.model
+  train_batch_tokens: 786432
+  train_files: ./data2/datasets/fineweb10B_sp8192/fineweb_train_*.bin
+  train_log_every: 500
+  train_seq_len: 4096
+  ttt_chunk_tokens: 32768
+  ttt_enabled: False
+  ttt_epochs: 3
+  ttt_lr: 0.005
+  ttt_momentum: 0.9
+  val_batch_tokens: 524288
+  val_files: ./data2/datasets/fineweb10B_sp8192/fineweb_val_*.bin
+  val_loss_every: 500
+  vocab_size: 8192
+  warmdown_frac: 0.85
+  warmup_steps: 20
+  world_size: 4
+  xsa_last_n: 11
+train_shards: 128
+val_tokens: 40540160
+model_params:38828120
+layer_types:['full', 'full', 'full', 'full', 'full', 'full', 'full', 'full', 'full', 'full', 'full']
+gptq:reserving 12s, effective=1788000ms
+warmup_step: 1/20
+warmup_step: 2/20
+warmup_step: 3/20
+warmup_step: 4/20
+warmup_step: 5/20
+warmup_step: 6/20
+warmup_step: 10/20
+warmup_step: 20/20
+loop_warmup:enabled encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+loop_warmup_step: 1/20
+loop_warmup_step: 2/20
+loop_warmup_step: 3/20
+loop_warmup_step: 4/20
+loop_warmup_step: 5/20
+loop_warmup_step: 6/20
+loop_warmup_step: 10/20
+loop_warmup_step: 20/20
+0/20000 val_loss: 9.0063 val_bpb: 3.4866
+1/20000 train_loss: 9.0074 train_time: 0.0m tok/s: 283392
+2/20000 train_loss: 12.2323 train_time: 0.1m tok/s: 460652
+3/20000 train_loss: 11.0389 train_time: 0.1m tok/s: 581596
+4/20000 train_loss: 9.4977 train_time: 0.1m tok/s: 669182
+5/20000 train_loss: 8.4213 train_time: 0.1m tok/s: 735483
+500/20000 train_loss: 3.3274 train_time: 5.5m tok/s: 1190332
+500/20000 val_loss: 3.3238 val_bpb: 1.2867
+layer_loop:enabled step:952 frac:0.350 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+1000/20000 train_loss: 3.1343 train_time: 11.2m tok/s: 1165171
+[rank0]:W0411 11:15:56.234000 92511 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] torch._dynamo hit config.recompile_limit (8)
+[rank0]:W0411 11:15:56.234000 92511 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    function: 'forward' (/root/parameter-golf/train_gpt_04_09.py:713)
+[rank0]:W0411 11:15:56.234000 92511 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    last reason: 0/7: tensor 'self._modules['blocks']._modules['0']._modules['attn']._modules['rotary']._cos_cached' dispatch key set mismatch. expected DispatchKeySet(CUDA, BackendSelect, ADInplaceOrView, AutocastCUDA), actual DispatchKeySet(CUDA, BackendSelect, AutocastCUDA)
+[rank0]:W0411 11:15:56.234000 92511 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+[rank0]:W0411 11:15:56.234000 92511 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 1773, in _compile
+[rank0]:     raise_unimplemented_cache_limit_exceeded()
+[rank0]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 1757, in raise_unimplemented_cache_limit_exceeded
+[rank0]:     unimplemented(
+[rank0]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/exc.py", line 634, in unimplemented
+[rank0]:     raise Unsupported(msg, gb_type, skip_frame)
+[rank0]: torch._dynamo.exc.Unsupported: Dynamo recompile limit exceeded
+[rank0]:   Explanation: Dynamo attempted to recompile the code object too many times, exceeding the recompile_limit cache size limit (currently set to 8). Excessive recompilations can degrade performance due to the compilation overhead of each recompilation.
+[rank0]:   Hint: To monitor recompilations, enable TORCH_LOGS=recompiles. If recompilations are expected, consider increasing torch._dynamo.config.recompile_limit to an appropriate value.
+[rank0]:   Hint: See https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html for tips on dealing with recompilations.
+
+[rank0]:   Developer debug context: Limit type: recompile_limit
+
+[rank0]:  For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0039.html
+
+[rank0]: The above exception was the direct cause of the following exception:
+
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1573, in <module>
+[rank0]:     main()
+[rank0]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1567, in main
+[rank0]:     train_and_eval(h, device)
+[rank0]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1493, in train_and_eval
+[rank0]:     base_model, compiled_model = train_model(h, device, val_data)
+[rank0]:                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1438, in train_model
+[rank0]:     val_loss, val_bpb = eval_val(h, device, val_data, model)
+[rank0]:                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1152, in eval_val
+[rank0]:     batch_loss = model(x, y).detach()
+[rank0]:                  ^^^^^^^^^^^
+[rank0]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/parallel/distributed.py", line 1699, in forward
+[rank0]:     else self._run_ddp_forward(*inputs, **kwargs)
+[rank0]:          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/parallel/distributed.py", line 1524, in _run_ddp_forward
+[rank0]:     return self.module(*inputs, **kwargs)  # type: ignore[index]
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 472, in __call__
+[rank0]:     return super().__call__(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 1024, in compile_wrapper
+[rank0]:     return fn(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 2316, in __call__
+[rank0]:     result = self._torchdynamo_orig_backend(
+[rank0]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 729, in __call__
+[rank0]:     result = _compile(
+[rank0]:              ^^^^^^^^^
+[rank0]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 1780, in _compile
+[rank0]:     raise FailOnRecompileLimitHit(
+[rank0]: torch._dynamo.exc.FailOnRecompileLimitHit: Hard failure due to fullgraph=True
+[rank2]:W0411 11:15:56.336000 92513 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] torch._dynamo hit config.recompile_limit (8)
+[rank2]:W0411 11:15:56.336000 92513 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    function: 'forward' (/root/parameter-golf/train_gpt_04_09.py:713)
+[rank2]:W0411 11:15:56.336000 92513 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    last reason: 0/7: tensor 'self._modules['blocks']._modules['0']._modules['attn']._modules['rotary']._cos_cached' dispatch key set mismatch. expected DispatchKeySet(CUDA, BackendSelect, ADInplaceOrView, AutocastCUDA), actual DispatchKeySet(CUDA, BackendSelect, AutocastCUDA)
+[rank2]:W0411 11:15:56.336000 92513 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+[rank2]:W0411 11:15:56.336000 92513 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 1773, in _compile
+[rank2]:     raise_unimplemented_cache_limit_exceeded()
+[rank2]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 1757, in raise_unimplemented_cache_limit_exceeded
+[rank2]:     unimplemented(
+[rank2]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/exc.py", line 634, in unimplemented
+[rank2]:     raise Unsupported(msg, gb_type, skip_frame)
+[rank2]: torch._dynamo.exc.Unsupported: Dynamo recompile limit exceeded
+[rank2]:   Explanation: Dynamo attempted to recompile the code object too many times, exceeding the recompile_limit cache size limit (currently set to 8). Excessive recompilations can degrade performance due to the compilation overhead of each recompilation.
+[rank2]:   Hint: To monitor recompilations, enable TORCH_LOGS=recompiles. If recompilations are expected, consider increasing torch._dynamo.config.recompile_limit to an appropriate value.
+[rank2]:   Hint: See https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html for tips on dealing with recompilations.
+
+[rank2]:   Developer debug context: Limit type: recompile_limit
+
+[rank2]:  For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0039.html
+
+[rank2]: The above exception was the direct cause of the following exception:
+
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1573, in <module>
+[rank2]:     main()
+[rank2]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1567, in main
+[rank2]:     train_and_eval(h, device)
+[rank2]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1493, in train_and_eval
+[rank2]:     base_model, compiled_model = train_model(h, device, val_data)
+[rank2]:                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1438, in train_model
+[rank2]:     val_loss, val_bpb = eval_val(h, device, val_data, model)
+[rank2]:                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1152, in eval_val
+[rank2]:     batch_loss = model(x, y).detach()
+[rank2]:                  ^^^^^^^^^^^
+[rank2]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+[rank2]:     return self._call_impl(*args, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+[rank2]:     return forward_call(*args, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/parallel/distributed.py", line 1699, in forward
+[rank2]:     else self._run_ddp_forward(*inputs, **kwargs)
+[rank2]:          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/parallel/distributed.py", line 1524, in _run_ddp_forward
+[rank2]:     return self.module(*inputs, **kwargs)  # type: ignore[index]
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 472, in __call__
+[rank2]:     return super().__call__(*args, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+[rank2]:     return self._call_impl(*args, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+[rank2]:     return forward_call(*args, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 1024, in compile_wrapper
+[rank2]:     return fn(*args, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+[rank2]:     return self._call_impl(*args, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+[rank2]:     return forward_call(*args, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 2316, in __call__
+[rank2]:     result = self._torchdynamo_orig_backend(
+[rank2]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 729, in __call__
+[rank2]:     result = _compile(
+[rank2]:              ^^^^^^^^^
+[rank2]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 1780, in _compile
+[rank2]:     raise FailOnRecompileLimitHit(
+[rank2]: torch._dynamo.exc.FailOnRecompileLimitHit: Hard failure due to fullgraph=True
+[rank1]:W0411 11:15:56.916000 92512 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] torch._dynamo hit config.recompile_limit (8)
+[rank1]:W0411 11:15:56.916000 92512 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    function: 'forward' (/root/parameter-golf/train_gpt_04_09.py:713)
+[rank1]:W0411 11:15:56.916000 92512 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    last reason: 0/7: tensor 'self._modules['blocks']._modules['0']._modules['attn']._modules['rotary']._cos_cached' dispatch key set mismatch. expected DispatchKeySet(CUDA, BackendSelect, ADInplaceOrView, AutocastCUDA), actual DispatchKeySet(CUDA, BackendSelect, AutocastCUDA)
+[rank1]:W0411 11:15:56.916000 92512 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+[rank1]:W0411 11:15:56.916000 92512 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 1773, in _compile
+[rank1]:     raise_unimplemented_cache_limit_exceeded()
+[rank1]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 1757, in raise_unimplemented_cache_limit_exceeded
+[rank1]:     unimplemented(
+[rank1]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/exc.py", line 634, in unimplemented
+[rank1]:     raise Unsupported(msg, gb_type, skip_frame)
+[rank1]: torch._dynamo.exc.Unsupported: Dynamo recompile limit exceeded
+[rank1]:   Explanation: Dynamo attempted to recompile the code object too many times, exceeding the recompile_limit cache size limit (currently set to 8). Excessive recompilations can degrade performance due to the compilation overhead of each recompilation.
+[rank1]:   Hint: To monitor recompilations, enable TORCH_LOGS=recompiles. If recompilations are expected, consider increasing torch._dynamo.config.recompile_limit to an appropriate value.
+[rank1]:   Hint: See https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html for tips on dealing with recompilations.
+
+[rank1]:   Developer debug context: Limit type: recompile_limit
+
+[rank1]:  For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0039.html
+
+[rank1]: The above exception was the direct cause of the following exception:
+
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1573, in <module>
+[rank1]:     main()
+[rank1]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1567, in main
+[rank1]:     train_and_eval(h, device)
+[rank1]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1493, in train_and_eval
+[rank1]:     base_model, compiled_model = train_model(h, device, val_data)
+[rank1]:                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1438, in train_model
+[rank1]:     val_loss, val_bpb = eval_val(h, device, val_data, model)
+[rank1]:                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1152, in eval_val
+[rank1]:     batch_loss = model(x, y).detach()
+[rank1]:                  ^^^^^^^^^^^
+[rank1]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/parallel/distributed.py", line 1699, in forward
+[rank1]:     else self._run_ddp_forward(*inputs, **kwargs)
+[rank1]:          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/parallel/distributed.py", line 1524, in _run_ddp_forward
+[rank1]:     return self.module(*inputs, **kwargs)  # type: ignore[index]
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 472, in __call__
+[rank1]:     return super().__call__(*args, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 1024, in compile_wrapper
+[rank1]:     return fn(*args, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 2316, in __call__
+[rank1]:     result = self._torchdynamo_orig_backend(
+[rank1]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 729, in __call__
+[rank1]:     result = _compile(
+[rank1]:              ^^^^^^^^^
+[rank1]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 1780, in _compile
+[rank1]:     raise FailOnRecompileLimitHit(
+[rank1]: torch._dynamo.exc.FailOnRecompileLimitHit: Hard failure due to fullgraph=True
+[rank3]:W0411 11:15:56.973000 92514 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] torch._dynamo hit config.recompile_limit (8)
+[rank3]:W0411 11:15:56.973000 92514 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    function: 'forward' (/root/parameter-golf/train_gpt_04_09.py:713)
+[rank3]:W0411 11:15:56.973000 92514 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    last reason: 0/7: tensor 'self._modules['blocks']._modules['0']._modules['attn']._modules['rotary']._cos_cached' dispatch key set mismatch. expected DispatchKeySet(CUDA, BackendSelect, ADInplaceOrView, AutocastCUDA), actual DispatchKeySet(CUDA, BackendSelect, AutocastCUDA)
+[rank3]:W0411 11:15:56.973000 92514 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+[rank3]:W0411 11:15:56.973000 92514 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 1773, in _compile
+[rank3]:     raise_unimplemented_cache_limit_exceeded()
+[rank3]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 1757, in raise_unimplemented_cache_limit_exceeded
+[rank3]:     unimplemented(
+[rank3]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/exc.py", line 634, in unimplemented
+[rank3]:     raise Unsupported(msg, gb_type, skip_frame)
+[rank3]: torch._dynamo.exc.Unsupported: Dynamo recompile limit exceeded
+[rank3]:   Explanation: Dynamo attempted to recompile the code object too many times, exceeding the recompile_limit cache size limit (currently set to 8). Excessive recompilations can degrade performance due to the compilation overhead of each recompilation.
+[rank3]:   Hint: To monitor recompilations, enable TORCH_LOGS=recompiles. If recompilations are expected, consider increasing torch._dynamo.config.recompile_limit to an appropriate value.
+[rank3]:   Hint: See https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html for tips on dealing with recompilations.
+
+[rank3]:   Developer debug context: Limit type: recompile_limit
+
+[rank3]:  For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0039.html
+
+[rank3]: The above exception was the direct cause of the following exception:
+
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1573, in <module>
+[rank3]:     main()
+[rank3]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1567, in main
+[rank3]:     train_and_eval(h, device)
+[rank3]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1493, in train_and_eval
+[rank3]:     base_model, compiled_model = train_model(h, device, val_data)
+[rank3]:                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1438, in train_model
+[rank3]:     val_loss, val_bpb = eval_val(h, device, val_data, model)
+[rank3]:                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/root/parameter-golf/train_gpt_04_09.py", line 1152, in eval_val
+[rank3]:     batch_loss = model(x, y).detach()
+[rank3]:                  ^^^^^^^^^^^
+[rank3]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+[rank3]:     return self._call_impl(*args, **kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+[rank3]:     return forward_call(*args, **kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/parallel/distributed.py", line 1699, in forward
+[rank3]:     else self._run_ddp_forward(*inputs, **kwargs)
+[rank3]:          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/parallel/distributed.py", line 1524, in _run_ddp_forward
+[rank3]:     return self.module(*inputs, **kwargs)  # type: ignore[index]
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 472, in __call__
+[rank3]:     return super().__call__(*args, **kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+[rank3]:     return self._call_impl(*args, **kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+[rank3]:     return forward_call(*args, **kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 1024, in compile_wrapper
+[rank3]:     return fn(*args, **kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+[rank3]:     return self._call_impl(*args, **kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+[rank3]:     return forward_call(*args, **kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 2316, in __call__
+[rank3]:     result = self._torchdynamo_orig_backend(
+[rank3]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 729, in __call__
+[rank3]:     result = _compile(
+[rank3]:              ^^^^^^^^^
+[rank3]:   File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py", line 1780, in _compile
+[rank3]:     raise FailOnRecompileLimitHit(
+[rank3]: torch._dynamo.exc.FailOnRecompileLimitHit: Hard failure due to fullgraph=True
+[rank0]:[W411 11:15:57.914509088 ProcessGroupNCCL.cpp:1575] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+027ffb5017964723bac512bf427add6d000002:92511:94391 [0] NCCL INFO comm 0x3d6fb350 rank 0 nRanks 4 cudaDev 0 busId 100000 - Abort START
+027ffb5017964723bac512bf427add6d000002:92511:94391 [0] NCCL INFO misc/socket.cc:64 -> 3
+027ffb5017964723bac512bf427add6d000002:92511:94391 [0] NCCL INFO misc/socket.cc:81 -> 3
+027ffb5017964723bac512bf427add6d000002:92511:94391 [0] NCCL INFO misc/socket.cc:868 -> 3
+027ffb5017964723bac512bf427add6d000002:92511:92545 [0] NCCL INFO misc/socket.cc:943 -> 3
+027ffb5017964723bac512bf427add6d000002:92511:94391 [0] NCCL INFO misc/socket.cc:64 -> 3
+027ffb5017964723bac512bf427add6d000002:92511:94391 [0] NCCL INFO misc/socket.cc:81 -> 3
+027ffb5017964723bac512bf427add6d000002:92511:94391 [0] NCCL INFO misc/socket.cc:868 -> 3
+027ffb5017964723bac512bf427add6d000002:92511:94391 [0] NCCL INFO misc/socket.cc:64 -> 3
+027ffb5017964723bac512bf427add6d000002:92511:94391 [0] NCCL INFO misc/socket.cc:81 -> 3
+027ffb5017964723bac512bf427add6d000002:92511:94391 [0] NCCL INFO misc/socket.cc:868 -> 3
+027ffb5017964723bac512bf427add6d000002:92513:94392 [2] NCCL INFO comm 0x15716490 rank 2 nRanks 4 cudaDev 2 busId 300000 - Abort START
+027ffb5017964723bac512bf427add6d000002:92513:94392 [2] NCCL INFO misc/socket.cc:64 -> 3
+027ffb5017964723bac512bf427add6d000002:92513:94392 [2] NCCL INFO misc/socket.cc:81 -> 3
+027ffb5017964723bac512bf427add6d000002:92513:94392 [2] NCCL INFO misc/socket.cc:868 -> 3
+027ffb5017964723bac512bf427add6d000002:92513:94392 [2] NCCL INFO misc/socket.cc:64 -> 3
+027ffb5017964723bac512bf427add6d000002:92513:94392 [2] NCCL INFO misc/socket.cc:81 -> 3
+027ffb5017964723bac512bf427add6d000002:92513:94392 [2] NCCL INFO misc/socket.cc:868 -> 3
+027ffb5017964723bac512bf427add6d000002:92513:92540 [2] NCCL INFO misc/socket.cc:943 -> 3
+027ffb5017964723bac512bf427add6d000002:92513:94392 [2] NCCL INFO misc/socket.cc:64 -> 3
+027ffb5017964723bac512bf427add6d000002:92513:94392 [2] NCCL INFO misc/socket.cc:81 -> 3
+027ffb5017964723bac512bf427add6d000002:92513:94392 [2] NCCL INFO misc/socket.cc:868 -> 3
+027ffb5017964723bac512bf427add6d000002:92511:94391 [0] NCCL INFO comm 0x3d6fb350 rank 0 nranks 4 cudaDev 0 busId 100000 - Abort COMPLETE
+027ffb5017964723bac512bf427add6d000002:92513:94392 [2] NCCL INFO comm 0x15716490 rank 2 nranks 4 cudaDev 2 busId 300000 - Abort COMPLETE
+027ffb5017964723bac512bf427add6d000002:92512:94393 [1] NCCL INFO comm 0x2e371670 rank 1 nRanks 4 cudaDev 1 busId 200000 - Abort START
+027ffb5017964723bac512bf427add6d000002:92512:94393 [1] NCCL INFO misc/socket.cc:64 -> 3
+027ffb5017964723bac512bf427add6d000002:92512:94393 [1] NCCL INFO misc/socket.cc:81 -> 3
+027ffb5017964723bac512bf427add6d000002:92512:94393 [1] NCCL INFO misc/socket.cc:868 -> 3
+027ffb5017964723bac512bf427add6d000002:92512:94393 [1] NCCL INFO misc/socket.cc:64 -> 3
+027ffb5017964723bac512bf427add6d000002:92512:94393 [1] NCCL INFO misc/socket.cc:81 -> 3
+027ffb5017964723bac512bf427add6d000002:92512:94393 [1] NCCL INFO misc/socket.cc:868 -> 3
+027ffb5017964723bac512bf427add6d000002:92512:94393 [1] NCCL INFO misc/socket.cc:64 -> 3
+027ffb5017964723bac512bf427add6d000002:92512:94393 [1] NCCL INFO misc/socket.cc:81 -> 3
+027ffb5017964723bac512bf427add6d000002:92512:94393 [1] NCCL INFO misc/socket.cc:868 -> 3
+027ffb5017964723bac512bf427add6d000002:92512:92541 [1] NCCL INFO misc/socket.cc:943 -> 3
+027ffb5017964723bac512bf427add6d000002:92514:94394 [3] NCCL INFO comm 0x46c77660 rank 3 nRanks 4 cudaDev 3 busId 400000 - Abort START
+027ffb5017964723bac512bf427add6d000002:92514:94394 [3] NCCL INFO misc/socket.cc:64 -> 3
+027ffb5017964723bac512bf427add6d000002:92514:94394 [3] NCCL INFO misc/socket.cc:81 -> 3
+027ffb5017964723bac512bf427add6d000002:92514:94394 [3] NCCL INFO misc/socket.cc:868 -> 3
+027ffb5017964723bac512bf427add6d000002:92514:94394 [3] NCCL INFO misc/socket.cc:64 -> 3
+027ffb5017964723bac512bf427add6d000002:92514:94394 [3] NCCL INFO misc/socket.cc:81 -> 3
+027ffb5017964723bac512bf427add6d000002:92514:94394 [3] NCCL INFO misc/socket.cc:868 -> 3
+027ffb5017964723bac512bf427add6d000002:92514:94394 [3] NCCL INFO misc/socket.cc:64 -> 3
+027ffb5017964723bac512bf427add6d000002:92514:94394 [3] NCCL INFO misc/socket.cc:81 -> 3
+027ffb5017964723bac512bf427add6d000002:92514:94394 [3] NCCL INFO misc/socket.cc:868 -> 3
+027ffb5017964723bac512bf427add6d000002:92514:92542 [3] NCCL INFO misc/socket.cc:943 -> 3
+027ffb5017964723bac512bf427add6d000002:92512:94393 [1] NCCL INFO comm 0x2e371670 rank 1 nranks 4 cudaDev 1 busId 200000 - Abort COMPLETE
+027ffb5017964723bac512bf427add6d000002:92514:94394 [3] NCCL INFO comm 0x46c77660 rank 3 nranks 4 cudaDev 3 busId 400000 - Abort COMPLETE
+027ffb5017964723bac512bf427add6d000002:92511:92511 [0] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault
+027ffb5017964723bac512bf427add6d000002:92513:92513 [2] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault
+W0411 11:15:59.682000 92443 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 92512 closing signal SIGTERM
+W0411 11:15:59.684000 92443 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 92513 closing signal SIGTERM
+W0411 11:15:59.685000 92443 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 92514 closing signal SIGTERM
+E0411 11:16:00.151000 92443 torch/distributed/elastic/multiprocessing/api.py:986] failed (exitcode: 1) local_rank: 0 (pid: 92511) of binary: /root/parameter-golf/.venv/bin/python3
+Traceback (most recent call last):
+  File "/root/parameter-golf/.venv/bin/torchrun", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/run.py", line 990, in main
+    run(args)
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/run.py", line 981, in run
+    elastic_launch(
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 170, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 317, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+train_gpt_04_09.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-04-11_11:16:00
+  host      : 027ffb5017964723bac512bf427add6d000002.internal.cloudapp.net
+  rank      : 1 (local_rank: 1)
+  exitcode  : -15 (pid: 92512)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 92512
+[2]:
+  time      : 2026-04-11_11:16:00
+  host      : 027ffb5017964723bac512bf427add6d000002.internal.cloudapp.net
+  rank      : 2 (local_rank: 2)
+  exitcode  : 1 (pid: 92513)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[3]:
+  time      : 2026-04-11_11:16:00
+  host      : 027ffb5017964723bac512bf427add6d000002.internal.cloudapp.net
+  rank      : 3 (local_rank: 3)
+  exitcode  : -15 (pid: 92514)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 92514
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-04-11_11:15:59
+  host      : 027ffb5017964723bac512bf427add6d000002.internal.cloudapp.net
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 92511)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

@@ -13,6 +13,50 @@
      Keep entries concise — 3-5 sentences, not paragraphs.
      ============================================================ -->
 
+## Experiment 28 — LOGIT_SOFTCAP=25
+
+**Hypothesis:** Fill the gap between 20 and 30 to confirm 20 is the peak.
+**Change:** LOGIT_SOFTCAP=25 with WARMDOWN=0.85.
+**Result:** Pre-quant=1.0778, post-quant=1.0890. Worse than 20, better than 30.
+**Status:** discard
+**Learned:** Full softcap sweep complete: 15(1.0777) < **20(1.0772)** > 25(1.0778) > 30(1.0793) > 50(worse). Softcap=20 is the definitive optimal value, providing −0.0021 BPB improvement. The improvement is from stronger logit compression acting as a regularizer.
+
+## Experiments 25-27 — SC20+ScalarLR, SC20+EMA, SC20+WD080
+
+**SC20+ScalarLR=0.03:** prequant=1.0780, postquant=1.0892. Doesn't stack.
+**SC20+EMA=0.997:** prequant=1.0775, postquant=**1.0883**. Tied with best (marginally better post-quant).
+**SC20+WD=0.80:** prequant=1.0774, postquant=1.0885. Also tied.
+**Conclusion:** LOGIT_SOFTCAP=20 is the dominant finding (−0.0021 pre-quant, −0.0022 post-quant). It's robust: all three WD/EMA variants give ~same result. The full softcap sweep: 15 < **20** > 30 > 50. Three independent combo attempts (rope32, gradclip05, scalarLR03) all failed to stack, confirming the screening winners were correlated.
+
+## Experiments 22-24 — Combo runs and softcap sweep
+
+**Combo: softcap20+rope32:** prequant=1.0779, postquant=1.0892. Rope32 doesn't stack (+0.0007 worse).
+**Combo: softcap20+gradclip05:** prequant=1.0777, postquant=1.0889. GradClip doesn't stack (+0.0005 worse).
+**Softcap=15:** prequant=1.0777, postquant=1.0890. Slightly worse than 20.
+**Conclusion:** Softcap=20 is the optimal value. Combinations don't help — the screening winners are correlated (all improve attention/gradient dynamics), not independent.
+
+## Experiments 12-21 — 1800s Screening Batch + Full Softcap20 Run
+
+**Method:** Ran 10 HP variants at 1800s each for fast screening, plus a 1800s baseline reference (prequant=1.1105). Then promoted best winner to full 3600s.
+
+**Screening results (sorted by pre-quant BPB):**
+| Run | Change | Δ Pre-quant | Δ Post-quant |
+|-----|--------|-------------|--------------|
+| softcap20 | LOGIT_SOFTCAP=20 | **−0.0014** | **−0.0012** |
+| rope32 | ROPE_DIMS=32 | −0.0009 | −0.0010 |
+| gradclip05 | GRAD_CLIP_NORM=0.5 | −0.0007 | −0.0007 |
+| scalarLR03 | SCALAR_LR=0.03 | −0.0005 | −0.0006 |
+| embedlr03 | EMBED_LR=0.3 | ≈0 | ≈0 |
+| beta2_099 | MUON_BETA2=0.99 | ≈0 | ≈0 |
+| tiedLR05 | TIED_EMBED_LR=0.05 | +0.0011 | +0.0018 |
+| mlp35 | MLP_MULT=3.5 | +0.0017 | +0.0022 |
+| parres5 | PARALLEL_RESIDUAL_START=5 | +0.0019 | +0.0019 |
+| softcap50 | LOGIT_SOFTCAP=50 | +0.0019 | +0.0047 |
+
+**Full 3600s run — SOFTCAP=20:** Pre-quant BPB=**1.0772** (−0.0021), Post-quant=**1.0884** (−0.0022). **NEW BEST.**
+
+**Learned:** Lower logit softcap (20 vs 30) is a significant win. Stronger logit compression helps generalization. RoPE_DIMS=32 and GRAD_CLIP=0.5 also show promise. Next: combine softcap20 with rope32 and gradclip05.
+
 ## Experiment 11 — WARMDOWN=0.85 + EMA_DECAY=0.998
 
 **Hypothesis:** Slower EMA averaging (0.998 vs 0.9965) keeps weights closer to recent training, potentially capturing late-stage improvements better with the extended warmdown.

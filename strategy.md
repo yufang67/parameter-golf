@@ -8,37 +8,35 @@
 
 ## Current phase
 
-Architecture search — SOTA hyperparameters are near-optimal; focus on structural changes
+Architecture search complete for scalar HPs. Identified LOGIT_SOFTCAP=20 as main win.
 
 ## Current best
 
-- **Run ID:** warmdown_085
-- **Pre-quant BPB:** 1.0793
-- **Post-quant BPB:** 1.0906
-- **Config:** 11L×512d, SP8192, GQA, QK_GAIN=5.25, depth recur, parallel resid, EMA=0.9965, WARMDOWN=0.85, 4xA100 3600s
+- **Run ID:** full_softcap20 (tied with sc20_ema997, sc20_wd080)
+- **Pre-quant BPB:** 1.0772
+- **Post-quant BPB:** 1.0883-1.0884
+- **Config:** 11L×512d, SP8192, GQA, QK_GAIN=5.25, depth recur, parallel resid, EMA=0.9965, WARMDOWN=0.85, LOGIT_SOFTCAP=20, 4xA100 3600s
+- **Improvement over original SOTA defaults:** −0.0028 pre-quant, −0.0024 post-quant
 
 ## What's working
 
-- SOTA architecture reproduces well on 4xA100: pre-quant BPB matches 8xH100 results
-- train_gpt_04_09.py with LINEAR_ATTN_RATIO=0 is our reliable working script
-- ~1.4M tok/s pre-recurrence, ~1.15M with depth recurrence active
-- SOTA hyperparameters (LR, warmdown, WD, EMA) are near-optimal
+- **LOGIT_SOFTCAP=20** is the biggest single finding: −0.0021 BPB from 30→20
+- WARMDOWN=0.85 adds −0.0007 on top of SOTA's 0.72
+- Softcap=20 is robust across WD (0.80, 0.85) and EMA (0.9965, 0.997) values
+- 1800s screening runs are effective for ranking single-variable changes
 
 ## What's been tried and failed
 
-- GatedDeltaNet (LINEAR_ATTN_RATIO=0.75): OOMs on A100 80GB
-- NUM_LOOPS=3: fewer steps, worse BPB
-- QK_GAIN_INIT=7.0: saturated
-- WARMDOWN_FRAC=0.50: too late warmdown start
-- WARMDOWN_FRAC=0.90: no better than 0.85
-- MATRIX_LR=0.030: within noise
-- MUON_WD=0.06: faster mid-training but worse final convergence
-- ENABLE_LOOPING_AT=0.20: fewer steps, worse final
-- **Conclusion:** SOTA HPs are near-optimal. Only confirmed gain: WARMDOWN 0.72→0.85 (−0.0007)
+- All previous HP tuning (see experiments 1-11)
+- Combinations of screening winners: rope32, gradclip05, scalarLR03 don't stack with softcap20
+- Softcap=15: worse than 20 (over-compressed)
+- Softcap=50: much worse (under-compressed)
+- GatedDeltaNet: OOMs on A100
+- TRAIN_SEQ_LEN=4096: torch.compile fullgraph crash
 
 ## Next hypotheses
 
-1. **Muon WD=0.06 + WARMDOWN=0.85**: Combine best warmdown with lower regularization — 0.095 is quite aggressive
-2. **EMA decay=0.998 + WARMDOWN=0.85**: Slower EMA averaging might pair well with longer warmdown
-3. **Wider model (768d × 7L)**: Trade depth for width at similar param count
-4. **train_gpt_new.py features**: N-gram hash embeddings, full attention residual from the experimental script
+1. **Model shape changes**: Need code changes to try 9L×576d or 12L×480d (requires custom LOOP_START/END, PARALLEL_RESIDUAL_START adjustments)
+2. **Quantization improvements**: GPTQ params, different clip sigmas, more calibration batches
+3. **Training tricks**: Label smoothing, curriculum learning, auxiliary losses
+4. **Code compression**: LZMA wrapper to save ~54KB code bytes

@@ -1,0 +1,33 @@
+nohup: ignoring input
+=== Screening screen_parres5 at Sat Apr 11 12:15:12 UTC 2026 ===
+RESULT: screen_parres5 prequant=1.11242661 postquant=1.12087499 steps=2465
+=== Screening screen_rope32 at Sat Apr 11 13:01:55 UTC 2026 ===
+RESULT: screen_rope32 prequant=1.10966218 postquant=1.11796885 steps=2479
+=== Screening screen_softcap20 at Sat Apr 11 13:48:48 UTC 2026 ===
+RESULT: screen_softcap20 prequant=1.10911253 postquant=1.11782257 steps=2481
+=== Screening screen_softcap50 at Sat Apr 11 14:35:28 UTC 2026 ===
+RESULT: screen_softcap50 prequant=1.11247159 postquant=1.12366454 steps=2485
+=== Screening screen_mlp35 at Sat Apr 11 15:22:12 UTC 2026 ===
+RESULT: screen_mlp35 prequant=1.11221644 postquant=1.12117819 steps=2574
+=== Screening screen_gradclip05 at Sat Apr 11 16:08:32 UTC 2026 ===
+RESULT: screen_gradclip05 prequant=1.10984184 postquant=1.11824564 steps=2485
+=== Screening screen_embedlr03 at Sat Apr 11 16:50:55 UTC 2026 ===
+RESULT: screen_embedlr03 prequant=1.11053583 postquant=1.11901047 steps=2486
+=== Screening screen_scalarLR03 at Sat Apr 11 17:32:50 UTC 2026 ===
+RESULT: screen_scalarLR03 prequant=1.11002628 postquant=1.11839226 steps=2483
+=== Screening screen_tiedLR05 at Sat Apr 11 18:14:49 UTC 2026 ===
+RESULT: screen_tiedLR05 prequant=1.11161729 postquant=1.12080952 steps=2486
+=== Screening screen_beta2_099 at Sat Apr 11 18:56:46 UTC 2026 ===
+RESULT: screen_beta2_099 prequant=1.11070991 postquant=1.11913980 steps=2488
+=== ALL SCREENING COMPLETE ===
+run_id	prequant_bpb	postquant_bpb	steps
+screen_softcap20	1.10911253	1.11782257	2481
+screen_rope32	1.10966218	1.11796885	2479
+screen_gradclip05	1.10984184	1.11824564	2485
+screen_scalarLR03	1.11002628	1.11839226	2483
+screen_embedlr03	1.11053583	1.11901047	2486
+screen_beta2_099	1.11070991	1.11913980	2488
+screen_tiedLR05	1.11161729	1.12080952	2486
+screen_mlp35	1.11221644	1.12117819	2574
+screen_parres5	1.11242661	1.12087499	2465
+screen_softcap50	1.11247159	1.12366454	2485

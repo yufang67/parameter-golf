@@ -1,0 +1,1 @@
+run_screen.sh: line 11: ROPE_DIMS=8: command not found

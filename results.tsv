@@ -10,3 +10,21 @@ commit	run_id	val_metric	memory_gb num_steps num_epochs	status	description
 -	wd085_muonwd060	1.0802/1.0927	44.3	4981	-	discard	WARMDOWN=0.85+MUON_WD=0.06. Trains faster mid-run but worse final: less regularization hurts convergence.
 -	wd085_loop_early	1.0800/1.0913	44.3	4641	-	discard	WARMDOWN=0.85+ENABLE_LOOPING_AT=0.20. Fewer steps (4641 vs 4989) due to longer slow phase. Worse by +0.0007.
 -	wd085_ema998	1.0816/1.0911	44.3	4991	-	discard	WARMDOWN=0.85+EMA_DECAY=0.998. Slower EMA hurts pre-quant by +0.0023. 0.9965 is better.
+-	screen_softcap20	1.1091/1.1178	44.3	2481	-	keep	1800s screen: SOFTCAP=20. Best screening result, −0.0014 vs baseline at 1800s.
+-	screen_rope32	1.1097/1.1180	44.3	2479	-	keep	1800s screen: ROPE_DIMS=32. Second best, −0.0009 vs baseline at 1800s.
+-	screen_gradclip05	1.1098/1.1182	44.3	2485	-	keep	1800s screen: GRAD_CLIP=0.5. Third best, −0.0007 vs baseline at 1800s.
+-	screen_scalarLR03	1.1100/1.1184	44.3	2483	-	keep	1800s screen: SCALAR_LR=0.03. Fourth best, −0.0005 vs baseline at 1800s.
+-	screen_embedlr03	1.1105/1.1190	44.3	2486	-	discard	1800s screen: EMBED_LR=0.3. No improvement vs baseline.
+-	screen_beta2_099	1.1107/1.1191	44.3	2488	-	discard	1800s screen: MUON_BETA2=0.99. No improvement vs baseline.
+-	screen_tiedLR05	1.1116/1.1208	44.3	2486	-	discard	1800s screen: TIED_EMBED_LR=0.05. Worse than baseline.
+-	screen_mlp35	1.1122/1.1212	44.3	2574	-	discard	1800s screen: MLP_MULT=3.5. Worse than baseline.
+-	screen_parres5	1.1124/1.1209	44.3	2465	-	discard	1800s screen: PARALLEL_RESIDUAL_START=5. Worse than baseline.
+-	screen_softcap50	1.1125/1.1237	44.3	2485	-	discard	1800s screen: SOFTCAP=50. Much worse, especially post-quant.
+-	full_softcap20	1.0772/1.0884	44.3	4989	-	keep	Full 3600s: SOFTCAP=20+WD=0.85. NEW BEST! −0.0021 pre-quant, −0.0022 post-quant vs WD=0.85 baseline.
+-	combo_sc20_r32	1.0779/1.0892	44.3	4977	-	discard	SOFTCAP=20+ROPE_DIMS=32. Rope32 doesn't stack with softcap20 (+0.0007).
+-	combo_sc20_gc05	1.0777/1.0889	44.3	4986	-	discard	SOFTCAP=20+GRAD_CLIP=0.5. GradClip doesn't stack with softcap20 (+0.0005).
+-	full_softcap15	1.0777/1.0890	44.3	4978	-	discard	SOFTCAP=15. Slightly worse than 20. Softcap=20 is the sweet spot.
+-	combo_sc20_slr03	1.0780/1.0892	44.3	4988	-	discard	SOFTCAP=20+SCALAR_LR=0.03. ScalarLR doesn't stack with softcap20.
+-	sc20_ema997	1.0775/1.0883	44.3	4992	-	keep	SOFTCAP=20+EMA=0.997. Tied with sc20 best. Post-quant marginally best at 1.0883.
+-	sc20_wd080	1.0774/1.0885	44.3	4988	-	keep	SOFTCAP=20+WD=0.80. Also tied with sc20 best. SC=20 robust across WD/EMA.
+-	full_softcap25	1.0778/1.0890	44.3	4990	-	discard	SOFTCAP=25. Worse than 20. Full sweep: 15 < 20 > 25 > 30 > 50. SC=20 confirmed optimal.
