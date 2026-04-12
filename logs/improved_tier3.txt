@@ -143,3 +143,34 @@ train_shards: 128
 val_tokens: 40540160
 model_params:35991216
 gptq:reserving 12s, effective=3588000ms
+warmup_step: 1/20
+warmup_step: 2/20
+warmup_step: 3/20
+warmup_step: 4/20
+warmup_step: 5/20
+warmup_step: 6/20
+warmup_step: 10/20
+warmup_step: 20/20
+loop_warmup:enabled encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+loop_warmup_step: 1/20
+loop_warmup_step: 2/20
+loop_warmup_step: 3/20
+loop_warmup_step: 4/20
+loop_warmup_step: 5/20
+loop_warmup_step: 6/20
+loop_warmup_step: 10/20
+loop_warmup_step: 20/20
+0/20000 val_loss: 9.0099 val_bpb: 3.4880
+1/20000 train_loss: 9.0110 train_time: 0.3m tok/s: 45881
+2/20000 train_loss: 11.2828 train_time: 0.3m tok/s: 88899
+3/20000 train_loss: 9.6400 train_time: 0.3m tok/s: 129254
+4/20000 train_loss: 8.0545 train_time: 0.3m tok/s: 167190
+5/20000 train_loss: 7.2105 train_time: 0.3m tok/s: 202930
+500/20000 train_loss: 3.3610 train_time: 5.1m tok/s: 1285533
+1000/20000 train_loss: 3.2001 train_time: 9.9m tok/s: 1323814
+1500/20000 train_loss: 3.1711 train_time: 14.7m tok/s: 1334192
+2000/20000 train_loss: 3.1427 train_time: 19.6m tok/s: 1339283
+layer_loop:enabled step:2141 frac:0.350 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+2500/20000 train_loss: 3.0297 train_time: 26.4m tok/s: 1239551
+3000/20000 train_loss: 2.9633 train_time: 34.0m tok/s: 1154880
+3500/20000 train_loss: 3.0047 train_time: 41.7m tok/s: 1101279
