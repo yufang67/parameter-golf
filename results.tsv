@@ -35,3 +35,9 @@ commit	run_id	val_metric	memory_gb num_steps num_epochs	status	description
 -	improved_wdmult15	1.08171/1.09234	42.6	5403	-	discard	improved.py WARMDOWN_WD_MULT=1.5. Worse BPB, same artifact size. Extra WD doesn't help.
 -	improved_normuon	1.08030/1.09236	42.6	5391	-	discard	improved.py NORMUON=1. Within noise of baseline. Row normalization post-NS doesn't help.
 -	improved_rope16	1.08073/1.09279	42.6	5401	-	discard	improved.py ROPE_DIMS=16 (default=32). Worse than 32. Confirms ROPE_DIMS=32 is better.
+-	improved_gated	1.07881/1.09031	42.6	5389	-	keep	improved.py GATED_ATTENTION=1. BPB −0.00146 pre, −0.00165 post. Artifact=16.05MB (52KB over!).
+-	improved_loopembed	1.07981/1.09154	42.6	5461	-	discard	improved.py LOOP_EMBEDDINGS=1. Marginal pre-quant gain, worse post-quant. Not worth it.
+-	gated_tightclip	1.07880/1.08627	42.6	5391	-	discard	GATED+CLIP=10. Best post-quant BPB! But artifact=17.46MB — tighter clip hurts compressibility.
+-	gated_looseclip	1.07873/1.09427	42.6	5390	-	keep	GATED+CLIP=15. Fits 15.19MB! Best pre-quant. Loose clip hurts post-quant but saves ~900KB for more params.
+-	gated_clip15_mlp425	1.07589/1.09104	43.5	5283	-	keep	GATED+CLIP=15+MLP=4.25. Best compliant run. Pre-quant=1.07589, artifact=15.75MB.
+-	gated_clip15_mlp435	1.07518/1.09027	43.8	5122	-	keep	GATED+CLIP=15+MLP=4.35. **NEW BEST!** Pre-quant=1.07518, post-quant=1.09027, artifact=15.98MB. Fits 16MB with 24KB to spare!

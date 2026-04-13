@@ -14,7 +14,7 @@ Hyperparameters:
   data_dir: ./data2/
   datasets_dir: ./data2/datasets/fineweb10B_sp8192
   distributed: True
-  effective_train_seq_len: <property object at 0x1455ffcd1b70>
+  effective_train_seq_len: <property object at 0x14b92fd29030>
   ema_decay: 0.9965
   embed_bits: 8
   embed_clip_sigmas: 20.0
@@ -37,7 +37,7 @@ Hyperparameters:
   iterations: 20000
   ln_scale: True
   local_rank: 0
-  logfile: logs/improved_gated.txt
+  logfile: logs/gated_clip15_mlp435.txt
   logit_softcap: 20.0
   loop_embeddings: False
   loop_end: 5
@@ -45,13 +45,13 @@ Hyperparameters:
   loop_layer_clip_sigmas: 0.0
   loop_start: 3
   matrix_bits: 6
-  matrix_clip_sigmas: 12.85
+  matrix_clip_sigmas: 15.0
   matrix_lr: 0.022
   max_wallclock_seconds: 3600.0
   min_lr: 0.0
   mixed_seq_gpu_frac: 0.375
   mixed_seq_len: 0
-  mlp_mult: 4.0
+  mlp_mult: 4.35
   model_dim: 512
   model_path: final_model.pt
   moe_enabled: False
@@ -77,7 +77,7 @@ Hyperparameters:
   rope_base: 10000.0
   rope_dims: 32
   rope_train_seq_len: 2048
-  run_id: improved_gated
+  run_id: gated_clip15_mlp435
   scalar_lr: 0.022
   seed: 1337
   skip_gates_enabled: True
@@ -105,7 +105,7 @@ Hyperparameters:
 ====================================================================================================
 Running Python 3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]
 Running PyTorch 2.11.0+cu130
-Mon Apr 13 01:35:27 2026       
+Mon Apr 13 07:48:00 2026       
 +-----------------------------------------------------------------------------------------+
 | NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.2     |
 +-----------------------------------------+------------------------+----------------------+
@@ -114,19 +114,19 @@ Mon Apr 13 01:35:27 2026
 |                                         |                        |               MIG M. |
 |=========================================+========================+======================|
 |   0  NVIDIA A100 80GB PCIe          On  |   00000001:00:00.0 Off |                    0 |
-| N/A   37C    P0             75W /  300W |     733MiB /  81920MiB |      8%      Default |
+| N/A   60C    P0             86W /  300W |     733MiB /  81920MiB |      0%      Default |
 |                                         |                        |             Disabled |
 +-----------------------------------------+------------------------+----------------------+
 |   1  NVIDIA A100 80GB PCIe          On  |   00000002:00:00.0 Off |                    0 |
-| N/A   38C    P0             74W /  300W |     733MiB /  81920MiB |      9%      Default |
+| N/A   62C    P0             86W /  300W |     733MiB /  81920MiB |      0%      Default |
 |                                         |                        |             Disabled |
 +-----------------------------------------+------------------------+----------------------+
 |   2  NVIDIA A100 80GB PCIe          On  |   00000003:00:00.0 Off |                    0 |
-| N/A   39C    P0             75W /  300W |     733MiB /  81920MiB |      6%      Default |
+| N/A   65C    P0             93W /  300W |     733MiB /  81920MiB |      0%      Default |
 |                                         |                        |             Disabled |
 +-----------------------------------------+------------------------+----------------------+
 |   3  NVIDIA A100 80GB PCIe          On  |   00000004:00:00.0 Off |                    0 |
-| N/A   40C    P0             78W /  300W |     733MiB /  81920MiB |      9%      Default |
+| N/A   67C    P0            109W /  300W |     733MiB /  81920MiB |      0%      Default |
 |                                         |                        |             Disabled |
 +-----------------------------------------+------------------------+----------------------+
 
@@ -135,16 +135,16 @@ Mon Apr 13 01:35:27 2026
 |  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
 |        ID   ID                                                               Usage      |
 |=========================================================================================|
-|    0   N/A  N/A          214469      C   ...ameter-golf/.venv/bin/python3        724MiB |
-|    1   N/A  N/A          214470      C   ...ameter-golf/.venv/bin/python3        724MiB |
-|    2   N/A  N/A          214471      C   ...ameter-golf/.venv/bin/python3        724MiB |
-|    3   N/A  N/A          214472      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    0   N/A  N/A          234404      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    1   N/A  N/A          234405      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    2   N/A  N/A          234406      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    3   N/A  N/A          234407      C   ...ameter-golf/.venv/bin/python3        724MiB |
 +-----------------------------------------------------------------------------------------+
 
 ====================================================================================================
 train_shards: 128
 val_tokens: 40540160
-model_params:35989680
+model_params:38005936
 gptq:reserving 12s, effective=3588000ms
 warmup_step: 1/20
 warmup_step: 2/20
@@ -163,51 +163,51 @@ loop_warmup_step: 5/20
 loop_warmup_step: 6/20
 loop_warmup_step: 10/20
 loop_warmup_step: 20/20
-0/20000 val_loss: 9.0099 val_bpb: 3.4880
-1/20000 train_loss: 9.0110 train_time: 0.0m tok/s: 1661798
-2/20000 train_loss: 11.3096 train_time: 0.0m tok/s: 1611898
-3/20000 train_loss: 9.8193 train_time: 0.0m tok/s: 1591155
-4/20000 train_loss: 8.3990 train_time: 0.0m tok/s: 1579538
-5/20000 train_loss: 7.4364 train_time: 0.0m tok/s: 1573163
-500/20000 train_loss: 3.3427 train_time: 4.3m tok/s: 1516438
-500/20000 val_loss: 3.3145 val_bpb: 1.2831
-1000/20000 train_loss: 3.1896 train_time: 8.6m tok/s: 1518671
-1000/20000 val_loss: 3.1925 val_bpb: 1.2359
-1500/20000 train_loss: 3.1620 train_time: 12.9m tok/s: 1519812
-1500/20000 val_loss: 3.1365 val_bpb: 1.2142
-2000/20000 train_loss: 3.1265 train_time: 17.2m tok/s: 1520326
-2000/20000 val_loss: 3.0856 val_bpb: 1.1945
-layer_loop:enabled step:2429 frac:0.350 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
-2500/20000 train_loss: 3.0395 train_time: 21.9m tok/s: 1498477
-2500/20000 val_loss: 3.0554 val_bpb: 1.1828
-3000/20000 train_loss: 2.9531 train_time: 28.4m tok/s: 1382657
-3000/20000 val_loss: 2.9940 val_bpb: 1.1591
-3500/20000 train_loss: 2.9993 train_time: 35.0m tok/s: 1310168
-3500/20000 val_loss: 2.9565 val_bpb: 1.1446
-4000/20000 train_loss: 2.9468 train_time: 41.6m tok/s: 1261378
-4000/20000 val_loss: 2.9183 val_bpb: 1.1298
-4500/20000 train_loss: 2.8544 train_time: 48.2m tok/s: 1224919
-4500/20000 val_loss: 2.8749 val_bpb: 1.1130
-5000/20000 train_loss: 2.8487 train_time: 54.7m tok/s: 1197777
-5000/20000 val_loss: 2.8234 val_bpb: 1.0930
-5389/20000 val_loss: 2.7881 val_bpb: 1.0794
-stopping_early: wallclock_cap train_time: 3588637ms step: 5389/20000
-peak memory allocated: 42770 MiB reserved: 42790 MiB
+0/20000 val_loss: 9.0063 val_bpb: 3.4866
+1/20000 train_loss: 9.0071 train_time: 0.0m tok/s: 1543856
+2/20000 train_loss: 11.1860 train_time: 0.0m tok/s: 1502237
+3/20000 train_loss: 9.6942 train_time: 0.0m tok/s: 1483728
+4/20000 train_loss: 8.3222 train_time: 0.0m tok/s: 1474490
+5/20000 train_loss: 7.4076 train_time: 0.0m tok/s: 1468355
+500/20000 train_loss: 3.3387 train_time: 4.6m tok/s: 1418636
+500/20000 val_loss: 3.3074 val_bpb: 1.2804
+1000/20000 train_loss: 3.1753 train_time: 9.2m tok/s: 1422135
+1000/20000 val_loss: 3.1868 val_bpb: 1.2337
+1500/20000 train_loss: 3.1499 train_time: 13.8m tok/s: 1423609
+1500/20000 val_loss: 3.1253 val_bpb: 1.2099
+2000/20000 train_loss: 3.1164 train_time: 18.4m tok/s: 1424331
+2000/20000 val_loss: 3.0736 val_bpb: 1.1899
+layer_loop:enabled step:2275 frac:0.350 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+2500/20000 train_loss: 3.0004 train_time: 24.0m tok/s: 1365651
+2500/20000 val_loss: 3.0164 val_bpb: 1.1678
+3000/20000 train_loss: 2.9336 train_time: 30.8m tok/s: 1275632
+3000/20000 val_loss: 2.9721 val_bpb: 1.1506
+3500/20000 train_loss: 2.9744 train_time: 37.6m tok/s: 1219151
+3500/20000 val_loss: 2.9334 val_bpb: 1.1356
+4000/20000 train_loss: 2.9234 train_time: 44.4m tok/s: 1180019
+4000/20000 val_loss: 2.8913 val_bpb: 1.1193
+4500/20000 train_loss: 2.8236 train_time: 51.3m tok/s: 1149752
+4500/20000 val_loss: 2.8419 val_bpb: 1.1002
+5000/20000 train_loss: 2.8111 train_time: 58.1m tok/s: 1127101
+5000/20000 val_loss: 2.7860 val_bpb: 1.0786
+5122/20000 val_loss: 2.7786 val_bpb: 1.0757
+stopping_early: wallclock_cap train_time: 3588460ms step: 5122/20000
+peak memory allocated: 44454 MiB reserved: 44738 MiB
 ema:applying EMA weights
-pre-quantization post-ema val_loss:2.78668648 val_bpb:1.07881318 eval_time:18897ms
-Serialized model: 135618917 bytes
+pre-quantization post-ema val_loss:2.77729004 val_bpb:1.07517552 eval_time:20739ms
+Serialized model: 143683941 bytes
 Code size: 88211 bytes
 GPTQ:collecting Hessians from calibration data...
-GPTQ:collected 67 Hessians in 27.3s
+GPTQ:collected 67 Hessians in 41.7s
 Quantized weights:
   gptq (int6): blocks.attn.c_k.weight, blocks.attn.c_q.weight, blocks.attn.c_v.weight, blocks.attn.proj.weight, blocks.mlp.fc.weight, blocks.mlp.proj.weight
   gptq (int8): tok_emb.weight
   passthrough (float16): blocks.attn.gate_proj.bias, blocks.attn.gate_proj.weight, blocks.attn.q_gain, blocks.attn_scale, blocks.mlp_scale, blocks.resid_mix, skip_gates, skip_weights
-compress:brotli 16075653 bytes (61.7s)
-compress:ans 15963435 bytes (14.2s)
-  ans: model=15963435 total=16051646
-  brotli: model=16075653 total=16163864
-compress:using ans (15963435 bytes)
-Serialized model quantized+brotli: 15963435 bytes
-Total submission size quantized+brotli: 16051646 bytes
-quantized val_loss:2.81637538 val_bpb:1.09030668 eval_time:12555ms
+compress:brotli 16032077 bytes (64.6s)
+compress:ans 15887804 bytes (15.0s)
+  ans: model=15887804 total=15976015
+  brotli: model=16032077 total=16120288
+compress:using ans (15887804 bytes)
+Serialized model quantized+brotli: 15887804 bytes
+Total submission size quantized+brotli: 15976015 bytes
+quantized val_loss:2.81626977 val_bpb:1.09026579 eval_time:13998ms

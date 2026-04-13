@@ -12,11 +12,12 @@ Architecture search complete for scalar HPs. Identified LOGIT_SOFTCAP=20 as main
 
 ## Current best
 
-- **Run ID:** full_softcap20
-- **Pre-quant BPB:** 1.07718
-- **Post-quant BPB:** 1.08844
-- **Config:** 11L×512d, SP8192, GQA, QK_GAIN=5.25, depth recur, parallel resid, EMA=0.9965, WARMDOWN=0.85, LOGIT_SOFTCAP=20, 4xA100 3600s
-- **Improvement over original SOTA defaults:** −0.00282 pre-quant, −0.00231 post-quant
+- **Run ID:** gated_clip15_mlp435
+- **Pre-quant BPB:** 1.07518
+- **Post-quant BPB:** 1.09027
+- **Artifact:** 15.98MB ✅ (under 16MB, 24KB to spare)
+- **Config:** train_gpt_improved.py, 11L×512d, SP8192, GATED_ATTENTION=1, MATRIX_CLIP_SIGMAS=15, MLP_MULT=4.35, SOFTCAP=20, WARMDOWN=0.85, ROPE_DIMS=32, 4xA100 3600s
+- **Improvement over original SOTA defaults:** −0.00482 pre-quant BPB
 
 ## What's working
 

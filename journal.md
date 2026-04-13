@@ -35,6 +35,36 @@
 **Softcap=15:** prequant=1.0777, postquant=1.0890. Slightly worse than 20.
 **Conclusion:** Softcap=20 is the optimal value. Combinations don't help — the screening winners are correlated (all improve attention/gradient dynamics), not independent.
 
+**🎉 NEW BEST: gated_clip15_mlp435**
+MLP=4.35 pushes capacity further while staying under 16MB (15.98MB, 24KB to spare):
+- Pre-quant BPB = **1.07518** (best ever, −0.00071 vs MLP=4.25)
+- Post-quant BPB = **1.09027** (−0.00077 vs MLP=4.25)
+- 38.0M params, 5122 steps
+
+The recipe: GATED_ATTENTION for BPB + loose CLIP_SIGMAS=15 for compression + max MLP capacity that fits.
+
+## Experiments 37-42 — Compression tuning + Gated Attention combos
+
+**Key discovery: MATRIX_CLIP_SIGMAS controls artifact size vs post-quant BPB tradeoff:**
+| CLIP_SIGMAS | Post-quant BPB | Artifact |
+|---|---|---|
+| 10 (tight) | **1.08627** | 17.46MB ❌ |
+| 12.85 (default) | 1.09031 | 16.05MB ❌ |
+| 15 (loose) | 1.09427 | **15.19MB** ✅ |
+
+**GATED_ATTENTION=1** improves BPB by −0.0015 with minimal extra params (+45K).
+**LOOP_EMBEDDINGS=1** — marginal, not worth it.
+**LZMA wrapper** — incompatible with Triton @jit (needs source file).
+
+**🎉 BREAKTHROUGH: gated_clip15_mlp425**
+Combining GATED_ATTENTION=1 + MATRIX_CLIP_SIGMAS=15 + MLP_MULT=4.25:
+- Pre-quant BPB = **1.07589** (best ever, −0.00129 vs previous best)
+- Post-quant BPB = 1.09104
+- Artifact = **15.75MB** (fits 16MB with 250KB headroom!)
+- 37.4M params, 5283 steps
+
+This is our first run with both strong BPB AND artifact compliance.
+
 ## Experiments 29-36 — train_gpt_improved.py exploration
 
 **Baseline (exp29):** Pre-quant=1.08027, post-quant=1.09196, artifact=**15.96MB (fits 16MB!)**. 35.9M params, 5400 steps. Faster than 04_09 (1.6M vs 1.4M tok/s) but worse BPB due to fewer params.
