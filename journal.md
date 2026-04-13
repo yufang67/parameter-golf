@@ -35,7 +35,31 @@
 **Softcap=15:** prequant=1.0777, postquant=1.0890. Slightly worse than 20.
 **Conclusion:** Softcap=20 is the optimal value. Combinations don't help — the screening winners are correlated (all improve attention/gradient dynamics), not independent.
 
-## Experiments 12-21 — 1800s Screening Batch + Full Softcap20 Run
+## Experiments 29-36 — train_gpt_improved.py exploration
+
+**Baseline (exp29):** Pre-quant=1.08027, post-quant=1.09196, artifact=**15.96MB (fits 16MB!)**. 35.9M params, 5400 steps. Faster than 04_09 (1.6M vs 1.4M tok/s) but worse BPB due to fewer params.
+
+**MLP capacity sweep:**
+- MLP=4.5 (exp30): **Best BPB ever** (1.07647/1.08763) but artifact=17.17MB ❌
+- MLP=4.25 (exp31): 1.07767/1.08914, artifact=16.57MB ❌
+- MLP=4.06 (exp32): 1.08064/1.09212, artifact=16.10MB ❌ (marginal params don't help BPB)
+
+**Feature tests (all on default MLP=4.0):**
+- WARMDOWN_WD_MULT=1.5 (exp33): Worse by +0.0014 pre-quant
+- NORMUON=1 (exp34): Within noise
+- ROPE_DIMS=16 (exp35): Worse by +0.0005 vs 32 default
+
+**Key insight:** The artifact budget is the binding constraint. Best BPB (MLP=4.5) doesn't fit under 16MB. The improved baseline with default params fits (15.96MB) but has worse BPB than our 04_09 softcap20 run. Need either better compression or architectural improvements that don't add params.
+
+## Experiment 29 — train_gpt_improved.py baseline
+
+**Hypothesis:** The improved script has our best HPs baked in (softcap=20, WD=0.85) plus ROPE_DIMS=32, Triton fused kernels, cleaner architecture. Should match or beat train_gpt_04_09.py.
+**Change:** Switched to train_gpt_improved.py with FUSED_ROPE=0 FUSED_MLP=0 (disabled fused kernels for compile compat). Added SDPA fallback for A100.
+**Result:** Pre-quant=1.08027, post-quant=1.09196, **artifact=15.96MB (under 16MB!)**, 5400 steps, 35.9M params.
+**Status:** keep (fits artifact budget, but worse BPB than 04_09)
+**Learned:** Improved script is faster (1.6M tok/s, 5400 steps vs 4989) and much smaller (15.96MB vs 17.27MB), but 2.9M fewer params hurts BPB by +0.003. The artifact size win is critical — this is the only run that fits under 16MB. Need to recover BPB, likely by increasing model capacity.
+
+
 
 **Method:** Ran 10 HP variants at 1800s each for fast screening, plus a 1800s baseline reference (prequant=1.1105). Then promoted best winner to full 3600s.
 
@@ -53,7 +77,7 @@
 | parres5 | PARALLEL_RESIDUAL_START=5 | +0.0019 | +0.0019 |
 | softcap50 | LOGIT_SOFTCAP=50 | +0.0019 | +0.0047 |
 
-**Full 3600s run — SOFTCAP=20:** Pre-quant BPB=**1.0772** (−0.0021), Post-quant=**1.0884** (−0.0022). **NEW BEST.**
+**Full 3600s run — SOFTCAP=20:** Pre-quant BPB=**1.07718** (−0.00282), Post-quant=**1.08844** (−0.00231). **BEST RUN.**
 
 **Learned:** Lower logit softcap (20 vs 30) is a significant win. Stronger logit compression helps generalization. RoPE_DIMS=32 and GRAD_CLIP=0.5 also show promise. Next: combine softcap20 with rope32 and gradclip05.
 

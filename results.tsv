@@ -20,11 +20,18 @@ commit	run_id	val_metric	memory_gb num_steps num_epochs	status	description
 -	screen_mlp35	1.1122/1.1212	44.3	2574	-	discard	1800s screen: MLP_MULT=3.5. Worse than baseline.
 -	screen_parres5	1.1124/1.1209	44.3	2465	-	discard	1800s screen: PARALLEL_RESIDUAL_START=5. Worse than baseline.
 -	screen_softcap50	1.1125/1.1237	44.3	2485	-	discard	1800s screen: SOFTCAP=50. Much worse, especially post-quant.
--	full_softcap20	1.0772/1.0884	44.3	4989	-	keep	Full 3600s: SOFTCAP=20+WD=0.85. NEW BEST! −0.0021 pre-quant, −0.0022 post-quant vs WD=0.85 baseline.
+-	full_softcap20	1.07718/1.08844	44.3	4989	-	keep	Full 3600s: SOFTCAP=20+WD=0.85. BEST RUN. −0.00282 pre-quant, −0.00231 post-quant vs SOTA defaults.
 -	combo_sc20_r32	1.0779/1.0892	44.3	4977	-	discard	SOFTCAP=20+ROPE_DIMS=32. Rope32 doesn't stack with softcap20 (+0.0007).
 -	combo_sc20_gc05	1.0777/1.0889	44.3	4986	-	discard	SOFTCAP=20+GRAD_CLIP=0.5. GradClip doesn't stack with softcap20 (+0.0005).
 -	full_softcap15	1.0777/1.0890	44.3	4978	-	discard	SOFTCAP=15. Slightly worse than 20. Softcap=20 is the sweet spot.
 -	combo_sc20_slr03	1.0780/1.0892	44.3	4988	-	discard	SOFTCAP=20+SCALAR_LR=0.03. ScalarLR doesn't stack with softcap20.
--	sc20_ema997	1.0775/1.0883	44.3	4992	-	keep	SOFTCAP=20+EMA=0.997. Tied with sc20 best. Post-quant marginally best at 1.0883.
--	sc20_wd080	1.0774/1.0885	44.3	4988	-	keep	SOFTCAP=20+WD=0.80. Also tied with sc20 best. SC=20 robust across WD/EMA.
+-	sc20_ema997	1.07747/1.08830	44.3	4992	-	keep	SOFTCAP=20+EMA=0.997. Runner-up. Post-quant marginally best at 1.08830.
+-	sc20_wd080	1.07741/1.08853	44.3	4988	-	keep	SOFTCAP=20+WD=0.80. Third best overall.
 -	full_softcap25	1.0778/1.0890	44.3	4990	-	discard	SOFTCAP=25. Worse than 20. Full sweep: 15 < 20 > 25 > 30 > 50. SC=20 confirmed optimal.
+-	improved_baseline	1.08027/1.09196	42.6	5400	-	keep	train_gpt_improved.py baseline. 35.9M params. ARTIFACT=15.96MB (FITS 16MB!). BPB worse by +0.003 vs 04_09 best.
+-	improved_mlp45	1.07647/1.08763	44.3	5208	-	keep	improved.py MLP=4.5. NEW BEST BPB! But artifact=17.17MB (over 16MB). Need smaller model.
+-	improved_mlp425	1.07767/1.08914	43.5	5297	-	discard	improved.py MLP=4.25. 37.4M params. Artifact=16.57MB (still over 16MB).
+-	improved_mlp406	1.08064/1.09212	42.8	5193	-	discard	improved.py MLP=4.06. 36.3M params. Artifact=16.10MB (still over, worse BPB than baseline).
+-	improved_wdmult15	1.08171/1.09234	42.6	5403	-	discard	improved.py WARMDOWN_WD_MULT=1.5. Worse BPB, same artifact size. Extra WD doesn't help.
+-	improved_normuon	1.08030/1.09236	42.6	5391	-	discard	improved.py NORMUON=1. Within noise of baseline. Row normalization post-NS doesn't help.
+-	improved_rope16	1.08073/1.09279	42.6	5401	-	discard	improved.py ROPE_DIMS=16 (default=32). Worse than 32. Confirms ROPE_DIMS=32 is better.

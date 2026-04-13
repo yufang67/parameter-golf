@@ -12,11 +12,11 @@ Architecture search complete for scalar HPs. Identified LOGIT_SOFTCAP=20 as main
 
 ## Current best
 
-- **Run ID:** full_softcap20 (tied with sc20_ema997, sc20_wd080)
-- **Pre-quant BPB:** 1.0772
-- **Post-quant BPB:** 1.0883-1.0884
+- **Run ID:** full_softcap20
+- **Pre-quant BPB:** 1.07718
+- **Post-quant BPB:** 1.08844
 - **Config:** 11L×512d, SP8192, GQA, QK_GAIN=5.25, depth recur, parallel resid, EMA=0.9965, WARMDOWN=0.85, LOGIT_SOFTCAP=20, 4xA100 3600s
-- **Improvement over original SOTA defaults:** −0.0028 pre-quant, −0.0024 post-quant
+- **Improvement over original SOTA defaults:** −0.00282 pre-quant, −0.00231 post-quant
 
 ## What's working
 
@@ -35,8 +35,7 @@ Architecture search complete for scalar HPs. Identified LOGIT_SOFTCAP=20 as main
 - TRAIN_SEQ_LEN=4096: torch.compile fullgraph crash
 
 ## Next hypotheses
-
-1. **Model shape changes**: Need code changes to try 9L×576d or 12L×480d (requires custom LOOP_START/END, PARALLEL_RESIDUAL_START adjustments)
-2. **Quantization improvements**: GPTQ params, different clip sigmas, more calibration batches
-3. **Training tricks**: Label smoothing, curriculum learning, auxiliary losses
-4. **Code compression**: LZMA wrapper to save ~54KB code bytes
+1. applied known working solution to `train_gpt_improved.py` if its not default.
+2. explore any optimization on `train_gpt_improved.py`
+3. **Model shape changes**: Need code changes to try 9L×576d or 12L×480d (requires custom LOOP_START/END, PARALLEL_RESIDUAL_START adjustments)
+4. **Quantization improvements**: GPTQ params, different clip sigmas, more calibration batches

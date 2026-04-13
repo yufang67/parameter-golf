@@ -10,10 +10,10 @@
 
         // Project Documentation
         //"assets/**": true,
-        "README.md": true,
+        //"README.md": true,
 
         // Program files
-        "program.md": true,
+        //"program.md": true,
         //"prepare.py": true,
 
         // Project data and training results

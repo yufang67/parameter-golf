@@ -71,6 +71,7 @@ Keep a complex change only if it pays for itself in `val_bpb`, speed, size, or r
 | `program.md` | Agent/Human | This operating spec for this repo |
 | `train_gpt.py` | **Agent** | Original CUDA training, eval, quantization, serialization |
 | `train_gpt_04_09.py` | **Agent** | Training, eval, quantization, and serialization based on the 2026-04-09 solution, with architecture changes |
+| `train_gpt_improved.py` | **Agent** | Training, eval, quantization, and serialization with improved hyperparameters (SOFTCAP=20, WARMDOWN=0.85) |
 | `test_run_1311.py` | **Agent** | Local script related to experiments around PR 1311 |
 | `train_gpt_2026-04-05.py` | **Agent** | Training, eval, quantization, and serialization based on the 2026-04-05 solution with full residual attention |
 | `train_gpt_new.py` | **Agent** | Training, eval, quantization, and serialization for repo-local experiments derived from the original `train_gpt.py` |
@@ -103,6 +104,7 @@ Run a disciplined loop:
 
 1. **Read state**
    - Check `strategy.md`, `journal.md`, and `results.tsv`.
+   - Verify the logs in logs and deprecated folders.
    - Check the strongest relevant results under the `records` folder, because they are validated reference points and practical baselines.
    - Identify the potential improvements.
    - Identify the best-known tradeoff among `val_bpb`, artifact size, and runtime.
