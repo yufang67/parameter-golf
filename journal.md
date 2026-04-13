@@ -13,6 +13,14 @@
      Keep entries concise — 3-5 sentences, not paragraphs.
      ============================================================ -->
 
+## Experiment 44 — GATED + CLIP=13 + MLP=4.35
+
+**Hypothesis:** Clip=13 should give better post-quant BPB than clip=15 while hopefully fitting under 16MB.
+**Change:** MATRIX_CLIP_SIGMAS=13 with GATED_ATTENTION=1, MLP_MULT=4.35.
+**Result:** Pre-quant=1.07522, post-quant=**1.08670** (best overall!), but artifact=16.83MB ❌.
+**Status:** keep (best post-quant, over budget)
+**Learned:** Clip=13 gives much better post-quant (1.08670 vs 1.09027) but +850KB artifact. Clip=15+MLP=4.35 (15.98MB) remains best compliant config.
+
 ## Experiment 28 — LOGIT_SOFTCAP=25
 
 **Hypothesis:** Fill the gap between 20 and 30 to confirm 20 is the peak.

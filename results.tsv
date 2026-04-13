@@ -40,4 +40,5 @@ commit	run_id	val_metric	memory_gb num_steps num_epochs	status	description
 -	gated_tightclip	1.07880/1.08627	42.6	5391	-	discard	GATED+CLIP=10. Best post-quant BPB! But artifact=17.46MB — tighter clip hurts compressibility.
 -	gated_looseclip	1.07873/1.09427	42.6	5390	-	keep	GATED+CLIP=15. Fits 15.19MB! Best pre-quant. Loose clip hurts post-quant but saves ~900KB for more params.
 -	gated_clip15_mlp425	1.07589/1.09104	43.5	5283	-	keep	GATED+CLIP=15+MLP=4.25. Best compliant run. Pre-quant=1.07589, artifact=15.75MB.
--	gated_clip15_mlp435	1.07518/1.09027	43.8	5122	-	keep	GATED+CLIP=15+MLP=4.35. **NEW BEST!** Pre-quant=1.07518, post-quant=1.09027, artifact=15.98MB. Fits 16MB with 24KB to spare!
+-	gated_clip15_mlp435	1.07518/1.09027	43.8	5122	-	keep	GATED+CLIP=15+MLP=4.35. Pre-quant=1.07518, post-quant=1.09027, artifact=15.98MB. Fits 16MB with 24KB to spare!
+-	gated_clip13_mlp435	1.07522/1.08670	43.8	5132	-	keep	GATED+CLIP=13+MLP=4.35. Best post-quant=1.08670! But artifact=16.83MB (over 16MB).
