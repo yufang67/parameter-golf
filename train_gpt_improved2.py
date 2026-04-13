@@ -305,7 +305,7 @@ class Hyperparameters():
     ema_decay = float(os.environ.get('EMA_DECAY', 0.9965))
     # Quantization & Compression
     compressor = os.environ.get('COMPRESSOR', 'brotli')
-    compress_brotli = bool(int(os.environ.get('COMPRESS_BROTLI', '1')))
+    compress_brotli = bool(int(os.environ.get('COMPRESS_BROTLI', '0')))
     compress_ans = bool(int(os.environ.get('COMPRESS_ANS', '1')))
     compress_lzma = bool(int(os.environ.get('COMPRESS_LZMA', '0')))
     gptq_calibration_batches = int(os.environ.get('GPTQ_CALIBRATION_BATCHES', 64))
@@ -333,6 +333,8 @@ class Hyperparameters():
     fused_mlp = bool(int(os.environ.get('FUSED_MLP', '1')))
     # Fused Triton QK-norm + RoPE + gain kernel
     fused_rope = bool(int(os.environ.get('FUSED_ROPE', '1')))
+    # torch.compile max-autotune (trades memory + compile time for faster kernels)
+    max_autotune = bool(int(os.environ.get('MAX_AUTOTUNE', '0')))
     # VarLen attention (within-document-only)
     varlen_attention = bool(int(os.environ.get('VARLEN_ATTENTION', '0')))
 
@@ -780,12 +782,12 @@ class BankedRecurrence(nn.Module):
         w_down = F.softmax(self.routing_down[virtual_idx], dim=-1) @ self.bank_down  # (rank, dim)
         w_up = F.softmax(self.routing_up[virtual_idx], dim=-1) @ self.bank_up        # (rank, dim)
         h = self.norm(x)
-        h = F.linear(h, w_down)            # (B, T, dim) → (B, T, rank)
+        h = F.linear(h, w_down.to(h.dtype))  # (B, T, dim) → (B, T, rank)
         if self.use_fused:
             h = fused_leaky_relu_sq(h)
         else:
             h = F.leaky_relu(h, negative_slope=0.5).square()
-        h = F.linear(h, w_up.T)            # (B, T, rank) → (B, T, dim)
+        h = F.linear(h, w_up.to(h.dtype).T)  # (B, T, rank) → (B, T, dim)
         return x + torch.sigmoid(self.gate[virtual_idx]) * h
 class GPT(nn.Module):
     def __init__(self, h: Hyperparameters):
@@ -1731,18 +1733,20 @@ def train_model(h: Hyperparameters, device: torch.device, val_data: ValidationDa
     # Set up model
     base_model = GPT(h).to(device).bfloat16()
     restore_fp32_params(base_model)
+    compile_mode = "max-autotune-no-cudagraphs" if h.max_autotune else None
     if base_model.use_varlen:
         # Varlen: compile forward_logits only for non-varlen path
         # The varlen branch bypasses compilation (dynamic cu_seqlens)
         base_model._compiled_forward_logits = torch.compile(
             base_model.forward_logits, dynamic=False, fullgraph=True,
-            mode="max-autotune-no-cudagraphs")
+            mode=compile_mode)
         compiled_model = base_model
     else:
         compiled_model = torch.compile(base_model, dynamic=False, fullgraph=True,
-                                       mode="max-autotune-no-cudagraphs")
+                                       mode=compile_mode)
     if h.distributed:
-        model = DDP(compiled_model, device_ids=[h.local_rank], broadcast_buffers=False)
+        model = DDP(compiled_model, device_ids=[h.local_rank], broadcast_buffers=False,
+                    find_unused_parameters=True)
     else:
         model = compiled_model
     log(f"model_params:{sum(p.numel() for p in base_model.parameters())}")
@@ -1947,10 +1951,9 @@ def main():
     enable_mem_efficient_sdp(False)
     enable_math_sdp(False)
     torch._dynamo.config.optimize_ddp = False
-    # Inductor: coordinate descent tuning trades extra compile-time memory
-    # for better kernel selection (explored during warmup steps).
-    torch._inductor.config.coordinate_descent_tuning = True
     h = Hyperparameters()
+    if h.max_autotune:
+        torch._inductor.config.coordinate_descent_tuning = True
     set_logging_hparams(h)
     if h.is_main_process:
         os.makedirs("logs", exist_ok=True)
