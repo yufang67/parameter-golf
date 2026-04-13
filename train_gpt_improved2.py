@@ -332,7 +332,7 @@ class Hyperparameters():
     # Fused Triton MLP kernel
     fused_mlp = bool(int(os.environ.get('FUSED_MLP', '1')))
     # Fused Triton QK-norm + RoPE + gain kernel
-    fused_rope = bool(int(os.environ.get('FUSED_ROPE', '0')))
+    fused_rope = bool(int(os.environ.get('FUSED_ROPE', '1')))
     # VarLen attention (within-document-only)
     varlen_attention = bool(int(os.environ.get('VARLEN_ATTENTION', '0')))
 
@@ -346,6 +346,11 @@ class Hyperparameters():
     normuon = bool(int(os.environ.get('NORMUON', '0')))
     # Per-pass loop embeddings
     loop_embeddings = bool(int(os.environ.get('LOOP_EMBEDDINGS', '0')))
+    # Parameter banking for looped layers (PR #1523): replace extra loop passes
+    # with cheap low-rank transforms constructed via scatter/gather from a shared bank
+    bank_enabled = bool(int(os.environ.get('BANK_ENABLED', '0')))
+    bank_size = int(os.environ.get('BANK_SIZE', 64))
+    bank_rank = int(os.environ.get('BANK_RANK', 32))
     # Compressibility regularization: multiply WD during warmdown
     warmdown_wd_mult = float(os.environ.get('WARMDOWN_WD_MULT', 1.0))
 
@@ -508,8 +513,8 @@ class ShuffledSequenceLoader:
         device_tokens = global_tokens // (self.world_size * grad_accum_steps)
         device_batch_size = device_tokens // self.seq_len
         remaining = np.array([len(s) for s in self.start_inds], dtype=np.float64)
-        x = torch.empty((device_batch_size, self.seq_len), dtype=torch.int64)
-        y = torch.empty((device_batch_size, self.seq_len), dtype=torch.int64)
+        # Collect (shard, offset) pairs, then batch-read into a single buffer
+        pairs: list[tuple[int, int]] = []
         for bi in range(device_batch_size):
             total = remaining.sum()
             if total <= 0:
@@ -521,11 +526,14 @@ class ShuffledSequenceLoader:
             si = int(self.rng.choice(len(self.files), p=probs))
             start_ind = self.start_inds[si].pop()
             remaining[si] -= 1
+            pairs.append((si, start_ind))
+        buf = np.empty((device_batch_size, self.seq_len + 1), dtype=np.int64)
+        for bi, (si, start_ind) in enumerate(pairs):
             mm = _get_shard_memmap(self.files[si])
-            window = torch.as_tensor(
-                np.array(mm[start_ind:start_ind + self.seq_len + 1], dtype=np.int64))
-            x[bi] = window[:-1]
-            y[bi] = window[1:]
+            buf[bi] = mm[start_ind:start_ind + self.seq_len + 1]
+        window = torch.from_numpy(buf)
+        x = window[:, :-1].contiguous()
+        y = window[:, 1:].contiguous()
         return x.to(self.device, non_blocking=True), y.to(self.device, non_blocking=True)
 class RMSNorm(nn.Module):
     def __init__(self, eps: float | None = None):
@@ -535,8 +543,8 @@ class RMSNorm(nn.Module):
         return F.rms_norm(x, (x.size(-1),), eps=self.eps)
 class CastedLinear(nn.Linear):
     def forward(self, x: Tensor) -> Tensor:
-        w = self.weight.to(x.dtype)
-        bias = self.bias.to(x.dtype) if self.bias is not None else None
+        w = self.weight if self.weight.dtype == x.dtype else self.weight.to(x.dtype)
+        bias = self.bias if (self.bias is None or self.bias.dtype == x.dtype) else self.bias.to(x.dtype)
         return F.linear(x, w, bias)
 class Rotary(nn.Module):
     def __init__(self, dim: int, base: float = 10000.0, train_seq_len: int = 1024, rope_dims: int = 0):
@@ -734,6 +742,51 @@ class Block(nn.Module):
             x_out = x_out + self.mlp_scale.to(dtype=x_out.dtype)[None, None, :] * self.mlp(
                 self.mlp_norm(x_out) * self.ln_scale_factor)
         return x_out
+class BankedRecurrence(nn.Module):
+    """Lightweight recurrence via shared parameter bank (PR #1523).
+
+    Instead of repeating full transformer block forward passes for each loop
+    iteration, extra passes use cheap low-rank transforms whose projections
+    are constructed by scatter/gather from a shared weight bank.
+
+    For loop pass 0: the original Block runs (full attention + MLP).
+    For loop passes 1+: this module applies norm → banked-down → act → banked-up → gate.
+    """
+    def __init__(self, dim: int, num_virtual_layers: int,
+                 bank_size: int = 64, rank: int = 32, use_fused: bool = False):
+        super().__init__()
+        self.dim = dim
+        self.num_virtual_layers = num_virtual_layers
+        self.rank = rank
+        self.use_fused = use_fused and _HAS_TRITON
+        # Shared weight banks (atoms for constructing per-layer transforms)
+        self.bank_down = nn.Parameter(torch.empty(bank_size, dim))
+        self.bank_up = nn.Parameter(torch.empty(bank_size, dim))
+        nn.init.orthogonal_(self.bank_down)
+        nn.init.orthogonal_(self.bank_up)
+        # Per-virtual-layer routing logits for scatter/gather from banks
+        # down: (rank, bank_size) softmax → @ bank_down → (rank, dim) projection
+        # up:   (rank, bank_size) softmax → @ bank_up   → (rank, dim) projection
+        self.routing_down = nn.Parameter(
+            torch.randn(num_virtual_layers, rank, bank_size) * 0.01)
+        self.routing_up = nn.Parameter(
+            torch.randn(num_virtual_layers, rank, bank_size) * 0.01)
+        # Per-virtual-layer gating (init 0 → identity at training start)
+        self.gate = nn.Parameter(torch.zeros(num_virtual_layers))
+        self.norm = RMSNorm()
+
+    def forward(self, x: Tensor, virtual_idx: int) -> Tensor:
+        # Construct per-pass projections via scatter/gather from shared bank
+        w_down = F.softmax(self.routing_down[virtual_idx], dim=-1) @ self.bank_down  # (rank, dim)
+        w_up = F.softmax(self.routing_up[virtual_idx], dim=-1) @ self.bank_up        # (rank, dim)
+        h = self.norm(x)
+        h = F.linear(h, w_down)            # (B, T, dim) → (B, T, rank)
+        if self.use_fused:
+            h = fused_leaky_relu_sq(h)
+        else:
+            h = F.leaky_relu(h, negative_slope=0.5).square()
+        h = F.linear(h, w_up.T)            # (B, T, rank) → (B, T, dim)
+        return x + torch.sigmoid(self.gate[virtual_idx]) * h
 class GPT(nn.Module):
     def __init__(self, h: Hyperparameters):
         super().__init__()
@@ -822,6 +875,19 @@ class GPT(nn.Module):
             total_passes = h.num_loops + 1
             self.loop_embs = nn.Parameter(
                 torch.zeros(total_passes, h.model_dim, dtype=torch.float32))
+        # Parameter banking for looped layers (PR #1523)
+        self._loop_start = h.loop_start
+        self._loop_end = h.loop_end
+        self._num_loop_layers = h.loop_end - h.loop_start + 1
+        self.bank_enabled = h.bank_enabled and h.num_loops > 0
+        if self.bank_enabled:
+            num_extra_passes = h.num_loops
+            num_virtual = self._num_loop_layers * num_extra_passes
+            self.param_bank = BankedRecurrence(
+                h.model_dim, num_virtual, h.bank_size, h.bank_rank,
+                use_fused=h.fused_mlp)
+        else:
+            self.param_bank = None
         self._init_weights()
     def _init_weights(self) -> None:
         if self.tie_embeddings:
@@ -872,9 +938,17 @@ class GPT(nn.Module):
         enc_iter = self.encoder_indices if self.looping_active else range(self.num_encoder_layers)
         dec_iter = self.decoder_indices if self.looping_active else range(self.num_encoder_layers, self.num_encoder_layers + self.num_decoder_layers)
         lpc: dict[int, int] = {}
+        bpc: dict[int, int] = {}  # bank pass counter per physical layer
         for i in enc_iter:
-            x = self._add_loop_emb(x, i, lpc)
-            x = self.blocks[i](x, x0, cu_seqlens, max_seqlen)
+            pass_num = bpc.get(i, 0)
+            bpc[i] = pass_num + 1
+            if (self.bank_enabled and self.looping_active
+                    and pass_num > 0 and self._loop_start <= i <= self._loop_end):
+                virtual_idx = (pass_num - 1) * self._num_loop_layers + (i - self._loop_start)
+                x = self.param_bank(x, virtual_idx)
+            else:
+                x = self._add_loop_emb(x, i, lpc)
+                x = self.blocks[i](x, x0, cu_seqlens, max_seqlen)
             skips.append(x)
         for skip_idx, i in enumerate(dec_iter):
             if skip_idx < self.num_skip_weights and skips:
@@ -884,8 +958,15 @@ class GPT(nn.Module):
                     x = torch.lerp(scaled_skip, x, g)
                 else:
                     x = x + scaled_skip
-            x = self._add_loop_emb(x, i, lpc)
-            x = self.blocks[i](x, x0, cu_seqlens, max_seqlen)
+            pass_num = bpc.get(i, 0)
+            bpc[i] = pass_num + 1
+            if (self.bank_enabled and self.looping_active
+                    and pass_num > 0 and self._loop_start <= i <= self._loop_end):
+                virtual_idx = (pass_num - 1) * self._num_loop_layers + (i - self._loop_start)
+                x = self.param_bank(x, virtual_idx)
+            else:
+                x = self._add_loop_emb(x, i, lpc)
+                x = self.blocks[i](x, x0, cu_seqlens, max_seqlen)
         x = self.final_norm(x)
         if self.head_proj is not None:
             x = self.head_proj(x)
@@ -996,7 +1077,7 @@ CONTROL_TENSOR_NAME_PATTERNS = tuple(
     pattern
     for pattern in os.environ.get(
         "CONTROL_TENSOR_NAME_PATTERNS",
-        "attn_scale,attn_scales,mlp_scale,mlp_scales,resid_mix,resid_mixes,q_gain,skip_weight,skip_weights,skip_gates,gate_proj,loop_embs",
+        "attn_scale,attn_scales,mlp_scale,mlp_scales,resid_mix,resid_mixes,q_gain,skip_weight,skip_weights,skip_gates,gate_proj,loop_embs,param_bank",
     ).split(",")
     if pattern
 )
@@ -1021,6 +1102,9 @@ class Optimizers():
             scalar_params.append(base_model.skip_gates)
         if hasattr(base_model, 'loop_embs'):
             scalar_params.append(base_model.loop_embs)
+        if base_model.param_bank is not None:
+            for p in base_model.param_bank.parameters():
+                scalar_params.append(p)
         token_lr = h.tied_embed_lr if h.tie_embeddings else h.embed_lr
         tok_params = [{"params": [base_model.tok_emb.weight], "lr": token_lr, "base_lr": token_lr}]
         self.optimizer_tok = torch.optim.AdamW(
@@ -1161,6 +1245,7 @@ def gptq_quantize_weight(
         s = (clip_sigmas * row_std / clip_range).clamp_min(1e-10).to(torch.float16)
 
     sf = s.float()
+    inv_sf = 1.0 / sf
     Q = torch.zeros(rows, cols, dtype=torch.int8)
     W_work = W_perm.clone()
     for i1 in range(0, cols, block_size):
@@ -1171,11 +1256,11 @@ def gptq_quantize_weight(
         for j in range(i2 - i1):
             w_col = W_block[:, j]
             d = Hinv_block[j, j]
-            q_col = torch.clamp(torch.round(w_col / sf), -clip_range, clip_range)
+            q_col = torch.clamp(torch.round(w_col * inv_sf), -clip_range, clip_range)
             Q[:, i1 + j] = q_col.to(torch.int8)
             err = (w_col - q_col.float() * sf) / d
             Err[:, j] = err
-            W_block[:, j:] -= err.unsqueeze(1) * Hinv_block[j, j:].unsqueeze(0)
+            W_block[:, j:] -= err[:, None] * Hinv_block[j, j:][None, :]
         if i2 < cols:
             W_work[:, i2:] -= Err @ Hinv[i1:i2, i2:]
     return Q[:, invperm], s
@@ -1650,10 +1735,12 @@ def train_model(h: Hyperparameters, device: torch.device, val_data: ValidationDa
         # Varlen: compile forward_logits only for non-varlen path
         # The varlen branch bypasses compilation (dynamic cu_seqlens)
         base_model._compiled_forward_logits = torch.compile(
-            base_model.forward_logits, dynamic=False, fullgraph=True)
+            base_model.forward_logits, dynamic=False, fullgraph=True,
+            mode="max-autotune-no-cudagraphs")
         compiled_model = base_model
     else:
-        compiled_model = torch.compile(base_model, dynamic=False, fullgraph=True)
+        compiled_model = torch.compile(base_model, dynamic=False, fullgraph=True,
+                                       mode="max-autotune-no-cudagraphs")
     if h.distributed:
         model = DDP(compiled_model, device_ids=[h.local_rank], broadcast_buffers=False)
     else:
@@ -1689,10 +1776,14 @@ def train_model(h: Hyperparameters, device: torch.device, val_data: ValidationDa
     def step_fn(step, lr_scale, wd_scale=1.0):
         optimizers.zero_grad_all()
         train_loss = torch.zeros((), device=device)
+        next_xy = train_loader.next_batch(h.train_batch_tokens, h.grad_accum_steps)
         for micro_step in range(h.grad_accum_steps):
             if h.distributed:
                 model.require_backward_grad_sync = micro_step == h.grad_accum_steps - 1
-            x, y = train_loader.next_batch(h.train_batch_tokens, h.grad_accum_steps)
+            x, y = next_xy
+            # Prefetch next micro-batch (CPU work overlaps with GPU forward/backward)
+            if micro_step + 1 < h.grad_accum_steps:
+                next_xy = train_loader.next_batch(h.train_batch_tokens, h.grad_accum_steps)
             with torch.autocast(device_type="cuda", dtype=torch.bfloat16, enabled=True):
                 loss = model(x, y)
             train_loss += loss.detach()
@@ -1774,8 +1865,10 @@ def train_model(h: Hyperparameters, device: torch.device, val_data: ValidationDa
             log(f"layer_loop:enabled step:{step} frac:{frac:.3f} encoder:{base_model.encoder_indices} decoder:{base_model.decoder_indices}")
         train_loss = step_fn(step, scale, wd_s)
         with torch.no_grad():
-            for name, t in base_model.state_dict().items():
-                ema_state[name].mul_(ema_decay).add_(t.detach().float(), alpha=1.0 - ema_decay)
+            ema_vals = list(ema_state.values())
+            cur_vals = [t.detach().float() for t in base_model.state_dict().values()]
+            torch._foreach_mul_(ema_vals, ema_decay)
+            torch._foreach_add_(ema_vals, cur_vals, alpha=1.0 - ema_decay)
         step += 1
         approx_training_time_ms = training_time_ms + 1000.0 * (time.perf_counter() - t0)
         should_log_train = (
@@ -1816,10 +1909,7 @@ def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
     base_model, compiled_model = train_model(h, device, val_data)
     torch._dynamo.reset()
     timed_eval("pre-quantization post-ema", eval_val, h, device, val_data, compiled_model)
-    # Use the compressed loader (train_gpt.py) as code artifact when launched
-    # via the packed submission; fall back to this file for direct runs.
-    code_path = Path(os.environ.get("_ORIG_SCRIPT", __file__))
-    serialize(h, base_model, code_path.read_text(encoding="utf-8"))
+    serialize(h, base_model, Path(__file__).read_text(encoding="utf-8"))
     if h.distributed:
         dist.barrier()
     eval_model = deserialize(h, device)
@@ -1842,6 +1932,9 @@ def main():
         raise ValueError(f"WORLD_SIZE={world_size} must divide 8 so grad_accum_steps stays integral")
     device = torch.device("cuda", local_rank)
     torch.cuda.set_device(device)
+    # Use expandable memory segments to reduce CUDA allocation fragmentation overhead;
+    # trades higher memory reservation for faster allocation.
+    os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
     if distributed:
         dist.init_process_group(backend="nccl", device_id=device)
         dist.barrier()
@@ -1854,6 +1947,9 @@ def main():
     enable_mem_efficient_sdp(False)
     enable_math_sdp(False)
     torch._dynamo.config.optimize_ddp = False
+    # Inductor: coordinate descent tuning trades extra compile-time memory
+    # for better kernel selection (explored during warmup steps).
+    torch._inductor.config.coordinate_descent_tuning = True
     h = Hyperparameters()
     set_logging_hparams(h)
     if h.is_main_process:

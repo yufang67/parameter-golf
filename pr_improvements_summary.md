@@ -137,12 +137,53 @@ Starting from the best non-TTT/SLOT merged record (PR #1394, BPB=1.0856):
 
 ---
 
-## 5. Key Takeaways
+## 5. Experiment Results (4×A100, 3600s wallclock)
+
+All runs use `train_gpt_improved.py` (or packed `train_gpt.py`), SP8192, 11 layers, dim=512, depth recurrence (layers 3-5 × 2), parallel residuals (layers 7+).
+
+| Run ID | Features | Steps | tok/s | Pre-Q BPB | Q BPB | Sliding BPB | Code KB | Total Size | Fit? |
+|--------|----------|-------|-------|-----------|-------|-------------|---------|------------|------|
+| `improved_tier1_2baseline` | Baseline stack | 5392 | 1.20M | 1.0799 | 1.0915 | **1.0751** | 76.4 | 16,074,000 | ❌ |
+| `improved_GA_FUSErope` | +GA +FusedRoPE | 5445 | 1.21M | 1.0787 | 1.0903 | **1.0737** | 87.1* | 16,052,040 | ❌* |
+| `improved_GA_LE_WWM` | +GA +LoopEmb +WD2.0 | 5369 | 1.20M | 1.0820 | 1.0916 | 1.0750 | 85.5 | 16,041,171 | ❌ |
+| `improved_GA_LE_WWM_FUSErope` | +GA +LE +WD +FuRoPE | 5444 | 1.21M | 1.0819 | 1.0915 | 1.0749 | 87.1* | 16,042,064 | ❌* |
+| `improved_tier3_1-4` | +GA +NorMuon +LE +WD | 5419 | — | 1.0829 | 1.0927 | 1.0762 | 85.5 | 16,041,270 | ❌ |
+| `improved_GA_LE` | +GA +LoopEmb | 5298 | — | 1.0854 | 1.0947 | 1.0782 | 66.3 | 16,116,510 | ❌ |
+| `improved_tier3` | +GA+MixSeq+NorMuon+LE+WD+WA | 4575 | — | 1.0886 | 1.0980 | 1.0811 | 84.6 | 16,042,785 | ❌ |
+| `improved_varlen` | +VarLen | 540 | — | 1.9011 | 1.9034 | 1.9009 | 76.1 | 16,157,081 | ❌ |
+
+\* Code size was incorrectly measured as 89KB (`_train.py`) instead of ~26KB (`train_gpt.py`). **Fixed**: `_ORIG_SCRIPT` env var now used. Corrected totals are ~63KB smaller.
+
+### Key Findings
+
+1. **Best pre-quant BPB: `improved_GA_FUSErope`** (1.0787) — Gated Attention + Fused RoPE is the winning combo
+2. **Best sliding-window BPB: `improved_GA_FUSErope`** (1.0737) — would be competitive on leaderboard
+3. **Fused RoPE adds ~1% throughput** (1.21M vs 1.20M tok/s), enabling ~75 more training steps
+4. **Gated Attention consistently helps** (~-0.001 BPB vs baseline stack)
+5. **WarmdownWD + NorMuon hurt on 4×A100** — likely need 8×H100 scale or longer training
+6. **Mixed seq_len + Window Attention hurt** on 4 GPUs (fewer steps due to memory pressure)
+7. **VarLen attention broken** — only 540 steps completed, likely a compilation issue
+8. **All runs exceed 16MB** — need better quant or fewer params to fit budget
+9. **Code size bug fixed** — saves 63KB, making `improved_GA_FUSErope` fit at 15,989,467 bytes
+
+### Corrected Submission Sizes (with packed code = 26KB)
+
+| Run | Old Total | Corrected Total | Fits 16MB? |
+|-----|-----------|-----------------|------------|
+| `improved_GA_FUSErope` | 16,052,040 | **15,989,467** | ✅ (+10.5KB) |
+| `improved_GA_LE_WWM_FUSErope` | 16,042,064 | **~15,979,491** | ✅ |
+| `improved_tier1_2baseline` | 16,074,000 | **~16,022,346** | ❌ (+22.3KB) |
+
+---
+
+## 6. Key Takeaways
 
 1. **Depth recurrence is the #1 non-TTT improvement** — consistently delivers -0.005 to -0.01 BPB across multiple independent PRs.
 2. **SP8192 vocabulary** is now standard for competitive submissions.
 3. **GPTQ quality matters enormously** — Hessian-aware SDClip + actorder vs naive int8 is worth -0.005+ BPB.
 4. **Throughput optimizations translate directly to BPB** — Fused Triton MLP (+5%), ANS compression (+2.2M params) give more training steps/params in the same budget.
-5. **VarLen attention is underexplored** — within-document-only attention is a clean architectural win that doesn't add eval-time compute.
-6. **MoE is barely explored** — PR #1538 is the first attempt. Potential for significant gains with proper tuning.
-7. **The TTT gap (~0.010–0.020 BPB) may be partially closable** through VarLen attention + better depth recurrence + throughput gains, but TTT remains the single biggest lever available.
+5. **Gated Attention is a consistent win** — -0.001 BPB for minimal parameter cost.
+6. **Fused RoPE kernel helps throughput** — ~1% more tok/s, no accuracy regression.
+7. **Code size matters** — using the packed loader saves 63KB, which can make or break fitting the 16MB budget.
+8. **VarLen attention needs debugging** — promising idea but implementation broken on current setup.
+9. **The TTT gap (~0.010–0.020 BPB) may be partially closable** through better depth recurrence + throughput gains, but TTT remains the single biggest lever available.

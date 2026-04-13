@@ -1816,7 +1816,10 @@ def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
     base_model, compiled_model = train_model(h, device, val_data)
     torch._dynamo.reset()
     timed_eval("pre-quantization post-ema", eval_val, h, device, val_data, compiled_model)
-    serialize(h, base_model, Path(__file__).read_text(encoding="utf-8"))
+    # Use the compressed loader (train_gpt.py) as code artifact when launched
+    # via the packed submission; fall back to this file for direct runs.
+    code_path = Path(os.environ.get("_ORIG_SCRIPT", __file__))
+    serialize(h, base_model, code_path.read_text(encoding="utf-8"))
     if h.distributed:
         dist.barrier()
     eval_model = deserialize(h, device)

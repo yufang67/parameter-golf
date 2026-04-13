@@ -15,7 +15,7 @@ Hyperparameters:
   data_dir: ./data2/
   datasets_dir: ./data2/datasets/fineweb10B_sp8192
   distributed: True
-  effective_train_seq_len: <property object at 0x151a54a7ff60>
+  effective_train_seq_len: <property object at 0x1552d26a04f0>
   ema_decay: 0.9965
   embed_bits: 8
   embed_clip_sigmas: 20.0
@@ -38,9 +38,9 @@ Hyperparameters:
   iterations: 20000
   ln_scale: True
   local_rank: 0
-  logfile: logs/improved_GA_FUSErope.txt
+  logfile: logs/improved_GA_LE_FUSErope.txt
   logit_softcap: 20.0
-  loop_embeddings: False
+  loop_embeddings: True
   loop_end: 5
   loop_layer_bits: 0
   loop_layer_clip_sigmas: 0.0
@@ -78,7 +78,7 @@ Hyperparameters:
   rope_base: 10000.0
   rope_dims: 32
   rope_train_seq_len: 2048
-  run_id: improved_GA_FUSErope
+  run_id: improved_GA_LE_FUSErope
   scalar_lr: 0.022
   seed: 1337
   skip_gates_enabled: True
@@ -106,7 +106,7 @@ Hyperparameters:
 ====================================================================================================
 Running Python 3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]
 Running PyTorch 2.11.0+cu130
-Sun Apr 12 18:03:13 2026       
+Mon Apr 13 01:20:53 2026       
 +-----------------------------------------------------------------------------------------+
 | NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.2     |
 +-----------------------------------------+------------------------+----------------------+
@@ -115,19 +115,19 @@ Sun Apr 12 18:03:13 2026
 |                                         |                        |               MIG M. |
 |=========================================+========================+======================|
 |   0  NVIDIA A100 80GB PCIe          On  |   00000001:00:00.0 Off |                    0 |
-| N/A   42C    P0             73W /  300W |     733MiB /  81920MiB |      7%      Default |
+| N/A   40C    P0             74W /  300W |     733MiB /  81920MiB |      7%      Default |
 |                                         |                        |             Disabled |
 +-----------------------------------------+------------------------+----------------------+
 |   1  NVIDIA A100 80GB PCIe          On  |   00000002:00:00.0 Off |                    0 |
-| N/A   44C    P0             78W /  300W |     733MiB /  81920MiB |      8%      Default |
+| N/A   41C    P0             77W /  300W |     733MiB /  81920MiB |      6%      Default |
 |                                         |                        |             Disabled |
 +-----------------------------------------+------------------------+----------------------+
 |   2  NVIDIA A100 80GB PCIe          On  |   00000003:00:00.0 Off |                    0 |
-| N/A   44C    P0             82W /  300W |     733MiB /  81920MiB |      7%      Default |
+| N/A   41C    P0             82W /  300W |     733MiB /  81920MiB |      8%      Default |
 |                                         |                        |             Disabled |
 +-----------------------------------------+------------------------+----------------------+
 |   3  NVIDIA A100 80GB PCIe          On  |   00000004:00:00.0 Off |                    0 |
-| N/A   43C    P0             71W /  300W |     733MiB /  81920MiB |      9%      Default |
+| N/A   40C    P0             73W /  300W |     733MiB /  81920MiB |      9%      Default |
 |                                         |                        |             Disabled |
 +-----------------------------------------+------------------------+----------------------+
 
@@ -136,16 +136,16 @@ Sun Apr 12 18:03:13 2026
 |  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
 |        ID   ID                                                               Usage      |
 |=========================================================================================|
-|    0   N/A  N/A          900161      C   ...ameter-golf/.venv/bin/python3        724MiB |
-|    1   N/A  N/A          900162      C   ...ameter-golf/.venv/bin/python3        724MiB |
-|    2   N/A  N/A          900163      C   ...ameter-golf/.venv/bin/python3        724MiB |
-|    3   N/A  N/A          900164      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    0   N/A  N/A          961727      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    1   N/A  N/A          961728      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    2   N/A  N/A          961729      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    3   N/A  N/A          961730      C   ...ameter-golf/.venv/bin/python3        724MiB |
 +-----------------------------------------------------------------------------------------+
 
 ====================================================================================================
 train_shards: 128
 val_tokens: 40540160
-model_params:35989680
+model_params:35991216
 gptq:reserving 12s, effective=3588000ms
 warmup_step: 1/20
 warmup_step: 2/20
@@ -165,42 +165,8 @@ loop_warmup_step: 6/20
 loop_warmup_step: 10/20
 loop_warmup_step: 20/20
 0/20000 val_loss: 9.0099 val_bpb: 3.4880
-1/20000 train_loss: 9.0110 train_time: 0.0m tok/s: 1675532
-2/20000 train_loss: 11.3094 train_time: 0.0m tok/s: 1634312
-3/20000 train_loss: 9.8187 train_time: 0.0m tok/s: 1612235
-4/20000 train_loss: 8.3986 train_time: 0.0m tok/s: 1601984
-5/20000 train_loss: 7.4361 train_time: 0.0m tok/s: 1595253
-500/20000 train_loss: 3.3424 train_time: 4.3m tok/s: 1531114
-1000/20000 train_loss: 3.1944 train_time: 8.6m tok/s: 1532583
-1500/20000 train_loss: 3.1622 train_time: 12.8m tok/s: 1533762
-2000/20000 train_loss: 3.1297 train_time: 17.1m tok/s: 1534337
-layer_loop:enabled step:2451 frac:0.350 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
-2500/20000 train_loss: 3.0491 train_time: 21.6m tok/s: 1519197
-3000/20000 train_loss: 2.9571 train_time: 28.1m tok/s: 1401394
-3500/20000 train_loss: 3.0006 train_time: 34.5m tok/s: 1327922
-4000/20000 train_loss: 2.9500 train_time: 41.0m tok/s: 1277239
-4000/20000 val_loss: 2.9221 val_bpb: 1.1312
-4500/20000 train_loss: 2.8604 train_time: 47.6m tok/s: 1240353
-5000/20000 train_loss: 2.8544 train_time: 54.1m tok/s: 1212497
-5445/20000 val_loss: 2.7879 val_bpb: 1.0793
-stopping_early: wallclock_cap train_time: 3588773ms step: 5445/20000
-peak memory allocated: 37475 MiB reserved: 37522 MiB
-ema:applying EMA weights
-pre-quantization post-ema val_loss:2.78647763 val_bpb:1.07873233 eval_time:32041ms
-Serialized model: 135618917 bytes
-Code size: 89188 bytes
-GPTQ:collecting Hessians from calibration data...
-GPTQ:collected 67 Hessians in 23.6s
-Quantized weights:
-  gptq (int6): blocks.attn.c_k.weight, blocks.attn.c_q.weight, blocks.attn.c_v.weight, blocks.attn.proj.weight, blocks.mlp.fc.weight, blocks.mlp.proj.weight
-  gptq (int8): tok_emb.weight
-  passthrough (float16): blocks.attn.gate_proj.bias, blocks.attn.gate_proj.weight, blocks.attn.q_gain, blocks.attn_scale, blocks.mlp_scale, blocks.resid_mix, skip_gates, skip_weights
-compress:brotli 16070904 bytes (62.3s)
-compress:ans 15962852 bytes (13.8s)
-  ans: model=15962852 total=16052040
-  brotli: model=16070904 total=16160092
-compress:using ans (15962852 bytes)
-Serialized model quantized+brotli: 15962852 bytes
-Total submission size quantized+brotli: 16052040 bytes
-quantized val_loss:2.81637611 val_bpb:1.09030696 eval_time:11596ms
-quantized_sliding_window val_loss:2.77344990 val_bpb:1.07368888 eval_time:469235ms
+1/20000 train_loss: 9.0110 train_time: 0.0m tok/s: 1674663
+2/20000 train_loss: 11.3094 train_time: 0.0m tok/s: 1630950
+3/20000 train_loss: 9.8187 train_time: 0.0m tok/s: 1611438
+4/20000 train_loss: 8.3986 train_time: 0.0m tok/s: 1602001
+5/20000 train_loss: 7.4360 train_time: 0.0m tok/s: 1595289
