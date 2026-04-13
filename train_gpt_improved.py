@@ -303,6 +303,12 @@ class Hyperparameters():
     muon_wd = float(os.environ.get('MUON_WD', 0.095))
     embed_wd = float(os.environ.get('EMBED_WD', 0.085))
     ema_decay = float(os.environ.get('EMA_DECAY', 0.9965))
+    # Test-Time Training (TTT): score-first sliding window with chunk-level SGD
+    ttt_enabled = bool(int(os.environ.get('TTT_ENABLED', '0')))
+    ttt_lr = float(os.environ.get('TTT_LR', 0.005))
+    ttt_epochs = int(os.environ.get('TTT_EPOCHS', 3))
+    ttt_momentum = float(os.environ.get('TTT_MOMENTUM', 0.9))
+    ttt_chunk_tokens = int(os.environ.get('TTT_CHUNK_TOKENS', 32768))
     # Quantization & Compression
     compressor = os.environ.get('COMPRESSOR', 'brotli')
     compress_brotli = bool(int(os.environ.get('COMPRESS_BROTLI', '1')))
@@ -1634,6 +1640,127 @@ def eval_val_sliding(
         dist.all_reduce(byte_count, op=dist.ReduceOp.SUM)
     base_model.train()
     return _loss_bpb(loss_sum, token_count, byte_count)
+def eval_val_ttt(
+    h: Hyperparameters,
+    device: torch.device,
+    val_data: ValidationData,
+    base_model: nn.Module,
+    batch_seqs: int = 32,
+) -> tuple[float, float]:
+    """Score-first TTT: for each chunk, score all windows first, then adapt
+    on the chunk's data before moving to the next chunk."""
+    rank = h.rank
+    world_size = h.world_size
+    seq_len = h.eval_seq_len
+    stride = h.eval_stride
+    total_tokens = val_data.val_tokens.numel() - 1
+    ttt_chunk = h.ttt_chunk_tokens
+    context_size = seq_len - stride
+    window_starts = [ws for ws in range(0, total_tokens, stride)
+                     if ws + context_size < total_tokens]
+    num_chunks = (total_tokens + ttt_chunk - 1) // ttt_chunk
+    chunk_windows: list[list[int]] = [[] for _ in range(num_chunks)]
+    for ws in window_starts:
+        s = 0 if ws == 0 else context_size
+        scored_start = ws + s
+        ci = min(scored_start // ttt_chunk, num_chunks - 1)
+        chunk_windows[ci].append(ws)
+    log(f"ttt:start chunks={num_chunks} ttt_lr={h.ttt_lr} ttt_epochs={h.ttt_epochs}")
+    _nfg = getattr(base_model, 'use_varlen', False)
+    compiled_logits = torch.compile(base_model.forward_logits, dynamic=False, fullgraph=not _nfg)
+    loss_sum = torch.zeros((), device=device, dtype=torch.float64)
+    token_count = torch.zeros((), device=device, dtype=torch.float64)
+    byte_count = torch.zeros((), device=device, dtype=torch.float64)
+    ttt_params = list(base_model.parameters())
+    for p in ttt_params:
+        p.requires_grad_(True)
+    optimizer = torch.optim.SGD(ttt_params, lr=h.ttt_lr, momentum=h.ttt_momentum)
+    for ci in range(num_chunks):
+        windows = chunk_windows[ci]
+        if not windows:
+            continue
+        chunk_start = ci * ttt_chunk
+        chunk_end = min((ci + 1) * ttt_chunk, total_tokens)
+        my_s = (len(windows) * rank) // world_size
+        my_e = (len(windows) * (rank + 1)) // world_size
+        my_windows = windows[my_s:my_e]
+        # Score all windows in current chunk (no grad)
+        base_model.eval()
+        with torch.no_grad():
+            for bi in range(0, len(my_windows), batch_seqs):
+                batch_ws = my_windows[bi:bi + batch_seqs]
+                bsz = len(batch_ws)
+                x_batch = torch.zeros(bsz, seq_len, dtype=torch.int64, device=device)
+                y_batch = torch.zeros(bsz, seq_len, dtype=torch.int64, device=device)
+                wlens: list[int] = []
+                for i, ws in enumerate(batch_ws):
+                    we = min(ws + seq_len, total_tokens)
+                    wlen = we - ws
+                    wlens.append(wlen)
+                    chunk_tok = val_data.val_tokens[ws:we + 1].to(dtype=torch.int64, device=device)
+                    x_batch[i, :wlen] = chunk_tok[:-1]
+                    y_batch[i, :wlen] = chunk_tok[1:]
+                cu, ms = GPT._compute_cu_seqlens(x_batch, getattr(base_model, 'use_varlen', False))
+                with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
+                    logits = compiled_logits(x_batch, cu, ms)
+                nll = F.cross_entropy(
+                    logits.reshape(-1, logits.size(-1)).float(),
+                    y_batch.reshape(-1), reduction="none",
+                ).reshape(bsz, seq_len)
+                for i, ws in enumerate(batch_ws):
+                    wlen = wlens[i]
+                    s = 0 if ws == 0 else context_size
+                    scored_nll = nll[i, s:wlen].to(torch.float64)
+                    loss_sum += scored_nll.sum()
+                    token_count += float(wlen - s)
+                    tgt = y_batch[i, s:wlen]
+                    prev = x_batch[i, s:wlen]
+                    tb = val_data.base_bytes_lut[tgt].to(torch.float64)
+                    tb += (val_data.has_leading_space_lut[tgt] &
+                           ~val_data.is_boundary_token_lut[prev]).to(torch.float64)
+                    byte_count += tb.sum()
+        # Adapt on this chunk's data (skip last chunk — no future to improve)
+        is_last_chunk = (ci == num_chunks - 1)
+        if not is_last_chunk and h.ttt_epochs > 0:
+            base_model.train()
+            chunk_seqs = (chunk_end - chunk_start) // seq_len
+            if chunk_seqs > 0:
+                cos_lr = h.ttt_lr * 0.5 * (1.0 + math.cos(math.pi * ci / max(num_chunks - 1, 1)))
+                for pg in optimizer.param_groups:
+                    pg["lr"] = cos_lr
+                my_seq_s = (chunk_seqs * rank) // world_size
+                my_seq_e = (chunk_seqs * (rank + 1)) // world_size
+                my_chunk_seqs = my_seq_e - my_seq_s
+                for _ep in range(h.ttt_epochs):
+                    for bs in range(0, my_chunk_seqs, batch_seqs):
+                        be = min(bs + batch_seqs, my_chunk_seqs)
+                        actual_bs = my_seq_s + bs
+                        start_tok = chunk_start + actual_bs * seq_len
+                        end_tok = chunk_start + (my_seq_s + be) * seq_len + 1
+                        if end_tok > val_data.val_tokens.numel():
+                            continue
+                        local = val_data.val_tokens[start_tok:end_tok].to(
+                            device=device, dtype=torch.int64)
+                        x = local[:-1].reshape(-1, seq_len)
+                        y = local[1:].reshape(-1, seq_len)
+                        optimizer.zero_grad(set_to_none=True)
+                        with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
+                            loss = base_model(x, y)
+                        loss.backward()
+                        if world_size > 1:
+                            for p in ttt_params:
+                                if p.grad is not None:
+                                    dist.all_reduce(p.grad, op=dist.ReduceOp.AVG)
+                        torch.nn.utils.clip_grad_norm_(ttt_params, 1.0)
+                        optimizer.step()
+    if dist.is_available() and dist.is_initialized():
+        dist.all_reduce(loss_sum, op=dist.ReduceOp.SUM)
+        dist.all_reduce(token_count, op=dist.ReduceOp.SUM)
+        dist.all_reduce(byte_count, op=dist.ReduceOp.SUM)
+    for p in base_model.parameters():
+        p.requires_grad_(True)
+    base_model.eval()
+    return _loss_bpb(loss_sum, token_count, byte_count)
 def timed_eval(label: str, fn, *args, **kwargs) -> tuple[float, float]:
     torch.cuda.synchronize()
     t0 = time.perf_counter()
@@ -1830,6 +1957,15 @@ def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
     timed_eval("quantized", eval_val, h, device, val_data, compiled_model)
     if h.sliding_window_enabled:
         timed_eval("quantized_sliding_window", eval_val_sliding, h, device, val_data, eval_model)
+    if h.ttt_enabled and h.sliding_window_enabled:
+        del eval_model, compiled_model
+        torch._dynamo.reset()
+        torch.cuda.empty_cache()
+        ttt_model = deserialize(h, device)
+        if h.num_loops > 0:
+            ttt_model.looping_active = True
+        timed_eval("quantized_ttt", eval_val_ttt, h, device, val_data, ttt_model)
+        del ttt_model
 def main():
     world_size = int(os.environ.get("WORLD_SIZE", "1"))
     local_rank = int(os.environ.get("LOCAL_RANK", "0"))

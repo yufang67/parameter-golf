@@ -170,3 +170,37 @@ loop_warmup_step: 20/20
 3/20000 train_loss: 9.8187 train_time: 0.0m tok/s: 1611438
 4/20000 train_loss: 8.3986 train_time: 0.0m tok/s: 1602001
 5/20000 train_loss: 7.4360 train_time: 0.0m tok/s: 1595289
+500/20000 train_loss: 3.3489 train_time: 4.3m tok/s: 1533061
+1000/20000 train_loss: 3.1932 train_time: 8.5m tok/s: 1536651
+1500/20000 train_loss: 3.1625 train_time: 12.8m tok/s: 1538525
+2000/20000 train_loss: 3.1305 train_time: 17.0m tok/s: 1539430
+layer_loop:enabled step:2459 frac:0.350 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+2500/20000 train_loss: 3.0568 train_time: 21.5m tok/s: 1526654
+3000/20000 train_loss: 2.9571 train_time: 28.0m tok/s: 1405966
+3500/20000 train_loss: 2.9999 train_time: 34.5m tok/s: 1329021
+4000/20000 train_loss: 2.9511 train_time: 41.0m tok/s: 1277320
+4000/20000 val_loss: 2.9222 val_bpb: 1.1313
+4500/20000 train_loss: 2.8633 train_time: 47.6m tok/s: 1239654
+5000/20000 train_loss: 2.8535 train_time: 54.1m tok/s: 1211835
+5441/20000 val_loss: 2.7881 val_bpb: 1.0794
+stopping_early: wallclock_cap train_time: 3588787ms step: 5441/20000
+peak memory allocated: 38151 MiB reserved: 38246 MiB
+ema:applying EMA weights
+pre-quantization post-ema val_loss:2.78660463 val_bpb:1.07878149 eval_time:32952ms
+Serialized model: 135625319 bytes
+Code size: 27851 bytes
+GPTQ:collecting Hessians from calibration data...
+GPTQ:collected 67 Hessians in 23.7s
+Quantized weights:
+  gptq (int6): blocks.attn.c_k.weight, blocks.attn.c_q.weight, blocks.attn.c_v.weight, blocks.attn.proj.weight, blocks.mlp.fc.weight, blocks.mlp.proj.weight
+  gptq (int8): tok_emb.weight
+  passthrough (float16): blocks.attn.gate_proj.bias, blocks.attn.gate_proj.weight, blocks.attn.q_gain, blocks.attn_scale, blocks.mlp_scale, blocks.resid_mix, loop_embs, skip_gates, skip_weights
+compress:brotli 16078723 bytes (62.4s)
+compress:ans 15964475 bytes (14.0s)
+  ans: model=15964475 total=15992326
+  brotli: model=16078723 total=16106574
+compress:using ans (15964475 bytes)
+Serialized model quantized+brotli: 15964475 bytes
+Total submission size quantized+brotli: 15992326 bytes
+quantized val_loss:2.81631243 val_bpb:1.09028231 eval_time:11900ms
+quantized_sliding_window val_loss:2.77347725 val_bpb:1.07369947 eval_time:432296ms
