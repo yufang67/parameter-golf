@@ -101,6 +101,11 @@ torchrun --standalone --nproc_per_node=4 train_gpt_improved.py
 RUN_ID=improved_GA_FUSErope_WinATT FUSED_ROPE=1 WINDOW_ATTN_SIZE=512 WINDOW_ATTN_LAYERS="2,4,6,8,10" MAX_WALLCLOCK_SECONDS=3600 \
 torchrun --standalone --nproc_per_node=4 train_gpt.py
 
+RUN_ID=improved_GA_FUSErope_MLP4.35_Mclip13_TTT MLP_MULT=4.35 TTT_ENABLED=1 MAX_WALLCLOCK_SECONDS=3600 \
+torchrun --standalone --nproc_per_node=4 train_gpt.py
+RUN_ID=improved_GA_FUSErope_MLP4.35_Mclip15_gptqCl_TTT MATRIX_CLIP_SIGMAS=15 MLP_MULT=4.35 GPTQ_CALIBRATION_BATCHES=128 TTT_ENABLED=1 MAX_WALLCLOCK_SECONDS=3600 \
+torchrun --standalone --nproc_per_node=4 train_gpt.py
+
 # improve2
 RUN_ID=improved2_GA BANK_ENABLED=1 FUSED_ROPE=1 GATED_ATTENTION=1 MAX_WALLCLOCK_SECONDS=3600 \
 torchrun --standalone --nproc_per_node=4 train_gpt.py

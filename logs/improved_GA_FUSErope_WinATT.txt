@@ -318,3 +318,42 @@ loop_warmup_step: 4/20
 loop_warmup_step: 5/20
 loop_warmup_step: 6/20
 loop_warmup_step: 10/20
+loop_warmup_step: 20/20
+0/20000 val_loss: 9.0099 val_bpb: 3.4880
+1/20000 train_loss: 9.0103 train_time: 0.0m tok/s: 1762646
+2/20000 train_loss: 11.2916 train_time: 0.0m tok/s: 1719771
+3/20000 train_loss: 9.9822 train_time: 0.0m tok/s: 1695152
+4/20000 train_loss: 8.3965 train_time: 0.0m tok/s: 1680637
+5/20000 train_loss: 7.4308 train_time: 0.0m tok/s: 1672223
+500/20000 train_loss: 3.3204 train_time: 4.3m tok/s: 1521764
+1000/20000 train_loss: 3.2271 train_time: 8.6m tok/s: 1525201
+1500/20000 train_loss: 3.1129 train_time: 12.9m tok/s: 1526017
+2000/20000 train_loss: 3.1173 train_time: 17.2m tok/s: 1526319
+layer_loop:enabled step:2438 frac:0.350 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+2500/20000 train_loss: 3.1285 train_time: 21.7m tok/s: 1507012
+3000/20000 train_loss: 3.0387 train_time: 28.3m tok/s: 1389472
+3500/20000 train_loss: 3.0115 train_time: 34.9m tok/s: 1315939
+4000/20000 train_loss: 2.9438 train_time: 41.4m tok/s: 1265955
+4000/20000 val_loss: 2.9777 val_bpb: 1.1527
+4500/20000 train_loss: 2.8702 train_time: 48.0m tok/s: 1229675
+5000/20000 train_loss: 2.8369 train_time: 54.5m tok/s: 1202227
+5405/20000 val_loss: 2.8723 val_bpb: 1.1120
+stopping_early: wallclock_cap train_time: 3588774ms step: 5405/20000
+peak memory allocated: 37479 MiB reserved: 37522 MiB
+ema:applying EMA weights
+pre-quantization post-ema val_loss:2.85881116 val_bpb:1.10673489 eval_time:30961ms
+Serialized model: 135618917 bytes
+Code size: 27852 bytes
+GPTQ:collecting Hessians from calibration data...
+GPTQ:collected 67 Hessians in 23.5s
+Quantized weights:
+  gptq (int6): blocks.attn.c_k.weight, blocks.attn.c_q.weight, blocks.attn.c_v.weight, blocks.attn.proj.weight, blocks.mlp.fc.weight, blocks.mlp.proj.weight
+  gptq (int8): tok_emb.weight
+  passthrough (float16): blocks.attn.gate_proj.bias, blocks.attn.gate_proj.weight, blocks.attn.q_gain, blocks.attn_scale, blocks.mlp_scale, blocks.resid_mix, skip_gates, skip_weights
+compress:ans 15960893 bytes (15.2s)
+  ans: model=15960893 total=15988745
+compress:using ans (15960893 bytes)
+Serialized model quantized+brotli: 15960893 bytes
+Total submission size quantized+brotli: 15988745 bytes
+quantized val_loss:2.89523517 val_bpb:1.12083576 eval_time:11854ms
+quantized_sliding_window val_loss:3.03668995 val_bpb:1.17559731 eval_time:492614ms

@@ -192,52 +192,46 @@ try:
 
     class _FusedNormRopeGain(torch.autograd.Function):
         @staticmethod
-        def forward(ctx, x_flat, cos_2d, sin_2d, gain_c, N, H, D, rope_half, T, has_gain):
+        def forward(ctx, x, cos, sin, gain, rope_half, has_gain):
+            B, T, H, D = x.shape
+            N = B * T
+            x_flat = x.reshape(N, H, D).contiguous()
             y = torch.empty_like(x_flat)
+            cos_2d = cos.reshape(T, rope_half).contiguous()
+            sin_2d = sin.reshape(T, rope_half).contiguous()
+            gain_c = gain.contiguous().float() if gain is not None else torch.empty(1, device=x.device)
             _norm_rope_gain_fwd[(N,)](
                 x_flat, y, cos_2d, sin_2d, gain_c,
-                H * D, rope_half, N, H, D, rope_half, T, has_gain,
+                H * D, rope_half,
+                N, H, D, rope_half, T, has_gain,
             )
-            ctx.save_for_backward(x_flat, cos_2d, sin_2d, gain_c if has_gain else torch.empty(0, device=x_flat.device))
+            ctx.save_for_backward(x_flat, cos_2d, sin_2d, gain_c if has_gain else torch.empty(0, device=x.device))
             ctx.has_gain = has_gain
-            ctx.info = (N, H, D, rope_half, T)
-            return y
+            ctx.shape_info = (B, T, H, D, rope_half)
+            return y.reshape(B, T, H, D)
 
         @staticmethod
         def backward(ctx, dy):
             x_flat, cos_2d, sin_2d, gain_saved = ctx.saved_tensors
             has_gain = ctx.has_gain
-            N, H, D, rope_half, T = ctx.info
-            dy_flat = dy.contiguous()
+            B, T, H, D, rope_half = ctx.shape_info
+            N = B * T
+            dy_flat = dy.reshape(N, H, D).contiguous()
             dx = torch.empty_like(x_flat)
             dgain = torch.zeros(H, dtype=torch.float32, device=x_flat.device) if has_gain else None
             _norm_rope_gain_bwd[(N,)](
                 x_flat, dy_flat, dx, cos_2d, sin_2d,
                 gain_saved if has_gain else torch.empty(1, device=x_flat.device),
                 dgain if dgain is not None else torch.empty(1, device=x_flat.device),
-                H * D, rope_half, N, H, D, rope_half, T, has_gain,
+                H * D, rope_half,
+                N, H, D, rope_half, T, has_gain,
             )
-            return dx, None, None, dgain, None, None, None, None, None, None
+            return dx.reshape(B, T, H, D), None, None, dgain, None, None
 
     def fused_norm_rope_gain(x, cos, sin, gain, rope_half):
-        B, T, H, D = x.shape
-        N = B * T
-        x_flat = x.reshape(N, H, D).contiguous()
-        cos_2d = cos.reshape(T, rope_half).contiguous()
-        sin_2d = sin.reshape(T, rope_half).contiguous()
-        gain_c = gain.contiguous().float()
-        y = _FusedNormRopeGain.apply(x_flat, cos_2d, sin_2d, gain_c, N, H, D, rope_half, T, True)
-        return y.reshape(B, T, H, D)
-
+        return _FusedNormRopeGain.apply(x, cos, sin, gain, rope_half, True)
     def fused_norm_rope(x, cos, sin, rope_half):
-        B, T, H, D = x.shape
-        N = B * T
-        x_flat = x.reshape(N, H, D).contiguous()
-        cos_2d = cos.reshape(T, rope_half).contiguous()
-        sin_2d = sin.reshape(T, rope_half).contiguous()
-        dummy_gain = torch.empty(1, device=x.device)
-        y = _FusedNormRopeGain.apply(x_flat, cos_2d, sin_2d, dummy_gain, N, H, D, rope_half, T, False)
-        return y.reshape(B, T, H, D)
+        return _FusedNormRopeGain.apply(x, cos, sin, None, rope_half, False)
 except ImportError:
     pass
 class Hyperparameters():
@@ -318,7 +312,7 @@ class Hyperparameters():
     gptq_reserve_seconds = float(os.environ.get('GPTQ_RESERVE_SECONDS', 12.0))
     matrix_bits = int(os.environ.get('MATRIX_BITS', 6))
     embed_bits = int(os.environ.get('EMBED_BITS', 8))
-    matrix_clip_sigmas = float(os.environ.get('MATRIX_CLIP_SIGMAS', 12.85))
+    matrix_clip_sigmas = float(os.environ.get('MATRIX_CLIP_SIGMAS', 13)) #12.85
     embed_clip_sigmas = float(os.environ.get('EMBED_CLIP_SIGMAS', 20.0))
 
     # Hessian-aware SDClip (PR #1412): per-row clip modulation using GPTQ Hessian
@@ -338,7 +332,7 @@ class Hyperparameters():
     # Fused Triton MLP kernel
     fused_mlp = bool(int(os.environ.get('FUSED_MLP', '1')))
     # Fused Triton QK-norm + RoPE + gain kernel
-    fused_rope = bool(int(os.environ.get('FUSED_ROPE', '0')))
+    fused_rope = bool(int(os.environ.get('FUSED_ROPE', '1')))
     # VarLen attention (within-document-only)
     varlen_attention = bool(int(os.environ.get('VARLEN_ATTENTION', '0')))
 
@@ -664,6 +658,7 @@ class MLP(nn.Module):
     def __init__(self, dim: int, mlp_mult: int, use_fused: bool = False):
         super().__init__()
         hidden = int(mlp_mult * dim)
+        hidden = (hidden + 63) // 64 * 64  # round up to multiple of 64 for tensor cores
         self.fc = CastedLinear(dim, hidden, bias=False)
         self.proj = CastedLinear(hidden, dim, bias=False)
         self.proj._zero_init = True
