@@ -13,9 +13,9 @@
 | improved_GA_LE | GA+LE+NM+WW+FM | 1.08536 | 1.09472 | 1.07823 | 5,298 | 1,475K→1,173K | GPTQ+Brotli | 16,116,510 |
 | improved_tier3 | GA+LE+NM+WW+HS+ANS+FM | 1.08857 | 1.09798 | 1.08113 | 4,575 | 1,332K→1,006K | GPTQ+ANS | 16,042,785 |
 | improved_GA_FUSErope | GA+HS+ANS+FR+FM | **1.07873** | 1.09031 | **1.07369** | 5,445 | 1,540K→1,212K | GPTQ+ANS | 15,989,467** |
+| improved_GA_LE_FUSErope | GA+LE+HS+ANS+FR+FM | 1.07878 | 1.09028 | 1.07370 | 5,441 | 1,675K→1,212K | GPTQ+ANS | 15,992,326 |
+| improved2_GA | GA+BK+HS+ANS+FR+FM | 1.08664 | 1.09900 | 1.08273 | 6,886 | 1,587K→1,509K | GPTQ+ANS | 16,211,197 ⚠️ |
 | improved_varlen | GA+LE+NM+WW+VL+FM | 1.90107 | 1.90335 | 1.90094 | 540 | 120K→120K | GPTQ+Brotli | 16,157,081 |
-
-| improved_GA_LE_FUSErope | GA+LE+HS+ANS+FR+FM | ⏳ running | — | — | ~5 (early) | 1,675K→… | GPTQ+ANS | — |
 
 \*\* `improved_GA_FUSErope` originally reported 16,052,040 due to code size bug (measured `_train.py` at 89KB instead of packed `train_gpt.py` at 26KB). Corrected total: model (15,962,852) + code (26,615) = **15,989,467 bytes** ✅ fits 16MB.
 
@@ -32,19 +32,21 @@
 | VL | VarLen Attention | `VARLEN_ATTENTION=1` |
 | FR | Fused RoPE Triton | `FUSED_ROPE=1` |
 | FM | Fused MLP Triton | `FUSED_MLP=1` |
+| BK | Parameter Banking | `BANK_ENABLED=1` |
 
 ## Key Takeaways
 
-1. **Best sliding BPB:** `improved_GA_FUSErope` (**1.07369**) — GA+HS+ANS+FR+FM, and the only run that fits 16MB after code size fix
-2. **Baseline** (HS+FM only) competitive at 1.07508 — 0.0014 BPB behind best
-3. **Fused RoPE consistently helps throughput** — ~1% more tok/s → ~75 extra training steps in same wallclock
-4. **Gated Attention is a consistent win** — ~-0.001 BPB for minimal parameter cost
-5. **NorMuon hurts** — runs with NM consistently worse than without (compare GA_LE vs GA_LE_WWM)
-6. **VarLen is broken** — 1.90 BPB, doc boundary detection bug
-7. **ANS saves ~30KB** artifact size consistently vs Brotli
-8. **improved_tier3** had fewer steps (4,575) due to mixed_seq_len overhead, explaining worse BPB
-9. **Code size bug fixed** — `_ORIG_SCRIPT` env var now used in `serialize()`. Saves 63KB, makes `improved_GA_FUSErope` the first run to actually fit 16MB budget
-10. **improved_GA_LE_FUSErope** — currently running (GA+LE+FusedRoPE), expected to be best combo
+1. **Best sliding BPB:** `improved_GA_FUSErope` (**1.07369**) — GA+HS+ANS+FR+FM, fits 16MB ✅
+2. **Loop Embeddings don't help:** `improved_GA_LE_FUSErope` (1.07370) essentially tied with `improved_GA_FUSErope` (1.07369) — LE adds no measurable gain
+3. **Baseline** (HS+FM only) competitive at 1.07508 — 0.0014 BPB behind best
+4. **Fused RoPE consistently helps throughput** — ~1% more tok/s → ~75 extra training steps in same wallclock
+5. **Gated Attention is a consistent win** — ~-0.001 BPB for minimal parameter cost
+6. **NorMuon hurts** — runs with NM consistently worse than without (compare GA_LE vs GA_LE_WWM)
+7. **VarLen is broken** — 1.90 BPB, doc boundary detection bug
+8. **ANS saves ~30KB** artifact size consistently vs Brotli
+9. **improved_tier3** had fewer steps (4,575) due to mixed_seq_len overhead, explaining worse BPB
+10. **Code size bug fixed** — `_ORIG_SCRIPT` env var now used in `serialize()`. Saves 63KB, makes `improved_GA_FUSErope` the first run to actually fit 16MB budget
+11. **Parameter Banking hurts BPB and busts size budget** — `improved2_GA` got 1.08273 sw_bpb (0.009 worse) with 16.2MB total (⚠️ over 16MB). More steps (6,886 vs 5,441) due to no looping slowdown, but worse loss. Code size bug (94KB) also present
 
 ---
 
@@ -89,7 +91,9 @@
 
 ### TODO
 1. ~~The real optimization: PR #1523's approach — parameter banking where looped layers share a weight bank accessed via scatter/gather, avoiding repeated full-layer forward passes.~~ **Done** — implemented `BankedRecurrence` in `train_gpt_improved2.py` (`BANK_ENABLED=1`).
-2. Wait for `improved_GA_LE_FUSErope` to complete — expect best BPB (GA + Loop Embeddings + Fused RoPE).
-3. Re-run `improved_GA_FUSErope` with corrected code size to get official 16MB-valid results.
-4. Debug VarLen attention (doc boundary detection).
-5. Try parameter banking run: `BANK_ENABLED=1 BANK_SIZE=64 BANK_RANK=32`.
+2. ~~Wait for `improved_GA_LE_FUSErope` to complete.~~ **Done** — 1.07370 sw_bpb, essentially identical to GA_FUSErope. Loop Embeddings provide no benefit.
+3. ~~Try parameter banking run: `BANK_ENABLED=1 BANK_SIZE=64 BANK_RANK=32`.~~ **Done** — `improved2_GA` got 1.08273 sw_bpb, significantly worse than non-banked runs and over 16MB budget.
+4. Re-run `improved_GA_FUSErope` with corrected code size to get official 16MB-valid results.
+5. Debug VarLen attention (doc boundary detection).
+6. Fix code size bug in `train_gpt_improved2.py` (94KB → need `_ORIG_SCRIPT` fix).
+7. Investigate why parameter banking hurts — possible rank/size tuning or training instability from banked recurrence.
