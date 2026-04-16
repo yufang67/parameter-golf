@@ -13,6 +13,128 @@
      Keep entries concise — 3-5 sentences, not paragraphs.
      ============================================================ -->
 
+## Exp58 Repro — Apr 16 confirmation run
+
+Re-ran the current best `exp58_ttt` configuration unchanged to verify that the best result is reproducible from the saved setup rather than a one-off. The repro landed at pre-quant `1.07415`, post-quant `1.08901`, sliding `1.07239`, and TTT `1.07058`, with total artifact size `15.989MB`, so it still fits comfortably under 16MB. This is effectively identical to the original `exp58_ttt` result within about `1e-4` BPB and a few bytes of artifact size. The main takeaway is that the best config is stable enough to treat as real, so further work should focus on genuine architectural changes rather than revalidating the baseline again.
+
+## Experiments 66-75 — Batch 3: HP Refinement & Reproducibility
+
+**Exp66 — Reproducibility (SEED=42 + TTT):** Pre-quant=1.07460, post-quant=1.08954, sliding=1.07298, TTT=**1.07112**, artifact=16.01MB ❌. Reproduces within noise of exp58 (TTT=1.07045 vs 1.07112, Δ=0.00067). Seed variance ~0.0005 pre-quant. Artifact 13KB over — tight margin is seed-dependent.
+
+**Exp67 — SOFTCAP=18:** Pre-quant=1.07500, post-quant=1.08997, sliding=1.07337, artifact=16.02MB ❌. Worse than softcap=20 across the board. Confirms 20 is the sweet spot.
+
+**Exp68 — WARMDOWN=0.88:** Pre-quant=1.07415, post-quant=**1.08931**, sliding=**1.07268**, artifact=16.01MB ❌. Slightly better pre-quant and post-quant than 0.85, but artifact 13KB over. The improvement is within noise. Best warmdown remains 0.85.
+
+**Exp69 — EMBED_BITS=6:** Pre-quant=1.07425, post-quant=**1.11828**, artifact=**14.97MB** ✅✅. Fits with 1MB to spare! But post-quant BPB is catastrophic (+0.029). 6-bit embeddings destroy quality. Not viable.
+
+**Exp70 — GRAD_CLIP=0.5:** Pre-quant=1.07545, post-quant=1.09044, sliding=1.07393, artifact=16.01MB ❌. Worse on all metrics. Confirms gradclip doesn't stack with softcap20 (as found in earlier screening).
+
+**Exp71 — 12L + MLP=3.85 + TTT:** Pre-quant=1.07934, post-quant=1.09403, sliding=1.07740, TTT=1.07557, artifact=16.01MB ❌. 12L still worse than 11L — fewer steps (4852 vs 5229) kills it. Even TTT can't save it.
+
+**Exp72 — EMBED_BITS=6 + MLP=4.45:** Pre-quant=1.07440, post-quant=**1.11709**, artifact=**15.25MB** ✅. Same story as exp69 — 6-bit embeddings ruin post-quant BPB despite huge size savings and better pre-quant from bigger MLP.
+
+**Exp73 — GPTQ_CAL=256 + TTT:** Pre-quant=1.07421, post-quant=1.08931, sliding=1.07267, TTT=**1.07076**, artifact=16.02MB ❌. GPTQ256 gives slightly better post-quant than 128 (1.08931 vs 1.08890) but artifact 16KB over. TTT=1.07076 is close to exp58's 1.07045.
+
+**Exp74 — MUON_WD=0.08:** Pre-quant=1.07462, post-quant=1.09062, sliding=1.07398, artifact=16.02MB ❌. Worse on all metrics. WD=0.095 remains optimal.
+
+**Exp75 — QK_GAIN=6.0 + SOFTCAP=18:** Pre-quant=1.07475, post-quant=1.08954, sliding=1.07287, artifact=16.02MB ❌. Within noise of default (QK=5.25, SC=20). No benefit to this combo.
+
+**Key learnings:**
+- **No compliant improvements found.** exp58_ttt remains the best (TTT=1.07045, 15.99MB ✅).
+- **Artifact size is seed-dependent.** exp66 (seed=42) was 16.01MB while exp58 (seed=1337) was 15.99MB — a 23KB difference from seed alone.
+- **EMBED_BITS=6 saves 1MB** but costs +0.029 post-quant BPB — not viable with current architecture.
+- **All HP tweaks (softcap, warmdown, gradclip, muon_wd, qk_gain)** are near-optimal. No further gains from tuning.
+- **Architecture is converged.** Need fundamentally new approaches: different tokenizer, heterogeneous layers, or novel quantization to improve further.
+
+## Experiments 59-65 — Batch 2: MLP/Architecture/Eval Sweep
+
+**Exp59 — MLP=4.30 (safe fit):** Pre-quant=1.07468, post-quant=1.08959, sliding=1.07298, artifact=15.99MB ✅. 5231 steps. MLP=4.30 fits comfortably but worse BPB than 4.35 across the board. No benefit to smaller MLP.
+
+**Exp60 — MLP=4.30 + LOOP_BITS=7 + hessian_clip=0.3:** Pre-quant=1.07445, post-quant=**1.08624**, sliding=**1.06955**, artifact=17.18MB ❌. 5228 steps. Best post-quant and sliding BPB ever, but 1.2MB over budget. 7-bit loop layers improve quant quality dramatically but add too much size.
+
+**Exp61 — GPTQ_CALIBRATION=256:** Pre-quant=1.07435, post-quant=1.08916, sliding=1.07252, artifact=15.99MB ✅. 5230 steps. Diminishing returns: 256 batches ≈ identical to 128 (1.08916 vs 1.08881). Not worth the extra calibration time.
+
+**Exp62 — EVAL_STRIDE=32:** Pre-quant=1.07413, post-quant=1.08892, sliding=1.07230, artifact=15.99MB ✅. 5232 steps. Stride=32 gives same sliding BPB as stride=64 (1.07230 vs 1.07229) but takes 2x eval time (890s vs 450s). No benefit.
+
+**Exp63 — EMA=0.997:** Pre-quant=1.07475, post-quant=1.08896, sliding=1.07234, artifact=15.99MB ✅. 5229 steps. Worse pre-quant (+0.0007). 0.9965 remains optimal.
+
+**Exp64 — 12L + MLP=3.85 (depth over width):** Pre-quant=1.07909, post-quant=1.09352, sliding=1.07687, artifact=15.98MB ✅. 4850 steps. Extra layer hurts: fewer steps (4850 vs 5228) and worse BPB everywhere. 11L is the sweet spot.
+
+**Exp65 — CLIP=14 + MLP=4.25:** Pre-quant=1.07664, post-quant=1.08976, sliding=1.07317, artifact=16.11MB ❌. 5279 steps. Clip=14 doesn't fit even with MLP=4.25 and stripped code. Tighter clip needs even smaller MLP to compensate, but that hurts BPB.
+
+**Key learnings:**
+- Diminishing returns on quantization tuning: GPTQ_CAL=128 is sufficient, 256 doesn't help.
+- EVAL_STRIDE=32, EMA=0.997 don't improve over current config.
+- LOOP_BITS=7 is promising (best-ever sliding=1.06955) but needs artifact shrinkage.
+- 12L architecture is strictly worse — 11L with bigger MLP is better use of params.
+- Current config (exp58/56) appears near-optimal for this architecture class.
+
+## Experiment 58 — TTT (Score-First Test-Time Training)
+
+**Hypothesis:** TTT adapts model at eval time for free BPB gain (SOTA uses it).
+**Result:** Pre-quant=1.07409, post-quant=1.08890, sliding=1.07229, **TTT=1.07045**. Artifact=15.99MB ✅. 5232 steps.
+**Status:** keep — TTT gives −0.00184 BPB on top of sliding window (1.07229→1.07045)
+**Learned:** TTT is a free eval-time win with no training or artifact cost. Same model as exp56 but with TTT_ENABLED=1. Should be enabled for all future submission candidates. TTT eval takes ~870s (14.5min) vs 450s for regular sliding window.
+
+## Experiment 57 — Stripped + GPTQ128 + Hessian (completed)
+
+**Hypothesis:** Combine two best quantization wins (GPTQ_CAL=128 + hessian_clip=0.3) on stripped script.
+**Result:** Pre-quant=1.07437, post-quant=1.08949, artifact=**16.015MB** ❌ (15KB over!). 5231 steps.
+**Status:** discard (over budget)
+**Learned:** Hessian clipping makes weights less compressible, adding ~26KB to artifact vs exp56 (15.99→16.015MB). The two techniques don't combine well within budget. Exp56 (GPTQ128 alone, 15.99MB) remains best compliant.
+
+## Experiments 56-57 — Stripped script + best config
+
+**Exp56 — Stripped script + GPTQ_CAL=128:** Pre-quant=**1.07403**, post-quant=**1.08881**, artifact=**15.99MB** ✅. 5228 steps, 38.2M params. **NEW BEST COMPLIANT RUN!** The stripped script (83KB vs 88KB code) saves ~5KB, giving more room for model. Post-quant is our best compliant at 1.08881, beating exp48 (1.08905). Sliding window BPB=1.07215.
+
+**Exp57 — Stripped + GPTQ_CAL=128 + hessian_clip=0.3:** CRASHED at step 2500 (~23min). Killed by signal before completion. Would have been interesting to see if hessian+GPTQ stacks with stripped script.
+
+**Key takeaway:** Smaller code file = more model budget within 16MB. The stripped script approach is the right direction. Current best compliant: **exp56** (pre=1.07403, post=1.08881, 15.99MB).
+
+## Experiment 54 — Window Attention (completed)
+
+**Hypothesis:** Local attention (size=512) on layers 0-2 could be faster and save memory for more throughput.
+**Change:** WINDOW_ATTN_SIZE=512, WINDOW_ATTN_LAYERS=0,1,2. CLIP=15, MLP=4.35.
+**Result:** Pre-quant=1.08994, post-quant=**1.10862**, artifact=16.01MB. 5352 steps (more steps due to faster window attn).
+**Status:** discard
+**Learned:** Window attention on early layers severely hurts quality (+0.015 pre-quant, +0.019 post-quant). Despite more steps (5352 vs 5228), the restricted context in early layers damages representation learning. Full attention needed at all layers.
+
+## Experiments 46-54 — Batch of 10: Compression & Architecture Sweep
+
+**Exp46 — Clip=15/MLP=4.35 rerun (baseline verify):** CRASHED (killed by signal). No results.
+
+**Exp47 — Hessian-aware clipping (hessian_clip_lambda=0.3):** Pre-quant=1.07428, post-quant=**1.08944**, artifact=16.04MB ✅. 5229 steps. Hessian clipping improves post-quant by −0.0008 vs gated_clip15_mlp435 (1.09027→1.08944) and still fits 16MB (60KB to spare). New best compliant post-quant!
+
+**Exp48 — GPTQ_CALIBRATION_BATCHES=128:** Pre-quant=1.07430, post-quant=**1.08905**, artifact=16.01MB ✅. 5226 steps. More calibration data further improves post-quant to 1.08905 — best compliant post-quant! Only 12KB headroom though.
+
+**Exp49 — LOOP_LAYER_BITS=8 (int8 for looped layers):** Pre-quant=1.07409, post-quant=**1.08471** (best ever!), artifact=19.01MB ❌. The int8 looped layers give fantastic post-quant BPB but add 3MB to artifact. Would need massive architectural shrink.
+
+**Exp50 — Per-group clip tightening (early=0.85, loop=0.9):** Pre-quant=1.07400, post-quant=**1.08723**, artifact=16.45MB ❌. Great post-quant (+0.003 better than baseline) but 450KB over budget.
+
+**Exp51 — CLIP=13/MLP=4.15:** Pre-quant=1.07662, post-quant=1.08790, artifact=16.57MB ❌. MLP=4.15 still too big for clip=13. 570KB over.
+
+**Exp52 — CLIP=13/MLP=4.20:** Pre-quant=1.07641, post-quant=1.08780, artifact=16.57MB ❌. Same artifact as MLP=4.15 surprisingly — clip=13 dominates the size, MLP barely matters.
+
+**Exp53 — CLIP=15/MLP=4.40:** Pre-quant=1.07433, post-quant=1.08897, artifact=16.29MB ❌. MLP=4.40 pushes capacity but adds 310KB vs MLP=4.35. Over budget.
+
+**Exp54 — Window attention (layers 0-2, size=512):** INCOMPLETE — last seen at step 3500/20000 (35min). Faster tok/s (~1.5M) in early layers but training slowed after loop warmup.
+
+**Key learnings:**
+- **GPTQ_CALIBRATION_BATCHES=128 is the new best compliant config** (1.08905 post-quant, 16.01MB).
+- Hessian clipping also helps and stacks, but barely fits.
+- CLIP=13 doesn't fit even with MLP=4.15 — clip=13 is fundamentally incompatible with 16MB.
+- LOOP_LAYER_BITS=8 shows int8 for shared layers is a goldmine for post-quant but needs smaller base model.
+- Per-group clip tightening works but pushes artifact over limit.
+- Next: try combining GPTQ_CALIBRATION=128 + hessian_clip. Consider MLP=4.30 as smaller compliant option.
+
+## Experiment 45 — CLIP=14 + MLP=4.35
+
+**Hypothesis:** Clip=14 is the midpoint between clip=13 (best post-quant 1.08670, artifact 16.83MB ❌) and clip=15 (compliant at 15.98MB). Should give better post-quant than clip=15 while hopefully fitting 16MB.
+**Change:** MATRIX_CLIP_SIGMAS=14 with GATED_ATTENTION=1, MLP_MULT=4.35. Also using brotli compressor (new) and hessian_clip_lambda=0.3.
+**Result:** Pre-quant=1.08086, post-quant=**1.09351**, artifact=16.39MB ❌. Only 4394 steps (vs 5122 for clip=15).
+**Status:** discard
+**Learned:** Clip=14 worse on every metric. Slower throughput (~0.98M tok/s at step 4000) yielded 700 fewer steps than clip=15 run. New code features (hessian_clip_lambda=0.3, brotli/ANS compressor) may have changed baseline. Need to re-run clip=15 with current code to verify old results still hold. ANS compression gave 16.30MB model — bigger than zlib was for clip=15.
+
 ## Experiment 44 — GATED + CLIP=13 + MLP=4.35
 
 **Hypothesis:** Clip=13 should give better post-quant BPB than clip=15 while hopefully fitting under 16MB.

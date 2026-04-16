@@ -10,7 +10,7 @@ Optimize for the OpenAI Model Craft Challenge: Parameter Golf.
 
 **Definition:** tokenizer-agnostic bits-per-byte on the fixed FineWeb validation split
 
-**Primary source of truth:** this file and the evaluation path inside `train_gpt*.py`
+**Primary source of truth:** this file and the evaluation path inside `train_gpt_improved_04_15.py`
 
 For headline record claims, use the following statistical improvement rule:
 
@@ -40,8 +40,8 @@ Two budgets matter simultaneously:
 - Treat training speed, evaluation speed, and compressed size as first-class metrics, not afterthoughts.
 
 ### What the agent can edit
-- create new `train_gpt_*.py` files based on existing SOTA solutions under the `records` folder
-- modify existing `train_gpt_*.py` files
+- create new `train_gpt_xx.py` files based on existing SOTA solutions under the `records` folder
+- modify existing `train_gpt_improved_04_15.py` files
 - Repo-local experiment notes such as `strategy.md`, `journal.md`, and `results.tsv` may be updated.
 - Helper scripts or docs may be edited when needed to support the current workflow, but avoid unrelated churn.
 - install third-party libraries to accelerate training, compression, or quantization
@@ -69,12 +69,7 @@ Keep a complex change only if it pays for itself in `val_bpb`, speed, size, or r
 | File | Who edits | Purpose |
 |------|-----------|---------|
 | `program.md` | Agent/Human | This operating spec for this repo |
-| `train_gpt.py` | **Agent** | Original CUDA training, eval, quantization, serialization |
-| `train_gpt_04_09.py` | **Agent** | Training, eval, quantization, and serialization based on the 2026-04-09 solution, with architecture changes |
-| `train_gpt_improved.py` | **Agent** | Training, eval, quantization, and serialization with improved hyperparameters (SOFTCAP=20, WARMDOWN=0.85) |
-| `test_run_1311.py` | **Agent** | Local script related to experiments around PR 1311 |
-| `train_gpt_2026-04-05.py` | **Agent** | Training, eval, quantization, and serialization based on the 2026-04-05 solution with full residual attention |
-| `train_gpt_new.py` | **Agent** | Training, eval, quantization, and serialization for repo-local experiments derived from the original `train_gpt.py` |
+| `train_gpt_improved_04_15.py` | **Agent** | Training, eval, quantization, and serialization with improved hyperparameters |
 | `strategy.md` | **Agent** | Current search phase, hypotheses, priorities |
 | `journal.md` | **Agent** | Concise experiment narrative and lessons learned |
 | `results.tsv` | **Agent** | Structured run log |
@@ -87,7 +82,7 @@ Read the relevant files before making changes. This file defines the current rep
 Before starting a serious experiment cycle:
 
 1. Read this file, `strategy.md`, `journal.md`, and `results.tsv`.
-2. Two dataset roots are available: `sp1024` under `./data` and `sp8192` under `./data2`.
+2. Two dataset roots are available: `sp8192` under `./data`.
 3. Decide whether the run is:
    - a local smoke test,
    - a single-GPU CUDA experiment,
@@ -124,6 +119,7 @@ Run a disciplined loop:
 
 5. **Read results**
    - Record at minimum: `val_loss`, `val_bpb`, compressed size, total runtime, and any notable eval details.
+   - record the command as well and noted in command.txt
 
 6. **Decide**
    - Keep, discard, or mark as inconclusive.

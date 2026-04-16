@@ -1,4 +1,5 @@
 commit	run_id	val_metric	memory_gb num_steps num_epochs	status	description
+-	exp58_ttt_repro	1.07415/1.08901	40.5	5228	-	keep	Repro of exp58_ttt on Apr 16. TTT=1.07058, artifact=15.989MB. Confirms best config within ~1e-4 BPB and within budget.
 -	gqa_baseline	1.0800/1.0908	44.3	4990	-	keep	Baseline: 11L×512d SP8192 GQA, QK5.25, depth recur, parallel resid, EMA0.9965, 4xA100 3600s. Pre-quant/post-quant BPB.
 -	qk_gain_7	1.0797/1.0905	44.3	4991	-	discard	QK_GAIN_INIT=7.0 vs 5.25 baseline. Within noise (~0.0003). QK gain saturated.
 -	loops3	1.0820/1.0924	51.8	4554	-	discard	NUM_LOOPS=3 (20 virtual layers). Slower (1.0M tok/s), fewer steps, worse BPB than 2-loop baseline.
@@ -42,3 +43,33 @@ commit	run_id	val_metric	memory_gb num_steps num_epochs	status	description
 -	gated_clip15_mlp425	1.07589/1.09104	43.5	5283	-	keep	GATED+CLIP=15+MLP=4.25. Best compliant run. Pre-quant=1.07589, artifact=15.75MB.
 -	gated_clip15_mlp435	1.07518/1.09027	43.8	5122	-	keep	GATED+CLIP=15+MLP=4.35. Pre-quant=1.07518, post-quant=1.09027, artifact=15.98MB. Fits 16MB with 24KB to spare!
 -	gated_clip13_mlp435	1.07522/1.08670	43.8	5132	-	keep	GATED+CLIP=13+MLP=4.35. Best post-quant=1.08670! But artifact=16.83MB (over 16MB).
+-	exp45_clip14_mlp435	1.08086/1.09351	41.3	4394	-	discard	CLIP=14+MLP=4.35+hessian_clip=0.3+ANS. Worse on every metric. Only 4394 steps, artifact=16.39MB (over). ANS compression bigger than zlib.
+-	exp46_clip15_rerun	-/-	-	-	-	crashed	Rerun of clip15/MLP4.35 baseline with current code. Killed by signal before completion.
+-	exp47_hess03	1.07428/1.08944	43.8	5229	-	keep	CLIP=15+MLP=4.35+hessian_clip=0.3. Artifact=16.04MB (fits!). Hessian clipping improves post-quant by −0.0008.
+-	exp48_gptq128	1.07430/1.08905	43.8	5226	-	keep	CLIP=15+MLP=4.35+GPTQ_CALIBRATION=128. Artifact=16.01MB (fits!). Best compliant post-quant. 128 cal batches > 64.
+-	exp49_loopbits8	1.07409/1.08471	43.8	5227	-	keep	CLIP=15+MLP=4.35+LOOP_BITS=8. Best post-quant ever! But artifact=19.01MB (way over). Int8 loops = +3MB.
+-	exp50_earlyTight	1.07400/1.08723	43.8	5230	-	discard	CLIP=15+MLP=4.35+clip_early=0.85/loop=0.9. Good post-quant but artifact=16.45MB (over by 450KB).
+-	exp51_clip13_mlp415	1.07662/1.08790	43.5	5277	-	discard	CLIP=13+MLP=4.15. Artifact=16.57MB (over). Clip=13 incompatible with 16MB even at MLP=4.15.
+-	exp52_clip13_mlp420	1.07641/1.08780	43.5	5279	-	discard	CLIP=13+MLP=4.20. Artifact=16.57MB (over). Same artifact as 4.15 — clip dominates size, MLP ≈irrelevant.
+-	exp53_mlp440	1.07433/1.08897	43.8	5191	-	discard	CLIP=15+MLP=4.40. Artifact=16.29MB (over by 290KB). More MLP capacity doesn't help enough.
+-	exp54_winatt	1.08994/1.10862	40.5	5352	-	discard	CLIP=15+MLP=4.35+window_attn layers 0-2 (size=512). Pre-quant worse (+0.015), post-quant much worse (+0.019). Artifact=16.01MB. Window attn hurts quality badly.
+-	exp56_stripped_gptq128	1.07403/1.08881	40.5	5228	-	keep	Stripped script + GPTQ_CAL=128 + CLIP=15+MLP=4.35. NEW BEST COMPLIANT! Artifact=15.99MB ✅. Smaller code (83KB) = more model budget.
+-	exp57_stripped_combo	1.07437/1.08949	40.5	5231	-	discard	Stripped + GPTQ_CAL=128 + hessian_clip=0.3. Artifact=16.015MB (15KB over!). Hessian inflates artifact slightly vs exp56.
+-	exp58_ttt	1.07409/1.08890	40.5	5232	-	keep	Stripped + GPTQ_CAL=128 + TTT_ENABLED=1. Artifact=15.99MB ✅. TTT BPB=1.07045! −0.00184 from sliding window. NEW BEST with TTT.
+-	exp59_mlp430	1.07468/1.08959	40.5	5231	-	discard	Stripped + GPTQ_CAL=128 + MLP=4.30. Artifact=15.99MB ✅. Worse BPB than MLP=4.35 across the board. Sliding=1.07298.
+-	exp60_mlp430_loop7	1.07445/1.08624	40.5	5228	-	keep	MLP=4.30+LOOP_BITS=7+hessian=0.3. Best post-quant=1.08624, sliding=1.06955! But artifact=17.18MB ❌.
+-	exp61_gptq256	1.07435/1.08916	40.5	5230	-	discard	GPTQ_CAL=256. Artifact=15.99MB ✅. ≈Same as 128 (1.08916 vs 1.08881). Diminishing returns.
+-	exp62_stride32	1.07413/1.08892	40.5	5232	-	discard	EVAL_STRIDE=32. Artifact=15.99MB ✅. Same sliding BPB=1.07230 as stride=64 but 2x eval time.
+-	exp63_ema997	1.07475/1.08896	40.5	5229	-	discard	EMA=0.997. Artifact=15.99MB ✅. Worse pre-quant (+0.0007). 0.9965 remains optimal.
+-	exp64_12L_mlp385	1.07909/1.09352	40.5	4850	-	discard	12L+MLP=3.85. Artifact=15.98MB ✅. Extra layer hurts: fewer steps (4850) and worse BPB. 11L is better.
+-	exp65_clip14_mlp425	1.07664/1.08976	40.5	5279	-	discard	CLIP=14+MLP=4.25 stripped. Artifact=16.11MB ❌. Clip=14 doesn't fit even with smaller MLP and stripped code.
+-	exp66_repro_seed42	1.07460/1.08954	40.5	5229	-	keep	Seed=42 repro + TTT. TTT=1.07112. Artifact=16.01MB ❌ (13KB over). Confirms exp58 within noise (Δ=0.0007 TTT).
+-	exp67_softcap18	1.07500/1.08997	40.5	5230	-	discard	SOFTCAP=18. Worse than 20. Confirms SC=20 optimal.
+-	exp68_warmdown088	1.07415/1.08931	40.5	5231	-	discard	WARMDOWN=0.88. Within noise of 0.85 but artifact 13KB over. 0.85 remains best.
+-	exp69_embedbits6	1.07425/1.11828	40.5	5229	-	discard	EMBED_BITS=6. Artifact=14.97MB ✅ (1MB spare!) but post-quant catastrophic (+0.029 BPB).
+-	exp70_gradclip05	1.07545/1.09044	40.5	5229	-	discard	GRAD_CLIP=0.5. Worse on all metrics. Doesn't stack with softcap20.
+-	exp71_12L_ttt	1.07934/1.09403	40.5	4852	-	discard	12L+MLP=3.85+TTT. TTT=1.07557. Fewer steps (4852), worse BPB. 11L is better.
+-	exp72_emb6_mlp445	1.07440/1.11709	40.5	5195	-	discard	EMBED_BITS=6+MLP=4.45. Artifact=15.25MB ✅ but post-quant ruined (+0.028 BPB). 6-bit embeds not viable.
+-	exp73_gptq256_ttt	1.07421/1.08931	40.5	5229	-	discard	GPTQ256+TTT. TTT=1.07076. Artifact=16.02MB ❌. Marginal post-quant gain over 128 but doesn't fit.
+-	exp74_muonwd08	1.07462/1.09062	40.5	5225	-	discard	MUON_WD=0.08. Worse on all metrics. WD=0.095 optimal.
+-	exp75_qk6_sc18	1.07475/1.08954	40.5	5229	-	discard	QK_GAIN=6.0+SOFTCAP=18. Within noise. No benefit from this combo.
