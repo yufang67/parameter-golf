@@ -311,11 +311,20 @@ class Hyperparameters():
     ttt_sanity_check = bool(int(os.environ.get('TTT_SANITY_CHECK', '0')))
     ttt_layer_debug = bool(int(os.environ.get('TTT_LAYER_DEBUG', '0')))
     ttt_layer_debug_tol = float(os.environ.get('TTT_LAYER_DEBUG_TOL', 1e-3))
-    # Full-param TTT params
-    ttt_fp_lr = float(os.environ.get('TTT_FP_LR', 0.001))
+    # Full-param TTT params — defaults match train_gpt_stripped.py (exp58 proven).
+    ttt_fp_lr = float(os.environ.get('TTT_FP_LR', 0.005))
     ttt_fp_epochs = int(os.environ.get('TTT_FP_EPOCHS', 3))
     ttt_fp_momentum = float(os.environ.get('TTT_FP_MOMENTUM', 0.9))
     ttt_fp_chunk_tokens = int(os.environ.get('TTT_FP_CHUNK_TOKENS', 32768))
+    # Optimizer for fullparam TTT: 'sgd' (default, matches stripped) or 'adamw'
+    ttt_fp_optimizer = os.environ.get('TTT_FP_OPTIMIZER', 'sgd')
+    # TTT mode selector: 'auto' → lora if varlen else fullparam; or force 'lora'/'fullparam'
+    ttt_mode = os.environ.get('TTT_MODE', 'auto')
+    # LoRA TTT stability safeguards
+    ttt_lora_grad_clip = float(os.environ.get('TTT_LORA_GRAD_CLIP', 1.0))
+    ttt_lora_nan_guard = bool(int(os.environ.get('TTT_LORA_NAN_GUARD', '1')))
+    # Eval-only mode: skip training, load final_model.pt + final_model.int6.ptz
+    eval_only = bool(int(os.environ.get('EVAL_ONLY', '0')))
     # Quantization & Compression
     compressor = os.environ.get('COMPRESSOR', 'brotli')
     compress_brotli = bool(int(os.environ.get('COMPRESS_BROTLI', '0')))
@@ -1126,7 +1135,9 @@ class GPT(nn.Module):
             logits_proj = self.lm_head(x)
         return self.logit_softcap * torch.tanh(logits_proj / self.logit_softcap)
     def _block_with_lora(self, block: 'Block', x: Tensor, x0: Tensor,
-                         lora: 'BatchedTTTLoRA', slot: int) -> Tensor:
+                         lora: 'BatchedTTTLoRA', slot: int,
+                         cu_seqlens: Tensor | None = None,
+                         max_seqlen: int | None = None) -> Tensor:
         """Run a Block with LoRA injected into Q/K/V/O/MLP projections."""
         mix = block.resid_mix.to(dtype=x.dtype)
         x_in = mix[0][None, None, :] * x + mix[1][None, None, :] * x0
@@ -1153,8 +1164,19 @@ class GPT(nn.Module):
             q = apply_rotary_emb(q, cos, sin, attn.rope_dims)
             k = apply_rotary_emb(k, cos, sin, attn.rope_dims)
             q = q * attn.q_gain.to(dtype=q.dtype)[None, None, :, None]
-        window = (attn.window_size, attn.window_size) if attn.window_size > 0 and attn.training else (-1, -1)
-        y = flash_attn_3_func(q, k, v, causal=True, window_size=window)
+        if attn.use_varlen and cu_seqlens is not None and _HAS_VARLEN:
+            q_flat = q.reshape(-1, attn.num_heads, attn.head_dim)
+            k_flat = k.reshape(-1, attn.num_kv_heads, attn.head_dim)
+            v_flat = v.reshape(-1, attn.num_kv_heads, attn.head_dim)
+            y = flash_attn_3_varlen_func(
+                q_flat, k_flat, v_flat,
+                cu_seqlens, cu_seqlens,
+                max_seqlen, max_seqlen,
+                causal=True,
+            ).reshape(bsz, seqlen, attn.num_heads, attn.head_dim)
+        else:
+            window = (attn.window_size, attn.window_size) if attn.window_size > 0 and attn.training else (-1, -1)
+            y = flash_attn_3_func(q, k, v, causal=True, window_size=window)
         if attn.use_xsa:
             y = attn._xsa_efficient(y, v)
         if attn.gated:
@@ -1184,8 +1206,17 @@ class GPT(nn.Module):
             x_out = x_out + block.mlp_scale.to(dtype=x_out.dtype)[None, None, :] * mlp_out
         return x_out
     def forward_ttt(self, input_ids: Tensor, target_ids: Tensor,
-                    lora: 'BatchedTTTLoRA') -> Tensor:
+                    lora: 'BatchedTTTLoRA',
+                    cu_seqlens: Tensor | None = None,
+                    max_seqlen: int | None = None) -> Tensor:
         """Forward pass with per-sample LoRA for TTT. Returns per-token loss (B, T)."""
+        # For varlen-trained models each row in the batch is a different doc;
+        # synthesize cu_seqlens from row boundaries so attention stays within-doc.
+        if cu_seqlens is None and self.use_varlen and _HAS_VARLEN:
+            bsz_, sl_ = input_ids.shape
+            total = bsz_ * sl_
+            cu_seqlens = torch.arange(0, total + 1, sl_, dtype=torch.int32, device=input_ids.device)
+            max_seqlen = sl_
         x = self.tok_emb(input_ids)
         x = F.rms_norm(x, (x.size(-1),))
         if self.embed_proj is not None:
@@ -1201,7 +1232,7 @@ class GPT(nn.Module):
         slot = 0
         for i in enc_iter:
             x = self._add_loop_emb(x, i, {})
-            x = self._block_with_lora(self.blocks[i], x, x0, lora, slot)
+            x = self._block_with_lora(self.blocks[i], x, x0, lora, slot, cu_seqlens, max_seqlen)
             slot += 1
             skips.append(x)
         for skip_idx, i in enumerate(dec_iter):
@@ -1213,7 +1244,7 @@ class GPT(nn.Module):
                 else:
                     x = x + scaled_skip
             x = self._add_loop_emb(x, i, {})
-            x = self._block_with_lora(self.blocks[i], x, x0, lora, slot)
+            x = self._block_with_lora(self.blocks[i], x, x0, lora, slot, cu_seqlens, max_seqlen)
             slot += 1
         x = self.final_norm(x)
         if self.head_proj is not None:
@@ -2025,7 +2056,7 @@ def eval_val_sliding(
     with torch.no_grad():
         for bi in range(0, len(my_windows), batch_seqs):
             batch_idx = bi // batch_seqs
-            if is_master and (batch_idx % 50 == 0 or batch_idx == total_batches - 1):
+            if is_master and (batch_idx % 500 == 0 or batch_idx == total_batches - 1):
                 elapsed = time.perf_counter() - t_sw_start
                 rl = float(loss_sum.item() / token_count.item()) if token_count.item() > 0 else 0.0
                 rb = float((rl / math.log(2.0)) * token_count.item() / byte_count.item()) if byte_count.item() > 0 else 0.0
@@ -2508,9 +2539,32 @@ def eval_val_ttt(
                         with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
                             per_tok_loss = forward_ttt_train(x, y, lora=cur_lora)
                     per_doc = per_tok_loss[:, chunk_offset:chunk_offset + chunk_size].mean(dim=-1)
+                    loss_scalar = (per_doc * activate_chunk_mask).sum()
+                    if h.ttt_lora_nan_guard and (torch.isnan(loss_scalar) | torch.isinf(loss_scalar)).item():
+                        log(f"ttt_lora:NaN/Inf loss at batch {orig_batch_idx} chunk {ci} gi {gi} — skipping step")
+                        cur_opt.zero_grad(set_to_none=True)
+                        continue
                     cur_opt.zero_grad(set_to_none=True)
-                    (per_doc * activate_chunk_mask).sum().backward()
+                    loss_scalar.backward()
+                    if h.ttt_lora_nan_guard:
+                        for p in cur_lora.parameters():
+                            if p.grad is not None:
+                                torch.nan_to_num_(p.grad, nan=0.0, posinf=0.0, neginf=0.0)
+                    if h.ttt_lora_grad_clip > 0:
+                        torch.nn.utils.clip_grad_norm_(cur_lora.parameters(), h.ttt_lora_grad_clip)
                     cur_opt.step()
+                    if h.ttt_lora_nan_guard:
+                        has_nan = any(torch.isnan(p).any().item() for p in cur_lora.parameters() if p.numel() > 0)
+                        if has_nan:
+                            log(f"ttt_lora:NaN params after step at batch {orig_batch_idx} chunk {ci} gi {gi} — resetting LoRA")
+                            cur_lora.reset()
+                            for s in cur_opt.state.values():
+                                for k, v in s.items():
+                                    if isinstance(v, torch.Tensor):
+                                        v.zero_()
+                                    elif k == "step":
+                                        s[k] = 0
+                            break
             else:
                 del per_tok_loss
         batch_num = orig_batch_idx + 1
@@ -2571,17 +2625,29 @@ def eval_val_ttt_fullparam(
         ci = min(scored_start // ttt_chunk, num_chunks - 1)
         chunk_windows[ci].append(ws)
     log(f"ttt_fullparam:start chunks={num_chunks} lr={h.ttt_fp_lr} "
-        f"epochs={h.ttt_fp_epochs} optimizer=AdamW")
+        f"epochs={h.ttt_fp_epochs} optimizer={h.ttt_fp_optimizer}")
     # Use uncompiled forward_logits — torch.compile can have stale caches after SGD updates
     forward_logits_fn = base_model.forward_logits
+    use_varlen = getattr(base_model, 'use_varlen', False) and _HAS_VARLEN
+    global BOS_ID
+    if BOS_ID is None:
+        BOS_ID = 1
+    cu_bucket = 64
     loss_sum = torch.zeros((), device=device, dtype=torch.float64)
     token_count = torch.zeros((), device=device, dtype=torch.float64)
     byte_count = torch.zeros((), device=device, dtype=torch.float64)
     ttt_params = list(base_model.parameters())
     for p in ttt_params:
         p.requires_grad_(True)
-    optimizer = torch.optim.AdamW(ttt_params, lr=h.ttt_fp_lr, betas=(0.9, 0.999),
-                                  eps=1e-8, weight_decay=0.01)
+    # Match stripped-script TTT which is proven to improve BPB (exp58): SGD+momentum.
+    # Optionally allow AdamW via env for experimentation. AdamW with full-param TTT
+    # tends to diverge on a already-trained model because Adam's variance estimates
+    # start at 0 and produce large effective step sizes until betas stabilize.
+    if h.ttt_fp_optimizer == 'adamw':
+        optimizer = torch.optim.AdamW(ttt_params, lr=h.ttt_fp_lr, betas=(0.9, 0.999),
+                                      eps=1e-8, weight_decay=0.01)
+    else:
+        optimizer = torch.optim.SGD(ttt_params, lr=h.ttt_fp_lr, momentum=h.ttt_fp_momentum)
     for ci in range(num_chunks):
         windows = chunk_windows[ci]
         if not windows:
@@ -2597,6 +2663,53 @@ def eval_val_ttt_fullparam(
             for bi in range(0, len(my_windows), batch_seqs):
                 batch_ws = my_windows[bi:bi + batch_seqs]
                 bsz = len(batch_ws)
+                if use_varlen:
+                    # Flat concat with per-window BOS-derived cu_seqlens (match eval_val_sliding).
+                    x_parts = []
+                    y_parts = []
+                    cu_starts = []
+                    score_ranges = []
+                    offset = 0
+                    for ws in batch_ws:
+                        end = min(ws + seq_len, total_tokens)
+                        wlen = end - ws
+                        chunk_cpu = val_data.val_tokens[ws:end + 1]
+                        bos_pos = (chunk_cpu[:-1] == BOS_ID).nonzero(as_tuple=True)[0].tolist()
+                        if not bos_pos or bos_pos[0] != 0:
+                            bos_pos = [0] + bos_pos
+                        cu_starts.extend(offset + pos for pos in bos_pos)
+                        chunk = chunk_cpu.to(dtype=torch.int64, device=device)
+                        x_parts.append(chunk[:-1])
+                        y_parts.append(chunk[1:])
+                        score_ranges.append((offset, wlen, ws))
+                        offset += wlen
+                    x_cat = torch.cat(x_parts, dim=0)[None]
+                    y_cat = torch.cat(y_parts, dim=0)
+                    boundaries = cu_starts + [offset]
+                    padded_len = _get_next_multiple_of_n(len(boundaries), cu_bucket)
+                    cu_seqlens = torch.full((padded_len,), offset, dtype=torch.int32, device=device)
+                    cu_seqlens[:len(boundaries)] = torch.tensor(boundaries, dtype=torch.int32, device=device)
+                    with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
+                        logits = forward_logits_fn(x_cat, cu_seqlens=cu_seqlens, max_seqlen=seq_len)
+                    flat_nll = F.cross_entropy(
+                        logits.reshape(-1, logits.size(-1)).float(),
+                        y_cat, reduction="none",
+                    )
+                    flat_x = x_cat.reshape(-1)
+                    for off, wlen, ws in score_ranges:
+                        s = 0 if ws == 0 else context_size
+                        lo = off + s
+                        hi = off + wlen
+                        scored_nll = flat_nll[lo:hi].to(torch.float64)
+                        loss_sum += scored_nll.sum()
+                        token_count += float(hi - lo)
+                        tgt = y_cat[lo:hi]
+                        prev = flat_x[lo:hi]
+                        tb = val_data.base_bytes_lut[tgt].to(torch.float64)
+                        tb += (val_data.has_leading_space_lut[tgt] &
+                               ~val_data.is_boundary_token_lut[prev]).to(torch.float64)
+                        byte_count += tb.sum()
+                    continue
                 x_batch = torch.zeros(bsz, seq_len, dtype=torch.int64, device=device)
                 y_batch = torch.zeros(bsz, seq_len, dtype=torch.int64, device=device)
                 wlens: list[int] = []
@@ -2904,15 +3017,27 @@ def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
     val_data = ValidationData(h, device)
     log(f"train_shards: {len(list(Path(h.datasets_dir).resolve().glob('fineweb_train_*.bin')))}")
     log(f"val_tokens: {val_data.val_tokens.numel() - 1}")
-    base_model, compiled_model = train_model(h, device, val_data)
-    torch._dynamo.reset()
-    timed_eval("pre-quantization post-ema", eval_val, h, device, val_data, compiled_model)
-    # Use the compressed loader (train_gpt.py) as code artifact when launched
-    # via the packed submission; fall back to this file for direct runs.
-    code_path = Path(os.environ.get("_ORIG_SCRIPT", __file__))
-    serialize(h, base_model, code_path.read_text(encoding="utf-8"))
-    if h.distributed:
-        dist.barrier()
+    if h.eval_only:
+        log(f"EVAL_ONLY mode: loading {h.model_path} and {h.quantized_model_path}, skipping training")
+        base_model = GPT(h).to(device).bfloat16()
+        restore_fp32_params(base_model)
+        if not os.path.exists(h.model_path):
+            raise FileNotFoundError(f"EVAL_ONLY requires {h.model_path} to exist")
+        state_dict = torch.load(h.model_path, map_location=device, weights_only=True)
+        base_model.load_state_dict(state_dict, strict=True)
+        if h.num_loops > 0:
+            base_model.looping_active = True
+        compiled_model = torch.compile(base_model, dynamic=False, fullgraph=True)
+    else:
+        base_model, compiled_model = train_model(h, device, val_data)
+        torch._dynamo.reset()
+        timed_eval("pre-quantization post-ema", eval_val, h, device, val_data, compiled_model)
+        # Use the compressed loader (train_gpt.py) as code artifact when launched
+        # via the packed submission; fall back to this file for direct runs.
+        code_path = Path(os.environ.get("_ORIG_SCRIPT", __file__))
+        serialize(h, base_model, code_path.read_text(encoding="utf-8"))
+        if h.distributed:
+            dist.barrier()
     eval_model = deserialize(h, device)
     if h.num_loops > 0:
         eval_model.looping_active = True
@@ -2920,7 +3045,7 @@ def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
     timed_eval("quantized", eval_val, h, device, val_data, compiled_model)
     if h.sliding_window_enabled:
         timed_eval("quantized_sliding_window", eval_val_sliding, h, device, val_data, eval_model)
-    if h.ttt_enabled and h.sliding_window_enabled:
+    if h.ttt_enabled:
         del eval_model, compiled_model
         torch._dynamo.reset()
         torch.cuda.empty_cache()
@@ -2928,8 +3053,9 @@ def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
         if h.num_loops > 0:
             ttt_model.looping_active = True
         use_varlen = getattr(ttt_model, 'use_varlen', False) and _HAS_VARLEN
-        if not use_varlen:
-            # Non-varlen → fullparam TTT
+        if h.ttt_mode == 'fullparam' or (h.ttt_mode == 'auto' and not use_varlen):
+            # Fullparam TTT (score-sliding + SGD adaptation per mega-chunk).
+            # Known to work with or without varlen — forward auto-computes cu_seqlens.
             timed_eval("quantized_ttt_fullparam", eval_val_ttt_fullparam,
                         h, device, val_data, ttt_model)
         else:

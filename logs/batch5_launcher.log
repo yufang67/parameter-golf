@@ -1,0 +1,782 @@
+
+================================================================
+=== TRAIN exp86_varlen_base at Thu Apr 16 17:14:02 UTC 2026 ===
+================================================================
+CMD: DATA_DIR=./data2/ MAX_WALLCLOCK_SECONDS=3600 GATED_ATTENTION=1 COMPRESS_ANS=1     MATRIX_CLIP_SIGMAS=15 MLP_MULT=4.35 HESSIAN_CLIP_LAMBDA=0 GPTQ_CALIBRATION_BATCHES=128     VARLEN_ATTENTION=1  RUN_ID=exp86_varlen_base torchrun --standalone --nproc_per_node=4 train_gpt_improved_04_15.py
+W0416 17:14:03.344000 565574 torch/distributed/run.py:851] 
+W0416 17:14:03.344000 565574 torch/distributed/run.py:851] *****************************************
+W0416 17:14:03.344000 565574 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0416 17:14:03.344000 565574 torch/distributed/run.py:851] *****************************************
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Bootstrap: Using eth0:10.0.0.5<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Bootstrap: Using eth0:10.0.0.5<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Bootstrap: Using eth0:10.0.0.5<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Bootstrap: Using eth0:10.0.0.5<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.5<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.5<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.5<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO ncclCommInitRankConfig comm 0x25497300 rank 2 nranks 4 cudaDev 2 nvmlDev 2 busId 300000 commId 0xfd815a51809c7967 - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO ncclCommInitRankConfig comm 0x36dde3c0 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 100000 commId 0xfd815a51809c7967 - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO ncclCommInitRankConfig comm 0x16ce4e90 rank 3 nranks 4 cudaDev 3 nvmlDev 3 busId 400000 commId 0xfd815a51809c7967 - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.5<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO ncclCommInitRankConfig comm 0x2f167060 rank 1 nranks 4 cudaDev 1 nvmlDev 1 busId 200000 commId 0xfd815a51809c7967 - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Bootstrap timings total 0.005643 (create 0.000043, send 0.000177, recv 0.001417, ring 0.000154, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Bootstrap timings total 0.004433 (create 0.000037, send 0.000155, recv 0.000393, ring 0.003374, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Bootstrap timings total 0.004465 (create 0.000048, send 0.000189, recv 0.003606, ring 0.000235, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Bootstrap timings total 0.001087 (create 0.000052, send 0.000181, recv 0.000302, ring 0.000118, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 2 is 48-71. (GPU affinity = 48-71 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO NVLS multicast support is not available on dev 2 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 3 is 72-95. (GPU affinity = 72-95 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO NVLS multicast support is not available on dev 3 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 1 is 24-47. (GPU affinity = 24-47 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO NVLS multicast support is not available on dev 1 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 0 is 0-23. (GPU affinity = 0-23 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO NVLS multicast support is not available on dev 0 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO comm 0x25497300 rank 2 nRanks 4 nNodes 1 localRanks 4 localRank 2 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO comm 0x16ce4e90 rank 3 nRanks 4 nNodes 1 localRanks 4 localRank 3 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO comm 0x36dde3c0 rank 0 nRanks 4 nNodes 1 localRanks 4 localRank 0 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO comm 0x2f167060 rank 1 nRanks 4 nNodes 1 localRanks 4 localRank 1 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Trees [0] -1/-1/-1->3->2 [1] -1/-1/-1->3->2 [2] -1/-1/-1->3->2 [3] -1/-1/-1->3->2 [4] -1/-1/-1->3->2 [5] -1/-1/-1->3->2 [6] -1/-1/-1->3->2 [7] -1/-1/-1->3->2
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Trees [0] 3/-1/-1->2->1 [1] 3/-1/-1->2->1 [2] 3/-1/-1->2->1 [3] 3/-1/-1->2->1 [4] 3/-1/-1->2->1 [5] 3/-1/-1->2->1 [6] 3/-1/-1->2->1 [7] 3/-1/-1->2->1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Channel 00/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Channel 01/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Channel 02/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Channel 03/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Channel 04/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Trees [0] 2/-1/-1->1->0 [1] 2/-1/-1->1->0 [2] 2/-1/-1->1->0 [3] 2/-1/-1->1->0 [4] 2/-1/-1->1->0 [5] 2/-1/-1->1->0 [6] 2/-1/-1->1->0 [7] 2/-1/-1->1->0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Channel 05/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Channel 06/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Channel 07/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1 [2] 1/-1/-1->0->-1 [3] 1/-1/-1->0->-1 [4] 1/-1/-1->0->-1 [5] 1/-1/-1->0->-1 [6] 1/-1/-1->0->-1 [7] 1/-1/-1->0->-1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565686 [0] NCCL INFO [Proxy Service] Device 2 CPU core 65
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565687 [0] NCCL INFO [Proxy Service] Device 3 CPU core 92
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565688 [0] NCCL INFO [Proxy Service UDS] Device 2 CPU core 61
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565689 [0] NCCL INFO [Proxy Service UDS] Device 3 CPU core 81
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565691 [0] NCCL INFO [Proxy Service] Device 1 CPU core 38
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565690 [0] NCCL INFO [Proxy Service] Device 0 CPU core 9
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565693 [0] NCCL INFO [Proxy Service UDS] Device 1 CPU core 43
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565692 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 16
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO CC Off, workFifoBytes 1048576
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO ncclCommInitRankConfig comm 0x25497300 rank 2 nranks 4 cudaDev 2 nvmlDev 2 busId 300000 commId 0xfd815a51809c7967 - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO ncclCommInitRankConfig comm 0x36dde3c0 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 100000 commId 0xfd815a51809c7967 - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Init timings - ncclCommInitRankConfig: rank 0 nranks 4 total 0.16 (kernels 0.12, alloc 0.01, bootstrap 0.00, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Init timings - ncclCommInitRankConfig: rank 2 nranks 4 total 0.16 (kernels 0.12, alloc 0.01, bootstrap 0.01, allgathers 0.00, topo 0.01, graphs 0.00, connections 0.01, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO ncclCommInitRankConfig comm 0x2f167060 rank 1 nranks 4 cudaDev 1 nvmlDev 1 busId 200000 commId 0xfd815a51809c7967 - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Init timings - ncclCommInitRankConfig: rank 1 nranks 4 total 0.15 (kernels 0.12, alloc 0.00, bootstrap 0.00, allgathers 0.00, topo 0.01, graphs 0.00, connections 0.01, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO ncclCommInitRankConfig comm 0x16ce4e90 rank 3 nranks 4 cudaDev 3 nvmlDev 3 busId 400000 commId 0xfd815a51809c7967 - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Init timings - ncclCommInitRankConfig: rank 3 nranks 4 total 0.16 (kernels 0.12, alloc 0.01, bootstrap 0.00, allgathers 0.00, topo 0.01, graphs 0.00, connections 0.01, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Channel 00 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Channel 00 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Channel 01 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Channel 01 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Channel 02 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Channel 02 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Channel 03 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Channel 03 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Channel 04 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Channel 04 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Channel 00/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Channel 00/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Channel 01/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Channel 01/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Channel 05 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Channel 05 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Channel 02/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Channel 02/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Channel 06 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Channel 06 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Channel 03/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Channel 03/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Channel 04/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Channel 04/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Channel 07 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Channel 07 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Channel 05/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Channel 05/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Channel 06/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Channel 06/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Channel 07/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Channel 07/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+Hyperparameters:
+  adam_eps: 1e-08
+  adam_wd: 0.02
+  beta1: 0.9
+  beta2: 0.95
+  bigram_dim: 128
+  bigram_vocab_size: 0
+  clip_mult_early: 1.0
+  clip_mult_late: 1.0
+  clip_mult_loop: 1.0
+  clip_mult_mid: 1.0
+  compress_ans: True
+  compress_brotli: False
+  compress_lzma: False
+  compressor: brotli
+  data_dir: ./data2/
+  datasets_dir: ./data2/datasets/fineweb10B_sp8192
+  distributed: True
+  effective_train_seq_len: <property object at 0x14e690857bf0>
+  ema_decay: 0.9965
+  embed_bits: 8
+  embed_clip_sigmas: 20.0
+  embed_lr: 0.6
+  embed_wd: 0.085
+  embedding_dim: 512
+  enable_looping_at: 0.35
+  eval_only: False
+  eval_seq_len: 2048
+  eval_stride: 64
+  fused_mlp: True
+  fused_rope: True
+  gated_attention: True
+  gptq_calibration_batches: 128
+  gptq_reserve_seconds: 12.0
+  grad_accum_steps: 2
+  grad_clip_norm: 0.3
+  head_lr: 0.008
+  hessian_clip_lambda: 0.0
+  is_main_process: True
+  iterations: 20000
+  ln_scale: True
+  local_rank: 0
+  logfile: logs/exp86_varlen_base.txt
+  logit_softcap: 20.0
+  loop_embeddings: False
+  loop_end: 5
+  loop_layer_bits: 0
+  loop_layer_clip_sigmas: 0.0
+  loop_start: 3
+  matrix_bits: 6
+  matrix_clip_sigmas: 15.0
+  matrix_lr: 0.022
+  max_wallclock_seconds: 3600.0
+  min_lr: 0.0
+  mixed_seq_gpu_frac: 0.375
+  mixed_seq_len: 0
+  mlp_mult: 4.35
+  model_dim: 512
+  model_path: final_model.pt
+  moe_enabled: False
+  moe_layers: 3,5,7,9
+  moe_num_experts: 4
+  moe_top_k: 2
+  muon_backend_steps: 5
+  muon_beta2: 0.95
+  muon_momentum: 0.97
+  muon_momentum_warmup_start: 0.92
+  muon_momentum_warmup_steps: 1500
+  muon_row_normalize: True
+  muon_wd: 0.095
+  normuon: False
+  num_heads: 8
+  num_kv_heads: 4
+  num_layers: 11
+  num_loops: 2
+  parallel_residual_start: 7
+  qk_gain_init: 5.25
+  quantized_model_path: final_model.int6.ptz
+  rank: 0
+  rope_base: 10000.0
+  rope_dims: 32
+  rope_train_seq_len: 2048
+  run_id: exp86_varlen_base
+  scalar_lr: 0.022
+  seed: 1337
+  skip_gates_enabled: True
+  sliding_window_enabled: True
+  tie_embeddings: True
+  tied_embed_init_std: 0.005
+  tied_embed_lr: 0.03
+  tokenizer_path: ./data2/tokenizers/fineweb_8192_bpe.model
+  train_batch_tokens: 786432
+  train_files: ./data2/datasets/fineweb10B_sp8192/fineweb_train_*.bin
+  train_log_every: 500
+  train_seq_len: 2048
+  trigram_dim: 128
+  trigram_vocab_size: 0
+  ttt_batch_size: 64
+  ttt_beta1: 0.0
+  ttt_beta2: 0.999
+  ttt_chunk_size: 48
+  ttt_enabled: False
+  ttt_eval_seq_len: 2048
+  ttt_fp_chunk_tokens: 32768
+  ttt_fp_epochs: 3
+  ttt_fp_lr: 0.001
+  ttt_fp_momentum: 0.9
+  ttt_grad_steps: 1
+  ttt_k_lora: True
+  ttt_layer_debug: False
+  ttt_layer_debug_tol: 0.001
+  ttt_lora_grad_clip: 1.0
+  ttt_lora_lr: 5e-05
+  ttt_lora_nan_guard: True
+  ttt_lora_rank: 64
+  ttt_mlp_lora: True
+  ttt_o_lora: True
+  ttt_sanity_check: False
+  ttt_weight_decay: 0.2
+  val_batch_tokens: 524288
+  val_files: ./data2/datasets/fineweb10B_sp8192/fineweb_val_*.bin
+  val_loss_every: 4000
+  varlen_attention: True
+  vocab_size: 8192
+  warmdown_frac: 0.85
+  warmdown_wd_mult: 1.0
+  warmup_steps: 20
+  window_attn_layers: 
+  window_attn_size: 0
+  world_size: 4
+  xsa_last_n: 11
+train_shards: 80
+val_tokens: 40540160
+model_params:38152368
+gptq:reserving 12s, effective=3588000ms
+warmup_step: 1/20
+warmup_step: 2/20
+warmup_step: 3/20
+warmup_step: 4/20
+warmup_step: 5/20
+warmup_step: 6/20
+warmup_step: 10/20
+warmup_step: 20/20
+loop_warmup:enabled encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+loop_warmup_step: 1/20
+loop_warmup_step: 2/20
+loop_warmup_step: 3/20
+loop_warmup_step: 4/20
+loop_warmup_step: 5/20
+loop_warmup_step: 6/20
+loop_warmup_step: 10/20
+loop_warmup_step: 20/20
+0/20000 val_loss: 9.0079 val_bpb: 3.4871
+1/20000 train_loss: 9.0071 train_time: 0.0m tok/s: 1666874
+2/20000 train_loss: 11.3359 train_time: 0.0m tok/s: 1649093
+3/20000 train_loss: 9.9711 train_time: 0.0m tok/s: 1632834
+4/20000 train_loss: 8.5163 train_time: 0.0m tok/s: 1620695
+5/20000 train_loss: 7.4700 train_time: 0.0m tok/s: 1613825
+500/20000 train_loss: 3.2953 train_time: 5.5m tok/s: 1183609
+1000/20000 train_loss: 3.1385 train_time: 9.6m tok/s: 1365319
+1500/20000 train_loss: 3.0055 train_time: 13.7m tok/s: 1439383
+2000/20000 train_loss: 2.9887 train_time: 17.7m tok/s: 1479525
+layer_loop:enabled step:2396 frac:0.350 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+2500/20000 train_loss: 2.3536 train_time: 24.0m tok/s: 1367452
+3000/20000 train_loss: 2.9004 train_time: 30.2m tok/s: 1303113
+3500/20000 train_loss: 2.9222 train_time: 36.4m tok/s: 1260744
+4000/20000 train_loss: 2.9089 train_time: 42.6m tok/s: 1231483
+4000/20000 val_loss: 2.8902 val_bpb: 1.1188
+4500/20000 train_loss: 2.8343 train_time: 49.2m tok/s: 1198981
+5000/20000 train_loss: 3.1400 train_time: 55.4m tok/s: 1183099
+5356/20000 val_loss: 2.7568 val_bpb: 1.0672
+stopping_early: wallclock_cap train_time: 3588440ms step: 5356/20000
+peak memory allocated: 38878 MiB reserved: 38978 MiB
+ema:applying EMA weights
+pre-quantization post-ema val_loss:2.75576395 val_bpb:1.06678647 eval_time:19241ms
+Serialized model: 144269669 bytes
+Code size: 147544 bytes
+GPTQ:collecting Hessians from calibration data...
+GPTQ:collected 67 Hessians in 52.0s
+Quantized weights:
+  gptq (int6): blocks.attn.c_k.weight, blocks.attn.c_q.weight, blocks.attn.c_v.weight, blocks.attn.proj.weight, blocks.mlp.fc.weight, blocks.mlp.proj.weight
+  gptq (int8): tok_emb.weight
+  passthrough (float16): blocks.attn.gate_proj.bias, blocks.attn.gate_proj.weight, blocks.attn.q_gain, blocks.attn_scale, blocks.mlp_scale, blocks.resid_mix, skip_gates, skip_weights
+compress:ans 15914836 bytes (15.0s)
+  ans: model=15914836 total=16062380
+compress:using ans (15914836 bytes)
+Serialized model quantized+compressed: 15914836 bytes
+Total submission size quantized+compressed: 16062380 bytes
+quantized val_loss:2.79307338 val_bpb:1.08122936 eval_time:19075ms
+sliding_progress: batch 1/4949 tokens:0 running_loss:0.0000 running_bpb:0.0000 elapsed:0.0s
+sliding_progress: batch 501/4949 tokens:1025984 running_loss:2.7442 running_bpb:1.0778 elapsed:63.1s
+sliding_progress: batch 1001/4949 tokens:2049984 running_loss:2.7299 running_bpb:1.0769 elapsed:126.5s
+sliding_progress: batch 1501/4949 tokens:3073984 running_loss:2.7255 running_bpb:1.0735 elapsed:189.5s
+sliding_progress: batch 2001/4949 tokens:4097984 running_loss:2.7361 running_bpb:1.0798 elapsed:252.8s
+sliding_progress: batch 2501/4949 tokens:5121984 running_loss:2.7326 running_bpb:1.0786 elapsed:315.9s
+sliding_progress: batch 3001/4949 tokens:6145984 running_loss:2.7340 running_bpb:1.0783 elapsed:379.2s
+sliding_progress: batch 3501/4949 tokens:7169984 running_loss:2.7428 running_bpb:1.0789 elapsed:442.3s
+sliding_progress: batch 4001/4949 tokens:8193984 running_loss:2.7491 running_bpb:1.0799 elapsed:505.5s
+sliding_progress: batch 4501/4949 tokens:9217984 running_loss:2.7571 running_bpb:1.0799 elapsed:568.5s
+sliding_progress: batch 4949/4949 tokens:10135488 running_loss:2.7641 running_bpb:1.0790 elapsed:624.9s
+quantized_sliding_window val_loss:2.77438780 val_bpb:1.07405198 eval_time:625113ms
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO comm 0x36dde3c0 rank 0 nranks 4 cudaDev 0 busId 100000 - Destroy COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO comm 0x2f167060 rank 1 nranks 4 cudaDev 1 busId 200000 - Destroy COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO comm 0x25497300 rank 2 nranks 4 cudaDev 2 busId 300000 - Destroy COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO comm 0x16ce4e90 rank 3 nranks 4 cudaDev 3 busId 400000 - Destroy COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565648:565648 [0] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565649:565649 [1] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565650:565650 [2] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault
+e1a433d6d93644e090a8bcad4f3a7ab4000001:565651:565651 [3] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault
+=== TRAIN done exp86_varlen_base at Thu Apr 16 18:30:11 UTC 2026 ===
+
+================================================================
+=== EVAL exp87_ttt_baseline at Thu Apr 16 18:30:11 UTC 2026 ===
+================================================================
+CMD: DATA_DIR=./data2/ GATED_ATTENTION=1 COMPRESS_ANS=1     MATRIX_CLIP_SIGMAS=15 MLP_MULT=4.35 HESSIAN_CLIP_LAMBDA=0 GPTQ_CALIBRATION_BATCHES=128     VARLEN_ATTENTION=1 EVAL_ONLY=1 SLIDING_WINDOW_ENABLED=0 TTT_ENABLED=1  RUN_ID=exp87_ttt_baseline torchrun --standalone --nproc_per_node=4 train_gpt_improved_04_15.py
+W0416 18:30:12.942000 575544 torch/distributed/run.py:851] 
+W0416 18:30:12.942000 575544 torch/distributed/run.py:851] *****************************************
+W0416 18:30:12.942000 575544 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0416 18:30:12.942000 575544 torch/distributed/run.py:851] *****************************************
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Bootstrap: Using eth0:10.0.0.5<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Bootstrap: Using eth0:10.0.0.5<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Bootstrap: Using eth0:10.0.0.5<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Bootstrap: Using eth0:10.0.0.5<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.5<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.5<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO ncclCommInitRankConfig comm 0x14406740 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 100000 commId 0x34416f7ce0a129c3 - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO ncclCommInitRankConfig comm 0x37ee2300 rank 2 nranks 4 cudaDev 2 nvmlDev 2 busId 300000 commId 0x34416f7ce0a129c3 - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.5<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO ncclCommInitRankConfig comm 0x114f9be0 rank 1 nranks 4 cudaDev 1 nvmlDev 1 busId 200000 commId 0x34416f7ce0a129c3 - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.5<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO ncclCommInitRankConfig comm 0x2204ed60 rank 3 nranks 4 cudaDev 3 nvmlDev 3 busId 400000 commId 0x34416f7ce0a129c3 - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Bootstrap timings total 0.097049 (create 0.000044, send 0.000183, recv 0.078808, ring 0.000217, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Bootstrap timings total 0.096112 (create 0.000046, send 0.000172, recv 0.095152, ring 0.000104, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Bootstrap timings total 0.001231 (create 0.000048, send 0.000188, recv 0.000336, ring 0.000195, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Bootstrap timings total 0.018474 (create 0.000049, send 0.000189, recv 0.000341, ring 0.017416, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 0 is 0-23. (GPU affinity = 0-23 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 1 is 24-47. (GPU affinity = 24-47 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO NVLS multicast support is not available on dev 0 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO NVLS multicast support is not available on dev 1 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 3 is 72-95. (GPU affinity = 72-95 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO NVLS multicast support is not available on dev 3 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 2 is 48-71. (GPU affinity = 48-71 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO NVLS multicast support is not available on dev 2 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO comm 0x14406740 rank 0 nRanks 4 nNodes 1 localRanks 4 localRank 0 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO comm 0x37ee2300 rank 2 nRanks 4 nNodes 1 localRanks 4 localRank 2 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO comm 0x2204ed60 rank 3 nRanks 4 nNodes 1 localRanks 4 localRank 3 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO comm 0x114f9be0 rank 1 nRanks 4 nNodes 1 localRanks 4 localRank 1 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Trees [0] 3/-1/-1->2->1 [1] 3/-1/-1->2->1 [2] 3/-1/-1->2->1 [3] 3/-1/-1->2->1 [4] 3/-1/-1->2->1 [5] 3/-1/-1->2->1 [6] 3/-1/-1->2->1 [7] 3/-1/-1->2->1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Channel 00/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Trees [0] -1/-1/-1->3->2 [1] -1/-1/-1->3->2 [2] -1/-1/-1->3->2 [3] -1/-1/-1->3->2 [4] -1/-1/-1->3->2 [5] -1/-1/-1->3->2 [6] -1/-1/-1->3->2 [7] -1/-1/-1->3->2
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Channel 01/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Trees [0] 2/-1/-1->1->0 [1] 2/-1/-1->1->0 [2] 2/-1/-1->1->0 [3] 2/-1/-1->1->0 [4] 2/-1/-1->1->0 [5] 2/-1/-1->1->0 [6] 2/-1/-1->1->0 [7] 2/-1/-1->1->0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Channel 02/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Channel 03/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Channel 04/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Channel 05/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Channel 06/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Channel 07/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1 [2] 1/-1/-1->0->-1 [3] 1/-1/-1->0->-1 [4] 1/-1/-1->0->-1 [5] 1/-1/-1->0->-1 [6] 1/-1/-1->0->-1 [7] 1/-1/-1->0->-1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575653 [0] NCCL INFO [Proxy Service] Device 1 CPU core 44
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575654 [0] NCCL INFO [Proxy Service] Device 3 CPU core 81
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575657 [0] NCCL INFO [Proxy Service UDS] Device 1 CPU core 37
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575658 [0] NCCL INFO [Proxy Service UDS] Device 3 CPU core 89
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575656 [0] NCCL INFO [Proxy Service] Device 0 CPU core 11
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575655 [0] NCCL INFO [Proxy Service] Device 2 CPU core 69
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575660 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 16
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575659 [0] NCCL INFO [Proxy Service UDS] Device 2 CPU core 63
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO CC Off, workFifoBytes 1048576
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO ncclCommInitRankConfig comm 0x114f9be0 rank 1 nranks 4 cudaDev 1 nvmlDev 1 busId 200000 commId 0x34416f7ce0a129c3 - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO ncclCommInitRankConfig comm 0x2204ed60 rank 3 nranks 4 cudaDev 3 nvmlDev 3 busId 400000 commId 0x34416f7ce0a129c3 - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Init timings - ncclCommInitRankConfig: rank 3 nranks 4 total 0.16 (kernels 0.12, alloc 0.01, bootstrap 0.00, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Init timings - ncclCommInitRankConfig: rank 1 nranks 4 total 0.18 (kernels 0.12, alloc 0.00, bootstrap 0.02, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO ncclCommInitRankConfig comm 0x14406740 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 100000 commId 0x34416f7ce0a129c3 - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Init timings - ncclCommInitRankConfig: rank 0 nranks 4 total 0.26 (kernels 0.12, alloc 0.01, bootstrap 0.10, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO ncclCommInitRankConfig comm 0x37ee2300 rank 2 nranks 4 cudaDev 2 nvmlDev 2 busId 300000 commId 0x34416f7ce0a129c3 - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Init timings - ncclCommInitRankConfig: rank 2 nranks 4 total 0.26 (kernels 0.12, alloc 0.00, bootstrap 0.10, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.02, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Channel 00 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Channel 00 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Channel 01 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Channel 02 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Channel 01 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Channel 02 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Channel 03 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Channel 03 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Channel 04 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Channel 04 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Channel 05 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Channel 00/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Channel 01/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Channel 05 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Channel 06 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Channel 02/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Channel 00/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Channel 03/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Channel 01/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Channel 06 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Channel 07 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Channel 04/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Channel 02/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Channel 03/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Channel 05/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Channel 07 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Channel 04/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Channel 06/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Channel 05/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Channel 07/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Channel 06/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Channel 07/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575619:575619 [1] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575621:575621 [3] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575618:575618 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+e1a433d6d93644e090a8bcad4f3a7ab4000001:575620:575620 [2] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+Hyperparameters:
+  adam_eps: 1e-08
+  adam_wd: 0.02
+  beta1: 0.9
+  beta2: 0.95
+  bigram_dim: 128
+  bigram_vocab_size: 0
+  clip_mult_early: 1.0
+  clip_mult_late: 1.0
+  clip_mult_loop: 1.0
+  clip_mult_mid: 1.0
+  compress_ans: True
+  compress_brotli: False
+  compress_lzma: False
+  compressor: brotli
+  data_dir: ./data2/
+  datasets_dir: ./data2/datasets/fineweb10B_sp8192
+  distributed: True
+  effective_train_seq_len: <property object at 0x154956c57830>
+  ema_decay: 0.9965
+  embed_bits: 8
+  embed_clip_sigmas: 20.0
+  embed_lr: 0.6
+  embed_wd: 0.085
+  embedding_dim: 512
+  enable_looping_at: 0.35
+  eval_only: True
+  eval_seq_len: 2048
+  eval_stride: 64
+  fused_mlp: True
+  fused_rope: True
+  gated_attention: True
+  gptq_calibration_batches: 128
+  gptq_reserve_seconds: 12.0
+  grad_accum_steps: 2
+  grad_clip_norm: 0.3
+  head_lr: 0.008
+  hessian_clip_lambda: 0.0
+  is_main_process: True
+  iterations: 20000
+  ln_scale: True
+  local_rank: 0
+  logfile: logs/exp87_ttt_baseline.txt
+  logit_softcap: 20.0
+  loop_embeddings: False
+  loop_end: 5
+  loop_layer_bits: 0
+  loop_layer_clip_sigmas: 0.0
+  loop_start: 3
+  matrix_bits: 6
+  matrix_clip_sigmas: 15.0
+  matrix_lr: 0.022
+  max_wallclock_seconds: 600.0
+  min_lr: 0.0
+  mixed_seq_gpu_frac: 0.375
+  mixed_seq_len: 0
+  mlp_mult: 4.35
+  model_dim: 512
+  model_path: final_model.pt
+  moe_enabled: False
+  moe_layers: 3,5,7,9
+  moe_num_experts: 4
+  moe_top_k: 2
+  muon_backend_steps: 5
+  muon_beta2: 0.95
+  muon_momentum: 0.97
+  muon_momentum_warmup_start: 0.92
+  muon_momentum_warmup_steps: 1500
+  muon_row_normalize: True
+  muon_wd: 0.095
+  normuon: False
+  num_heads: 8
+  num_kv_heads: 4
+  num_layers: 11
+  num_loops: 2
+  parallel_residual_start: 7
+  qk_gain_init: 5.25
+  quantized_model_path: final_model.int6.ptz
+  rank: 0
+  rope_base: 10000.0
+  rope_dims: 32
+  rope_train_seq_len: 2048
+  run_id: exp87_ttt_baseline
+  scalar_lr: 0.022
+  seed: 1337
+  skip_gates_enabled: True
+  sliding_window_enabled: False
+  tie_embeddings: True
+  tied_embed_init_std: 0.005
+  tied_embed_lr: 0.03
+  tokenizer_path: ./data2/tokenizers/fineweb_8192_bpe.model
+  train_batch_tokens: 786432
+  train_files: ./data2/datasets/fineweb10B_sp8192/fineweb_train_*.bin
+  train_log_every: 500
+  train_seq_len: 2048
+  trigram_dim: 128
+  trigram_vocab_size: 0
+  ttt_batch_size: 64
+  ttt_beta1: 0.0
+  ttt_beta2: 0.999
+  ttt_chunk_size: 48
+  ttt_enabled: True
+  ttt_eval_seq_len: 2048
+  ttt_fp_chunk_tokens: 32768
+  ttt_fp_epochs: 3
+  ttt_fp_lr: 0.001
+  ttt_fp_momentum: 0.9
+  ttt_grad_steps: 1
+  ttt_k_lora: True
+  ttt_layer_debug: False
+  ttt_layer_debug_tol: 0.001
+  ttt_lora_grad_clip: 1.0
+  ttt_lora_lr: 5e-05
+  ttt_lora_nan_guard: True
+  ttt_lora_rank: 64
+  ttt_mlp_lora: True
+  ttt_o_lora: True
+  ttt_sanity_check: False
+  ttt_weight_decay: 0.2
+  val_batch_tokens: 524288
+  val_files: ./data2/datasets/fineweb10B_sp8192/fineweb_val_*.bin
+  val_loss_every: 4000
+  varlen_attention: True
+  vocab_size: 8192
+  warmdown_frac: 0.85
+  warmdown_wd_mult: 1.0
+  warmup_steps: 20
+  window_attn_layers: 
+  window_attn_size: 0
+  world_size: 4
+  xsa_last_n: 11
+train_shards: 80
+val_tokens: 40540160
+EVAL_ONLY mode: loading final_model.pt and final_model.int6.ptz, skipping training
+quantized val_loss:2.79307338 val_bpb:1.08122936 eval_time:19690ms
+ttt_lora:warming up compile
+ttt_lora:compile warmup done (194.7s)
+ttt_lora:docs:50000 rank:64 lr:5e-05 chunk:48
+[rank1]:W0416 18:41:42.537000 575619 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] torch._dynamo hit config.recompile_limit (8)
+[rank1]:W0416 18:41:42.537000 575619 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    function: '_fwd_ttt_inner' (/root/parameter-golf/train_gpt_improved_04_15.py:2982)
+[rank1]:W0416 18:41:42.537000 575619 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    last reason: 0/7: tensor 'input_ids' size mismatch at index 1. expected 288, actual 336
+[rank1]:W0416 18:41:42.537000 575619 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+[rank1]:W0416 18:41:42.537000 575619 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+[rank0]:W0416 18:41:48.760000 575618 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] torch._dynamo hit config.recompile_limit (8)
+[rank0]:W0416 18:41:48.760000 575618 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    function: '_fwd_ttt_inner' (/root/parameter-golf/train_gpt_improved_04_15.py:2982)
+[rank0]:W0416 18:41:48.760000 575618 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    last reason: 0/7: tensor 'input_ids' size mismatch at index 1. expected 336, actual 384
+[rank0]:W0416 18:41:48.760000 575618 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+[rank0]:W0416 18:41:48.760000 575618 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+[rank3]:W0416 18:41:54.825000 575621 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] torch._dynamo hit config.recompile_limit (8)
+[rank3]:W0416 18:41:54.825000 575621 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    function: '_fwd_ttt_inner' (/root/parameter-golf/train_gpt_improved_04_15.py:2982)
+[rank3]:W0416 18:41:54.825000 575621 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    last reason: 0/7: tensor 'input_ids' size mismatch at index 1. expected 336, actual 384
+[rank3]:W0416 18:41:54.825000 575621 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+[rank3]:W0416 18:41:54.825000 575621 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+[rank2]:W0416 18:41:57.923000 575620 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] torch._dynamo hit config.recompile_limit (8)
+[rank2]:W0416 18:41:57.923000 575620 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    function: '_fwd_ttt_inner' (/root/parameter-golf/train_gpt_improved_04_15.py:2982)
+[rank2]:W0416 18:41:57.923000 575620 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    last reason: 0/7: tensor 'input_ids' size mismatch at index 1. expected 336, actual 384
+[rank2]:W0416 18:41:57.923000 575620 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+[rank2]:W0416 18:41:57.923000 575620 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+ttt_progress: batch 781/782 batch_loss:2.8259 batch_bpb:1.1666 running_loss:2.8259 running_bpb:1.1666 doc_len:14510-25988
+ttt_progress: batch 774/782 batch_loss:3.1521 batch_bpb:1.2448 running_loss:2.9019 running_bpb:1.1854 doc_len:5552-5852
+ttt_progress: batch 771/782 batch_loss:3.1979 batch_bpb:1.2504 running_loss:2.9505 running_bpb:1.1965 doc_len:4701-4937
+ttt_progress: batch 767/782 batch_loss:3.2042 batch_bpb:1.2793 running_loss:2.9813 running_bpb:1.2067 doc_len:3963-4123
+ttt_progress: batch 763/782 batch_loss:3.2691 batch_bpb:1.2900 running_loss:3.0093 running_bpb:1.2150 doc_len:3536-3637
+ttt_progress: batch 757/782 batch_loss:3.1205 batch_bpb:1.2060 running_loss:3.0178 running_bpb:1.2143 doc_len:3033-3108
+ttt_progress: batch 754/782 batch_loss:3.1532 batch_bpb:1.2373 running_loss:3.0268 running_bpb:1.2158 doc_len:2839-2899
+ttt_progress: batch 749/782 batch_loss:3.2910 batch_bpb:1.2662 running_loss:3.0420 running_bpb:1.2188 doc_len:2580-2638
+ttt_progress: batch 746/782 batch_loss:3.1311 batch_bpb:1.2328 running_loss:3.0466 running_bpb:1.2196 doc_len:2459-2501
+W0416 18:51:16.562000 575544 torch/distributed/elastic/agent/server/api.py:739] Received 15 death signal, shutting down workers
+W0416 18:51:16.564000 575544 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 575618 closing signal SIGTERM
+W0416 18:51:16.565000 575544 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 575619 closing signal SIGTERM
+W0416 18:51:16.565000 575544 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 575620 closing signal SIGTERM
+W0416 18:51:16.565000 575544 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 575621 closing signal SIGTERM
+Traceback (most recent call last):
+  File "/root/parameter-golf/.venv/bin/torchrun", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/run.py", line 990, in main
+    run(args)
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/run.py", line 981, in run
+    elastic_launch(
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 170, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 308, in launch_agent
+    result = agent.run()
+             ^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/elastic/metrics/api.py", line 134, in wrapper
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/elastic/agent/server/api.py", line 731, in run
+    result = self._invoke_run(role)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/elastic/agent/server/api.py", line 908, in _invoke_run
+    time.sleep(monitor_interval)
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/api.py", line 86, in _terminate_process_handler
+    raise SignalException(f"Process {os.getpid()} got signal: {sigval}", sigval=sigval)
+torch.distributed.elastic.multiprocessing.api.SignalException: Process 575544 got signal: 15

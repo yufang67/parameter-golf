@@ -13,6 +13,75 @@
      Keep entries concise — 3-5 sentences, not paragraphs.
      ============================================================ -->
 
+## Experiments 86, 97-106 — Batch 5: TTT on VarLen+Improved (Fix divergence, 10 configs)
+
+**Motivation:** User-directed — run 10 experiments on TTT, warning it "may diverge or give worse results." Starting SOTA is exp80_varlen (sliding=1.07632) but artifact=16.06MB (over cap). Goal: establish whether TTT can help the VarLen-trained improved model and add divergence safeguards.
+
+**Fixes added to `train_gpt_improved_04_15.py`:**
+1. **LoRA TTT safeguards** (`eval_val_ttt`): NaN/Inf loss skip, `nan_to_num_` on grads, `clip_grad_norm_` (env `TTT_LORA_GRAD_CLIP`), post-step param-NaN detect → reset LoRA+optimizer.
+2. **Fullparam TTT safeguards** (`eval_val_ttt_fullparam`): same NaN guards + state-dict snapshot/restore on NaN.
+3. **VarLen attention in TTT paths:** `forward_ttt` and `_block_with_lora` now accept `cu_seqlens, max_seqlen`; auto-synthesizes cu_seqlens (per-row = one doc) when missing. **Critical bug fix** — scoring path in `eval_val_ttt_fullparam` previously fed no cu_seqlens → varlen-trained model saw cross-doc attention → BPB blew up to 1.73+. Fixed to build cu_seqlens from BOS like `eval_val_sliding`.
+4. **Optimizer selector** `TTT_FP_OPTIMIZER={sgd,adamw}` (default SGD lr=0.005 mom=0.9, matching proven exp58 config; previous AdamW lr=1e-3 default caused instant blowup).
+5. **EVAL_ONLY=1 mode** — loads `final_model.pt`+`.ptz` from disk and skips training, enabling fast (15-min) TTT sweeps on a frozen checkpoint.
+
+**exp86 (train once, reuse):** VarLen+GPTQ+hessian, same config as exp80. Pre-quant=1.0668, post-quant=1.0812, sliding=**1.07405** (beats exp80's 1.07632). Checkpoint saved as `final_model.pt` + `.ptz` (15.9MB). Used as base for all EVAL_ONLY runs below.
+
+**Fullparam TTT sweep (exp97–104)** — all EVAL_ONLY against exp86, reusing exp58's proven SGD protocol + new varlen cu_seqlens scoring:
+| Exp | Config | TTT BPB | Δ vs sliding |
+|---|---|---|---|
+| 97 | SGD lr=5e-3 (exp58-like) | 1.10205 | +0.028 |
+| 98 | SGD lr=3e-3 | 1.10158 | +0.028 |
+| 99 | SGD lr=1e-2 | 1.10300 | +0.029 |
+| 100 | SGD lr=5e-3 ep=1 | 1.10138 | +0.027 |
+| 101 | SGD lr=5e-3 ep=5 | 1.10266 | +0.029 |
+| 102 | SGD lr=5e-3 chunk=16k | 1.10377 | +0.030 |
+| 103 | SGD lr=5e-3 chunk=64k | 1.10206 | +0.028 |
+| 104 | AdamW lr=3e-5 | 1.10502 | +0.031 |
+
+**LoRA TTT (exp105, exp106):** sl=4096 OOMed (48-step adapt × 4096-seq too heavy on 4×A100). sl=2048 had separate chunk/context protocol mismatch (initial chunks see only 2048-token context vs sliding's 4032).
+
+**Result:** All 8 fullparam TTT variants give BPB=1.101–1.105, systematically **+0.027 to +0.031 worse** than the sliding baseline (1.07405). Variance between configs is <0.004 — the damage is structural, not a diverging-run issue. Single-epoch (ep=1) is no better than 2 or 5 epochs → damage happens on the very first grad step. No NaN safeguards were triggered in any run.
+
+**Status:** discard TTT for VarLen submission path. Sliding-window eval (1.07405) remains best.
+
+**Learned:**
+- The proven stripped-script TTT recipe (SGD lr=0.005, mom=0.9, clip=1.0, cos LR decay over chunks) does NOT transfer to varlen-trained improved-script models. Hypothesis: the varlen+depth-recurrence+GQA+softcap model is more tightly optimized; bf16 SGD updates to the full model (momentum buffers in bf16, ~38M params) introduce noise that degrades rather than improves the per-chunk alignment. On stripped (exp58 smaller 23M model) the same protocol helped by −0.0019; here it hurts by +0.028.
+- **Do not feed a varlen-trained model cross-doc attention at eval time.** `forward_logits` without cu_seqlens silently produces BPB≈1.73 (catastrophic). Sliding-window eval correctly builds per-window cu_seqlens from BOS tokens; TTT scoring now mirrors this.
+- EVAL_ONLY mode is a 10× speedup for TTT sweeps — train once (~1h), then 8-10 hparam configs at 15-17min each.
+- For LoRA TTT on 4×A100 with full varlen context, sl ≤ 2048 is the limit with 48 adapt steps × stride-64 scoring; can't extend to match sliding's 4032-token context without further OOM mitigation.
+- **Next steps:** drop TTT from VarLen submission path. Focus remaining budget on (a) shrinking exp86's 15.9MB artifact to add headroom, or (b) other levers (better quantization, code-size reduction) to get exp80's 16.06MB artifact under the 16MB cap.
+
+---
+
+## Experiments 76-85 — Batch 4: New Features on train_gpt_improved_04_15.py
+
+**Exp76 — Improved baseline (SOTA params):** Pre-quant=1.07396, post-quant=1.08888, sliding=1.07219, artifact=16.06MB ❌. Matches SOTA BPB within noise but improved script's larger code (145KB vs 83KB) makes artifact 60KB over budget.
+
+**Exp77 — Bigram hash (small, 1024×64):** Pre-quant=1.07438, post-quant=1.08909, sliding=1.07248, artifact=16.22MB ❌. Bigram adds ~155KB artifact, BPB slightly worse. Not viable.
+
+**Exp78 — Bigram hash (medium, 2048×128):** Pre-quant=1.07548, post-quant=1.09019, sliding=1.07368, artifact=16.28MB ❌. Larger bigram is worse across the board. More params don't help.
+
+**Exp79 — Trigram hash (1024×64):** Pre-quant=1.07434, post-quant=1.08894, sliding=1.07235, artifact=16.21MB ❌. Within noise of baseline. N-gram hash embeddings don't help.
+
+**Exp80 — VarLen attention:** Pre-quant=**1.06912**, post-quant=**1.08350**, sliding=1.07632, artifact=16.06MB ❌. **MASSIVE improvement!** −0.005 pre-quant, −0.005 post-quant vs baseline. Within-document attention prevents cross-doc leakage during training. No extra params. Slower throughput (~1.1M vs 1.5M tok/s) means fewer steps but much better quality. Artifact over only due to code size.
+
+**Exp81 — Hessian clip 0.3:** Pre-quant=1.07372, post-quant=1.08887, sliding=1.07220, artifact=16.09MB ❌. Within noise of baseline. Hessian adds 30KB to artifact.
+
+**Exp82 — Bigram + VarLen:** Pre-quant=1.06911, post-quant=1.08332, sliding=1.07607, artifact=16.21MB ❌. VarLen does all the work — bigram adds nothing, just +155KB artifact.
+
+**Exp83 — MoE tiny (2 experts, 1 layer):** Pre-quant=1.08310, post-quant=1.09747, sliding=1.08091, artifact=16.04MB ❌. MoE is terrible — slower training, fewer steps, +0.009 worse BPB.
+
+**Exp84 — Clip=13 + hessian + MLP=4.0:** Pre-quant=1.07777, post-quant=1.08947, sliding=1.07282, artifact=16.04MB ❌. Smaller MLP loses too much capacity. Clip=13 doesn't compensate.
+
+**Exp85 — Bigram + Trigram (MLP=4.0):** Pre-quant=1.07731, post-quant=1.09264, sliding=1.07604, artifact=**15.52MB** ✅. Fits! But BPB worse than MLP=4.35 baseline. N-gram hashes don't compensate for reduced MLP capacity.
+
+**Key learnings:**
+- **VarLen attention is the clear winner** — biggest BPB improvement seen in this entire project (−0.005 pre-quant, −0.005 post-quant). It prevents cross-document attention leakage during training.
+- **N-gram hash embeddings (bigram/trigram) don't help** — they add artifact size without improving BPB.
+- **MoE is not viable** — slower training means fewer steps, worse BPB despite extra capacity.
+- **Code size is the remaining blocker** — improved script is 145KB vs 83KB stripped, putting all runs ~60KB over. Need to strip the code or port VarLen to stripped script.
+- **Next step:** Port VARLEN_ATTENTION=1 to train_gpt_stripped.py to get the BPB win within the 16MB artifact budget.
+
 ## Exp58 Repro — Apr 16 confirmation run
 
 Re-ran the current best `exp58_ttt` configuration unchanged to verify that the best result is reproducible from the saved setup rather than a one-off. The repro landed at pre-quant `1.07415`, post-quant `1.08901`, sliding `1.07239`, and TTT `1.07058`, with total artifact size `15.989MB`, so it still fits comfortably under 16MB. This is effectively identical to the original `exp58_ttt` result within about `1e-4` BPB and a few bytes of artifact size. The main takeaway is that the best config is stable enough to treat as real, so further work should focus on genuine architectural changes rather than revalidating the baseline again.

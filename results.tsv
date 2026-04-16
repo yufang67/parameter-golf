@@ -1,4 +1,14 @@
 commit	run_id	val_metric	memory_gb num_steps num_epochs	status	description
+-	exp76_improved_baseline	1.07396/1.08888	-	5313	-	keep	Improved script baseline. SOTA params (CLIP=15, MLP=4.35, GPTQ128). Artifact=16.06MB ❌ (code 145KB). Sliding=1.07219.
+-	exp77_bigram_small	1.07438/1.08909	-	5284	-	discard	Bigram hash 1024×64. +155KB artifact, BPB worse. Sliding=1.07248.
+-	exp78_bigram_medium	1.07548/1.09019	-	5279	-	discard	Bigram hash 2048×128. +225KB artifact, BPB worse. Sliding=1.07368.
+-	exp79_trigram	1.07434/1.08894	-	5282	-	discard	Trigram hash 1024×64. +155KB artifact, within noise. Sliding=1.07235.
+-	exp80_varlen	1.06912/1.08350	-	4985	-	keep	VARLEN_ATTENTION=1. BEST PRE-QUANT & POST-QUANT EVER! −0.005 BPB. Artifact=16.06MB ❌ (code size). Sliding=1.07632.
+-	exp81_hessian03	1.07372/1.08887	-	5315	-	discard	HESSIAN_CLIP=0.3. Within noise. Artifact=16.09MB ❌.
+-	exp82_bigram_varlen	1.06911/1.08332	-	4995	-	discard	Bigram+VarLen. VarLen does all work, bigram adds nothing. Artifact=16.21MB ❌. Sliding=1.07607.
+-	exp83_moe_tiny	1.08310/1.09747	-	4683	-	discard	MoE 2 experts top-1 layer 5. Much worse BPB (+0.009). Slower training. Artifact=16.04MB ❌. Sliding=1.08091.
+-	exp84_clip13_hessian	1.07777/1.08947	-	5477	-	discard	CLIP=13+hessian+MLP=4.0. Worse BPB. Smaller MLP loses capacity. Artifact=16.04MB ❌. Sliding=1.07282.
+-	exp85_bigram_trigram	1.07731/1.09264	-	5436	-	discard	Bigram+Trigram+MLP=4.0. Artifact=15.52MB ✅ but worse BPB. N-grams don't compensate for reduced MLP. Sliding=1.07604.
 -	exp58_ttt_repro	1.07415/1.08901	40.5	5228	-	keep	Repro of exp58_ttt on Apr 16. TTT=1.07058, artifact=15.989MB. Confirms best config within ~1e-4 BPB and within budget.
 -	gqa_baseline	1.0800/1.0908	44.3	4990	-	keep	Baseline: 11L×512d SP8192 GQA, QK5.25, depth recur, parallel resid, EMA0.9965, 4xA100 3600s. Pre-quant/post-quant BPB.
 -	qk_gain_7	1.0797/1.0905	44.3	4991	-	discard	QK_GAIN_INIT=7.0 vs 5.25 baseline. Within noise (~0.0003). QK gain saturated.
@@ -72,4 +82,14 @@ commit	run_id	val_metric	memory_gb num_steps num_epochs	status	description
 -	exp72_emb6_mlp445	1.07440/1.11709	40.5	5195	-	discard	EMBED_BITS=6+MLP=4.45. Artifact=15.25MB ✅ but post-quant ruined (+0.028 BPB). 6-bit embeds not viable.
 -	exp73_gptq256_ttt	1.07421/1.08931	40.5	5229	-	discard	GPTQ256+TTT. TTT=1.07076. Artifact=16.02MB ❌. Marginal post-quant gain over 128 but doesn't fit.
 -	exp74_muonwd08	1.07462/1.09062	40.5	5225	-	discard	MUON_WD=0.08. Worse on all metrics. WD=0.095 optimal.
--	exp75_qk6_sc18	1.07475/1.08954	40.5	5229	-	discard	QK_GAIN=6.0+SOFTCAP=18. Within noise. No benefit from this combo.
+-	exp75_qk6_sc18	1.07475/1.08954	40.5	5229	-	discard	QK_GAIN=6.0+SOFTCAP=18. Within noise. No benefit from this combo.-exp86_varlen_ttt_base1.06680/1.0812080.55356-sliding_sotaVarLen+hessian+sliding=1.07405 (new SOTA for improved_04_15). Artifact not yet size-checked. Checkpoint reused for exp97-106 EVAL_ONLY.
+-exp97_ttt_fp_sgd5e3-/1.1020580.50-discardEVAL_ONLY TTT fullparam SGD lr=5e-3 mom=0.9. +0.028 BPB vs sliding. TTT HURTS.
+-exp98_ttt_fp_sgd3e3-/1.1015880.50-discardSame as exp97 with lr=3e-3. +0.028 BPB.
+-exp99_ttt_fp_sgd1e2-/1.1030080.50-discardlr=1e-2. +0.029 BPB.
+-exp100_ttt_fp_ep1-/1.1013880.50-discardepochs=1 (single grad step per chunk). +0.027 BPB. Damage happens on step 1.
+-exp101_ttt_fp_ep5-/1.1026680.50-discardepochs=5. +0.029 BPB. More steps not better.
+-exp102_ttt_fp_ch16k-/1.1037780.50-discardchunk=16k. +0.030 BPB.
+-exp103_ttt_fp_ch64k-/1.1020680.50-discardchunk=64k. +0.028 BPB.
+-exp104_ttt_fp_adamw-/1.1050280.50-discardAdamW lr=3e-5. +0.031 BPB. Worst fullparam variant.
+-exp105_ttt_lora_sl4096OOM80.50-discardLoRA TTT sl=4096. OOMed (48-step adapt too heavy).
+-exp106_ttt_lora_qv_sl4096OOM80.50-discardLoRA TTT QV-only sl=4096. OOMed similarly.
