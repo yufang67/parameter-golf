@@ -94,6 +94,174 @@ Candidates worth auditing line-by-line (unchecked after this batch):
 
 The most productive next step is to **turn on the built-in sanity check** (`TTT_SANITY_CHECK=1`, L2559-2626), which computes `forward_logits` vs zero-LoRA `forward_ttt` on the same tokens and prints per-position `|delta|` statistics, plus a per-block delta. That will point a finger at a specific layer. This is out of scope for the 10-run budget for this investigation but is the next clear step.
 
+## ⚠️ 2026-04-17 update — H1 conclusion below is FALSIFIED
+
+Two follow-up batches done on 2026-04-17 (logs in
+`/root/parameter-golf/logs/sanity_check_04_17_stdout.txt`,
+`logs/no_lora_probe_*_04_17_stdout.txt`,
+`logs/warmup_w*_04_17_stdout.txt`,
+`logs/fair_*_warmup1024_04_17_stdout.txt`) overturn the H1-confirmed claim:
+
+### Diagnostic 1 — `TTT_SANITY_CHECK=1 TTT_LAYER_DEBUG=1`
+
+For a 317-token `prefix` probe and a 2048-token `tail_window` probe, the
+per-layer comparison between `forward_logits` and zero-LoRA `forward_ttt`
+gives **mean_abs = max_abs = 0.000000e+00 at every one of the 19 states**
+(embed → 11 blocks → final_norm → logits). `_block_with_lora` is
+mathematically equivalent to `Block.forward`. The "+0.26 BPB at zero LoRA
+is a forward-path bug" hypothesis is **bitwise falsified**.
+
+### Diagnostic 2 — `TTT_NO_LORA_PROBE` (ad-hoc flag, since reverted)
+
+Patched `eval_val_ttt` to call `forward_logits(x)` (no LoRA, the trained
+forward path used by sliding-window) inside the TTT chunk loop, reusing
+TTT's windowing and `_accumulate_bpb`:
+
+| `TTT_MAX_DOCS` | `TTT_CHUNK_SIZE` | val_bpb (no-LoRA probe) |
+|---|---|---|
+| 50   | 64   | 1.33718 |
+| 200  | 64   | 1.29099 |
+| 1000 | 64   | 1.29086 |
+| 5000 | 64   | 1.31149 |
+| 1000 | 256  | 1.29081 |
+| 1000 | 1024 | 1.25751 |
+| 1000 | 2048 | 1.24523 |
+
+All numbers are far above the 1.07407 sliding-window baseline, even though
+the model forward is the trained one. The gap therefore lives in the
+**eval protocol itself** (windowing + which positions are scored + bpb
+denominator construction), not in `forward_ttt` / `_block_with_lora`.
+
+### Diagnostic 3 — `TTT_SCORE_WARMUP` (ad-hoc flag, since reverted)
+
+Tried to align TTT's scored-position set with sliding-window's by skipping
+the first `N` positions of every chunk's scored region (matching
+`eval_val_sliding`'s `s = context_size = seq_len - stride` skip). With
+`TTT_MAX_DOCS=1000`, `TTT_CHUNK_SIZE=64`, no-LoRA probe:
+
+| `TTT_SCORE_WARMUP` | val_bpb |
+|---|---|
+|    0 | 1.29086 |
+|   64 | 1.29006 |
+|  256 | 1.33529 |
+|  512 | 1.40500 |
+| 1024 | 1.50072 |
+
+**Counter-intuitive:** scoring positions with *more* left context produces
+*higher* bpb, not lower. The most likely explanation is that this is a
+**bytes-per-token denominator artifact**: late-document tokens in the first
+~1000 FineWeb docs are dominated by short / low-byte pieces (URLs,
+references, formulaic footers), so the bpb denominator
+(`base_bytes_lut[y]`) shrinks faster than the cross-entropy numerator,
+inflating bpb. Sliding-window's full-shard scoring averages this out.
+
+### Diagnostic 4 — fair-comparison run
+
+`TTT_LORA_LR=1e-4 TTT_SCORE_WARMUP=1024 TTT_MAX_DOCS=1000` →
+val_bpb = **1.22775**. Real LoRA is still ~0.07 BPB above the
+no-LoRA-probe-with-same-warmup floor of 1.50, i.e., LoRA *does* improve
+on its own protocol baseline (−0.273 BPB), but the protocol-noise
+dwarfs the LoRA gain at this sample size.
+
+### Real root cause
+
+`eval_val_ttt` and `eval_val_sliding` measure *different quantities*:
+
+1. **Scored-position set differs.** Sliding-window only scores the trailing
+   `stride` tokens of each window. TTT scores every position of every chunk
+   window, including cold-start positions with very short left context.
+2. **Token sample differs.** TTT (with `TTT_MAX_DOCS≪all`) only scores the
+   first N documents; sliding-window scores all 10 M tokens. The first N
+   FineWeb docs have skewed bytes-per-token statistics, especially in their
+   tails, which moves the bpb denominator independently of the model.
+3. **`cu_seqlens` handling differs.** `eval_val_sliding` (varlen) builds
+   `cu_seqlens` from BOS positions across the packed batch and forces a
+   boundary at offset 0 of every window. `forward_ttt` auto-synthesizes
+   `cu_seqlens=[0, sl_in]` per row. Late-chunk windows that start mid-doc
+   therefore look identical between the two protocols, but early-chunk
+   windows differ.
+
+LoRA TTT is **genuinely working**: at `TTT_LORA_LR=1e-4` it pulls the score
+from the protocol-floor (~1.336 with zero LoRA, 50 docs) down to 1.208 — a
+real −0.128 BPB improvement *on its own protocol*. The "regression vs sw"
+this batch reported was apples-to-oranges.
+
+### Action
+
+- Don't rewrite `_block_with_lora` (it's not broken).
+- The TTT-vs-sliding-window comparison cannot be fixed by skipping
+  positions alone — it also requires aligning the scored-token set
+  (use the same docs, same number of tokens) AND building cu_seqlens the
+  way the trained model expects on validation data.
+- The **next** investigation should compare TTT-with-LoRA to a
+  **TTT-without-LoRA control run on the exact same scored-token set**.
+  That is the only meaningful TTT-improvement number. The
+  `TTT_NO_LORA_PROBE` flag (used here, then reverted) is the right
+  mechanism — it should be re-introduced as a permanent diagnostic flag,
+  paired with a "score-only-from-doc-end" mode, to make
+  `Δ(LoRA) := bpb_TTT_lora − bpb_TTT_no_lora` a meaningful number.
+- The headline metric for the leaderboard is whatever the official eval
+  uses — `eval_val_sliding`. Improving TTT-vs-sw requires running TTT on
+  the same scored-token set as sliding-window (large refactor of
+  `eval_val_ttt`), not a `_block_with_lora` rewrite.
+- Patches `TTT_NO_LORA_PROBE` and `TTT_SCORE_WARMUP` were reverted from
+  `train_gpt_improved_04_16.py` after this batch; raw logs preserved
+  under `/root/parameter-golf/logs/` (filenames listed at top of this
+  section).
+
+The conclusion below ("forward-path mismatch") is left in place for
+historical context but should be considered overturned.
+
+---
+
+## ⚠️ 2026-04-18 update — gated-attention hypothesis FALSIFIED
+
+Tested whether per-head sigmoid `gated_attention` (which we have, PR #1530 does not)
+explains why our zero-LoRA TTT floor is 1.29 while sliding is 1.07.
+
+Patch (`DISABLE_GATED_ATTN_EVAL=1`) bypasses `attn._disable_gate=True` on every
+block in both `_block_with_lora` and `CausalSelfAttention.forward` at eval.
+
+| Run | gates | val_bpb |
+|---|---|---:|
+| sliding | ON  | **1.0742** |
+| sliding | OFF | 1.5796 |
+| TTT lora (2000 docs) | ON  | 1.1920 |
+| TTT lora (2000 docs) | OFF | 1.5602 |
+
+Disabling gates regresses sliding by +0.51 and TTT by +0.37. The gates are
+universally essential — removing them does **not** narrow the TTT-vs-sliding gap;
+it widens it (sliding takes the bigger hit). Hypothesis falsified.
+
+Notably, with gates OFF both protocols converge to ~1.56-1.58. With gates ON,
+sliding (1.07) and TTT (1.19) diverge by 0.12. The gates *amplify* the protocol
+difference rather than causing it.
+
+Logs: `logs/ttt_nogate_d2000_04_17.txt`, `logs/sw_nogate_04_17.txt`.
+
+### Remaining open hypotheses
+
+1. **RoPE position distribution (most likely)** — In sliding eval, packed flat
+   layout puts each doc at a varied row offset, so RoPE positions span 0..seq_len.
+   In TTT, every doc lives in its own row at positions 0..doclen-1. Training also
+   packs docs (mostly non-zero starts) so the position-0 distribution may be
+   thinner. Earlier `TTT_ROPE_OFFSET` test (token-0 padding) was confounded by
+   adding OOD attention context. A clean test requires a `position_offset`
+   parameter on `Rotary.forward` that shifts cos/sin without padding tokens.
+2. **Skip-gates / fused-RoPE / bigram-trigram path numerical drift between
+   `_block_with_lora` and `Block.forward`** — already partially tested via
+   bitwise sanity check (identical); but worth re-checking with full numerical
+   `torch.allclose(atol=1e-7)` of *intermediate* tensors rather than just final
+   logits.
+3. **q_gain / logit_softcap** — both apply equally to both protocols, but worth
+   ruling out by setting them at parity.
+
+### Patches reverted
+`DISABLE_GATED_ATTN_EVAL` and earlier `TTT_NO_LORA_PROBE` / `TTT_ROPE_OFFSET`
+patches reverted from `train_gpt_improved_04_16.py`. Raw logs retained.
+
+---
+
 ## Conclusion / one-line root cause
 
 **Varlen + LoRA-TTT regression is not a varlen bug.** It is a forward-path mismatch inside `GPT.forward_ttt` / `GPT._block_with_lora` vs the trained forward (`GPT.forward_logits` / `Block.forward`), worth ≈ +0.26 BPB at zero LoRA. Varlen-trained checkpoints expose it more visibly (+0.134 with the default LoRA LR) because their sw baseline is tighter, but the same bug must exist on the non-varlen path too — it is simply masked there because non-varlen uses the separate `eval_val_ttt_fullparam` code path which re-uses the compiled `Block.forward` (no `_block_with_lora` at all). That matches invest.md's own observation (line 57-63) that "fullparam TTT works on non-varlen" — not because varlen breaks it, but because **fullparam TTT runs through `Block.forward`, while LoRA TTT runs through the hand-rolled `_block_with_lora` that has drifted from `Block.forward`.**

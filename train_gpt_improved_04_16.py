@@ -300,6 +300,12 @@ class Hyperparameters():
     ttt_lora_lr = float(os.environ.get('TTT_LORA_LR', 1e-4)) #0.0001
     ttt_chunk_size = int(os.environ.get('TTT_CHUNK_SIZE', 64)) #32
     ttt_eval_seq_len = int(os.environ.get('TTT_EVAL_SEQ_LEN', 2048))
+    # RoPE base mismatch fix: training packs ~train_batch_tokens/(world*grad_accum) tokens
+    # per row, triggering NTK-aware RoPE rescaling. TTT eval processes 2048-token rows
+    # and falls back to vanilla cached RoPE → encoding mismatch (+0.12 BPB).
+    # When >0, force Rotary to compute cos/sin as if seq_len == ttt_rope_base_seqlen.
+    # When 0, auto-derive from train_batch_tokens at TTT eval entry.
+    ttt_rope_base_seqlen = int(os.environ.get('TTT_ROPE_BASE_SEQLEN', 0))
     ttt_batch_size = int(os.environ.get('TTT_BATCH_SIZE', 64))
     ttt_grad_steps = int(os.environ.get('TTT_GRAD_STEPS', 1))
     ttt_grad_clip = float(os.environ.get('TTT_GRAD_CLIP', 1.0))
@@ -722,6 +728,22 @@ class Rotary(nn.Module):
         self.register_buffer("_cos_cached", freqs.cos()[None, :, None, :].clone(), persistent=False)
         self.register_buffer("_sin_cached", freqs.sin()[None, :, None, :].clone(), persistent=False)
     def forward(self, seq_len: int, device: torch.device, dtype: torch.dtype) -> tuple[Tensor, Tensor]:
+        # Diagnostic: force a specific effective base-seqlen for NTK scaling.
+        # force > train_seq_len  → recompute with NTK rescale (force = effective long row).
+        # force == train_seq_len → recompute with vanilla base (no NTK), even if seq_len > train.
+        force = int(os.environ.get('ROPE_FORCE_BASE_SEQLEN', '0'))
+        if force > 0:
+            rd = self.rope_dims
+            if force > self.train_seq_len:
+                scale = force / self.train_seq_len
+                new_base = self.base * (scale ** (rd / (rd - 2)))
+            else:
+                new_base = self.base
+            inv_freq = 1.0 / (new_base ** (torch.arange(
+                0, rd, 2, dtype=torch.float32, device=device) / rd))
+            t = torch.arange(seq_len, device=device, dtype=inv_freq.dtype)
+            freqs = torch.outer(t, inv_freq)
+            return freqs.cos()[None, :, None, :].to(dtype=dtype), freqs.sin()[None, :, None, :].to(dtype=dtype)
         if seq_len <= self.train_seq_len:
             return self._cos_cached[:, :seq_len].to(dtype=dtype), self._sin_cached[:, :seq_len].to(dtype=dtype)
         # NTK-aware RoPE for sequences longer than train_seq_len
@@ -3468,6 +3490,20 @@ def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
                         h, device, val_data, ttt_model)
         else:
             # Varlen → LoRA TTT
+            # Auto-set RoPE base seqlen to match training-time packed row length
+            # (training packs ~train_batch_tokens/(world*grad_accum) tokens per row,
+            # which triggers NTK-aware RoPE; TTT processes 2048-token rows and
+            # otherwise hits vanilla cached RoPE → encoding mismatch).
+            base_force = h.ttt_rope_base_seqlen
+            if base_force <= 0:
+                base_force = max(
+                    h.train_seq_len + 1,
+                    h.train_batch_tokens // max(1, h.world_size * h.grad_accum_steps),
+                )
+            prev_rope_force = os.environ.get('ROPE_FORCE_BASE_SEQLEN', '0')
+            os.environ['ROPE_FORCE_BASE_SEQLEN'] = str(base_force)
+            log(f"ttt_lora:rope_base_fix ROPE_FORCE_BASE_SEQLEN={base_force} "
+                f"(train_seq_len={h.train_seq_len}, ttt_eval_seq_len={h.ttt_eval_seq_len})")
             for p in ttt_model.parameters():
                 p.requires_grad_(False)
             if h.ttt_sanity_check:
@@ -3515,6 +3551,7 @@ def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
             log(f"ttt_lora:compile warmup done ({time.perf_counter() - t_warmup:.1f}s)")
             timed_eval("quantized_ttt_lora", eval_val_ttt, h, device, val_data, ttt_model,
                         forward_ttt_train=fwd_ttt_compiled)
+            os.environ['ROPE_FORCE_BASE_SEQLEN'] = prev_rope_force
         del ttt_model
 def main():
     os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")

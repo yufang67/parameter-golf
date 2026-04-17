@@ -1,0 +1,212 @@
+====================================================================================================
+Hyperparameters:
+  adam_eps: 1e-08
+  adam_wd: 0.02
+  beta1: 0.9
+  beta2: 0.95
+  bigram_dim: 128
+  bigram_vocab_size: 0
+  clip_mult_early: 1.0
+  clip_mult_late: 1.0
+  clip_mult_loop: 1.0
+  clip_mult_mid: 1.0
+  compress_ans: True
+  compress_brotli: True
+  compress_lzma: False
+  compressor: brotli
+  data_dir: ./data2/
+  datasets_dir: ./data2/datasets/fineweb10B_sp8192
+  debug_varlen_probe: False
+  distributed: True
+  effective_train_seq_len: <property object at 0x154c2f27a5c0>
+  ema_decay: 0.9965
+  embed_bits: 8
+  embed_clip_sigmas: 20.0
+  embed_lr: 0.6
+  embed_wd: 0.085
+  embedding_dim: 512
+  enable_looping_at: 0.35
+  eval_pad_token: 0
+  eval_seq_len: 2048
+  eval_stride: 64
+  force_dense_eval: False
+  fused_mlp: True
+  fused_rope: False
+  gated_attention: True
+  gptq_calibration_batches: 64
+  gptq_reserve_seconds: 12.0
+  grad_accum_steps: 2
+  grad_clip_norm: 0.3
+  head_lr: 0.008
+  hessian_clip_lambda: 0.3
+  is_main_process: True
+  iterations: 20000
+  ln_scale: True
+  local_rank: 0
+  logfile: logs/ttt_nolora_probe2_04_17.txt
+  logit_softcap: 20.0
+  loop_embeddings: False
+  loop_end: 5
+  loop_layer_bits: 0
+  loop_layer_clip_sigmas: 0.0
+  loop_start: 3
+  matrix_bits: 6
+  matrix_clip_sigmas: 15.0
+  matrix_lr: 0.022
+  max_wallclock_seconds: 600.0
+  min_lr: 0.0
+  mixed_seq_gpu_frac: 0.375
+  mixed_seq_len: 0
+  mlp_mult: 4.35
+  model_dim: 512
+  model_path: final_model.pt
+  moe_enabled: False
+  moe_layers: 3,5,7,9
+  moe_num_experts: 4
+  moe_top_k: 2
+  muon_backend_steps: 5
+  muon_beta2: 0.95
+  muon_momentum: 0.97
+  muon_momentum_warmup_start: 0.92
+  muon_momentum_warmup_steps: 1500
+  muon_row_normalize: True
+  muon_wd: 0.095
+  normuon: False
+  num_heads: 8
+  num_kv_heads: 4
+  num_layers: 11
+  num_loops: 2
+  parallel_residual_start: 7
+  qk_gain_init: 5.25
+  quantized_model_path: final_model.int6.ptz
+  rank: 0
+  rope_base: 10000.0
+  rope_dims: 32
+  rope_train_seq_len: 2048
+  run_id: ttt_nolora_probe2_04_17
+  run_sw_only: False
+  run_ttt_only: True
+  scalar_lr: 0.022
+  seed: 1337
+  skip_gates_enabled: True
+  skip_training: True
+  sliding_window_enabled: True
+  slot_enabled: False
+  slot_lr: 0.01
+  slot_max_windows: 0
+  slot_steps: 4
+  slot_train_mode: context
+  slot_wd: 0.01
+  tie_embeddings: True
+  tied_embed_init_std: 0.005
+  tied_embed_lr: 0.03
+  tokenizer_path: ./data2/tokenizers/fineweb_8192_bpe.model
+  train_batch_tokens: 786432
+  train_files: ./data2/datasets/fineweb10B_sp8192/fineweb_train_*.bin
+  train_log_every: 500
+  train_seq_len: 2048
+  trigram_dim: 128
+  trigram_vocab_size: 0
+  ttt_adapt_ema: 0.95
+  ttt_adapt_max_scale: 2.0
+  ttt_adapt_min_scale: 0.5
+  ttt_adapt_power: 1.0
+  ttt_adaptive_lr: False
+  ttt_adaptive_lr_override: 
+  ttt_batch_size: 64
+  ttt_beta1: 0.9
+  ttt_beta2: 0.99
+  ttt_chunk_size: 64
+  ttt_compile_disable: False
+  ttt_compile_dynamic: True
+  ttt_dense_attn: False
+  ttt_enabled: True
+  ttt_eval_seq_len: 2048
+  ttt_fp_chunk_tokens: 32768
+  ttt_fp_epochs: 3
+  ttt_fp_lr: 0.001
+  ttt_fp_momentum: 0.9
+  ttt_grad_clip: 1.0
+  ttt_grad_steps: 1
+  ttt_k_lora: True
+  ttt_layer_debug: False
+  ttt_layer_debug_tol: 0.001
+  ttt_lora_lr: 0.0001
+  ttt_lora_rank: 96
+  ttt_max_docs: 2000
+  ttt_mlp_lora: True
+  ttt_nan_guard: False
+  ttt_no_lora_probe: True
+  ttt_o_lora: True
+  ttt_phase_sgd_batch: 8
+  ttt_phase_sgd_epochs: 1
+  ttt_phase_sgd_lr: 0.0005
+  ttt_phase_sgd_momentum: 0.9
+  ttt_phase_sgd_optimizer: sgd
+  ttt_phase_sgd_seq_len: 1024
+  ttt_phase_sgd_wd: 0.0
+  ttt_phases: 1
+  ttt_sanity_check: False
+  ttt_weight_decay: 0.2
+  val_batch_tokens: 524288
+  val_files: ./data2/datasets/fineweb10B_sp8192/fineweb_val_*.bin
+  val_loss_every: 4000
+  varlen_attention: True
+  vocab_size: 8192
+  warmdown_frac: 0.85
+  warmdown_wd_mult: 1.0
+  warmup_steps: 20
+  window_attn_layers: 
+  window_attn_size: 0
+  world_size: 4
+  xsa_last_n: 11
+====================================================================================================
+Running Python 3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]
+Running PyTorch 2.11.0+cu130
+Fri Apr 17 19:40:16 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.2     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100 80GB PCIe          On  |   00000001:00:00.0 Off |                    0 |
+| N/A   43C    P0             75W /  300W |     733MiB /  81920MiB |      9%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100 80GB PCIe          On  |   00000002:00:00.0 Off |                    0 |
+| N/A   41C    P0             75W /  300W |     733MiB /  81920MiB |      2%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100 80GB PCIe          On  |   00000003:00:00.0 Off |                    0 |
+| N/A   44C    P0             83W /  300W |     733MiB /  81920MiB |      7%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100 80GB PCIe          On  |   00000004:00:00.0 Off |                    0 |
+| N/A   41C    P0             75W /  300W |     733MiB /  81920MiB |      9%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A          730952      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    1   N/A  N/A          730953      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    2   N/A  N/A          730954      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    3   N/A  N/A          730955      C   ...ameter-golf/.venv/bin/python3        724MiB |
++-----------------------------------------------------------------------------------------+
+
+====================================================================================================
+train_shards: 80
+val_tokens: 40540160
+SKIP_TRAINING=1 — reusing existing final_model.int6.ptz
+ttt_lora:warming up compile
+ttt_lora:compile warmup done (77.8s)
+ttt_lora:TTT_MAX_DOCS capping to 2000 docs
+ttt_lora:TTT_NO_LORA_PROBE=1 — calling forward_logits() instead of forward_ttt(lora)
+ttt_lora:docs:2000 rank:96 lr:0.0001 chunk:64
+ttt_progress: batch 31/32 batch_loss:3.7394 batch_bpb:1.4794 running_loss:3.7394 running_bpb:1.4794 doc_len:2830-7765
+quantized_ttt_lora val_loss:3.33230075 val_bpb:1.31399167 eval_time:42669ms

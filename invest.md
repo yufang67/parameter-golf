@@ -1,5 +1,150 @@
 # Investigation: TTT on top of VarLen attention degrades eval BPB
 
+## 2026-04-18 update — gated-attention is NOT the cause; PR #1530 comparison
+
+After comparing against PR #1530 (samacqua, also varlen + LoRA-TTT, reaches
+ttt_lora ~1.073) and our diagnostic floor of ~1.29 with no LoRA on the TTT
+harness:
+
+- PR #1530's TTT path uses dense `flash_attn_3_func(causal=True)` on
+  `[bsz, seq_len]` one-doc-per-row — **no varlen kernel inside TTT**. Their
+  varlen is only used in *training* and in `eval_val` / sliding eval. Varlen is
+  a batch-layout feature (cu_seqlens-driven row packing), not a model feature;
+  weights trained with packing work in either layout.
+- Our `eval_val_ttt` is structurally a port of PR #1530's `eval_val_ttt_lora`
+  (same `_compute_chunk_window`, `_accumulate_bpb`, `_build_ttt_global_batches`,
+  `BatchedTTTLoRA`), and we already auto-synthesize `cu_seqlens=[0, sl, ...]`
+  inside `forward_ttt`. Forcing dense (`TTT_DENSE_ATTN=1`) gave 1.192 vs
+  varlen-path 1.186 — equivalent.
+
+### Hypotheses tested in this batch
+
+| Hypothesis | Test | Result | Verdict |
+|---|---|---|---|
+| Adaptive LR / NaN guard noise | `TTT_ADAPTIVE_LR=0 TTT_NAN_GUARD=0` | 1.192 (no change) | falsified |
+| Varlen kernel inside TTT | `TTT_DENSE_ATTN=1` | 1.192 | falsified |
+| RoPE position offset (BOS-pad) | `TTT_ROPE_OFFSET ∈ {0,256,1024,1536}` | 1.31→1.37→1.83→2.12 | confounded by OOD pad context |
+| **Gated attention** (we have it, PR #1530 doesn't) | `DISABLE_GATED_ATTN_EVAL=1` | sliding ON 1.074 / OFF 1.580; TTT ON 1.192 / OFF 1.560 | **FALSIFIED** — gates universally essential, removing them widens the gap, not narrows it |
+
+### Notable cross-protocol observation
+
+With gates **OFF**, sliding (1.58) and TTT (1.56) converge. With gates **ON**,
+sliding (1.07) and TTT (1.19) diverge by 0.12. The gates seem to *amplify* the
+protocol divergence rather than cause it, suggesting the underlying mismatch is
+in *what the gate sees* (residual stream `x` after some layers of attention),
+which is itself shaped by RoPE-position distribution and context shape.
+
+### Remaining open hypotheses (in order of likelihood)
+
+1. **RoPE-position distribution.** Sliding packs many docs into a flat row, so
+   docs sit at varied row offsets and see varied RoPE positions. TTT puts each
+   doc in its own row at positions 0..doclen-1. Trained model also packs but
+   most docs train at non-zero starts → position-0 may be thin in training
+   distribution. Clean test requires adding `position_offset` to `Rotary.forward`
+   so we can shift cos/sin without OOD padding tokens.
+2. **Numerical drift between `_block_with_lora` and `Block.forward`** at higher
+   precision than the bitwise sanity check used. Current sanity check checks
+   final logits; intermediate tensors (post-attn, post-MLP, post-skip) may drift
+   measurably even when logits look identical.
+3. **Skip-gates / fused-RoPE / parallel-residual ordering** as a numerical
+   second-order effect.
+
+### Patches reverted
+
+`DISABLE_GATED_ATTN_EVAL`, `TTT_ROPE_OFFSET`, `TTT_NO_LORA_PROBE` all reverted
+from `train_gpt_improved_04_16.py`. Raw logs preserved under
+`logs/{ttt_nogate,sw_nogate,ttt_ropeoff_*,ttt_nolora_probe*,ttt_dense_attn,
+ttt_clean_adapt0_guard0,ttt_zerolr}_*_04_17.txt`.
+
+---
+
+## 2026-04-17 update — root cause is the TTT scoring protocol, NOT a forward-path bug
+
+After three follow-up batches (`logs/sanity_check_04_17_stdout.txt`,
+`logs/no_lora_probe_*_04_17_stdout.txt`,
+`logs/warmup_w*_04_17_stdout.txt`,
+`logs/fair_*_warmup1024_04_17_stdout.txt`) the original H1 conclusion in
+`varlen_ttt_invest/results.md` (that `_block_with_lora` had drifted from
+`Block.forward`) is **wrong**. Findings:
+
+1. `TTT_SANITY_CHECK=1 TTT_LAYER_DEBUG=1` shows `forward_logits` and
+   zero-LoRA `forward_ttt` are **bitwise identical** at every one of the 19
+   layer states (mean_abs = max_abs = 0.0e+00) for both a 317-token prefix
+   probe and a 2048-token tail-window probe. `_block_with_lora` is exonerated.
+2. A `TTT_NO_LORA_PROBE` flag (calls `forward_logits` instead of
+   `forward_ttt`, no LoRA at all, but reuses `eval_val_ttt`'s windowing,
+   chunking, and `_accumulate_bpb`) reports the **same ~1.30 BPB** as the
+   zero-LoRA `forward_ttt` probe. So the +0.26 BPB gap exists even when the
+   model forward is the trained one. → The defect lives in the eval
+   *protocol* in `eval_val_ttt`, not in any TTT-specific forward code.
+3. Sweeping `TTT_MAX_DOCS ∈ {50, 200, 1000, 5000}` with the no-LoRA probe
+   keeps val_bpb at 1.29-1.34. Not a sample-size artifact.
+4. Sweeping `TTT_CHUNK_SIZE ∈ {64, 256, 1024, 2048}` with the no-LoRA probe
+   moves val_bpb from 1.291 → 1.291 → 1.258 → 1.245. The number drops
+   monotonically as fewer cold-start positions get scored, but never
+   approaches the 1.074 sliding-window baseline.
+5. Adding a `TTT_SCORE_WARMUP` shift (skip the first N positions of every
+   chunk's scored region, matching `eval_val_sliding`'s `s = seq_len -
+   stride` skip) makes bpb **worse**, not better:
+   `W=0:1.291  W=64:1.290  W=256:1.335  W=512:1.405  W=1024:1.501`.
+   This means the gap is dominated by **bytes-per-token denominator skew**
+   in the first ~1000 FineWeb docs (their late-doc tokens are dominated by
+   short pieces — URLs, references, footers — so the bpb denominator
+   shrinks faster than the cross-entropy numerator).
+
+**Conclusion.** `eval_val_ttt` and `eval_val_sliding` measure *different
+quantities* on the same model. Three independent confounders:
+
+- **Scored-position set differs.** Sliding-window only scores the trailing
+  `stride` tokens of each window (≥ `seq_len - stride` of left context per
+  scored position). TTT scores every position of every chunk window,
+  including cold-start positions.
+- **Token sample differs.** TTT (with `TTT_MAX_DOCS≪all`) only scores the
+  first N documents; sliding-window scores all 10 M tokens. The first N
+  FineWeb docs have skewed bytes-per-token statistics, especially in their
+  tails, which moves the bpb denominator independently of the model.
+- **`cu_seqlens` handling differs.** `forward_ttt` auto-synthesizes
+  `cu_seqlens=[0, sl_in]` per row, while `eval_val_sliding` (varlen) builds
+  `cu_seqlens` from a BOS scan across the packed batch and forces a
+  boundary at offset 0 of every window.
+
+LoRA TTT is **actually working**: at `TTT_LORA_LR=1e-4` it pulls the score
+from the protocol-floor (~1.336 zero-LoRA, 50 docs) down to 1.208 (a real
+−0.128 BPB improvement). The headline regression ("TTT 1.21 vs sw 1.07")
+is an apples-to-oranges comparison — not a model or LoRA bug.
+
+### Implications for next steps
+
+- **Do not** rewrite `_block_with_lora` to delegate to `Block.forward`. It
+  isn't broken.
+- **Fix the comparison, not the model.** The only fair LoRA-improvement
+  number is `Δ(LoRA) := bpb_TTT_lora − bpb_TTT_no_lora` measured on the
+  *same* scored-token set, *same* docs. Reintroduce `TTT_NO_LORA_PROBE`
+  as a permanent diagnostic flag (it was reverted after this batch), pair
+  every TTT report with its zero-LoRA control number, and judge LoRA on
+  Δ rather than on absolute bpb.
+- To make the headline TTT bpb directly comparable to `eval_val_sliding`,
+  refactor `eval_val_ttt` so it: (a) iterates the same window starts as
+  `eval_val_sliding`, (b) scores the same trailing-`stride`-tokens-per-
+  window subset, (c) builds `cu_seqlens` the same way (BOS scan + offset-0
+  boundary insertion). This is a substantial refactor.
+- The original sliding-window varlen-degradation observation (sw_bpb
+  degradation on varlen-trained checkpoints vs non-varlen) is a separate
+  phenomenon and should be investigated independently — it is not caused
+  by `eval_val_ttt`.
+- Patches `TTT_NO_LORA_PROBE` and `TTT_SCORE_WARMUP` were reverted from
+  `train_gpt_improved_04_16.py` after this batch; logs preserved under
+  `/root/parameter-golf/logs/` (`sanity_check_04_17_*`,
+  `no_lora_probe_*_04_17_*`, `warmup_w*_04_17_*`,
+  `fair_*_warmup1024_04_17_*`).
+
+The remainder of this document is preserved for historical context.
+Sections below (especially H1 "per-path forward mismatch") have been
+**superseded by this update**.
+
+---
+
+
 ## Working file & output folder
 - **All code edits land in**: `train_gpt_improved_04_16.py` (a snapshot of `train_gpt_improved.py` taken on 2026-04-16; currently byte-identical). All investigation code edits happen here; do **not** touch `train_gpt_improved.py` until a fix is validated.
 - **All runs, logs, and notes for this investigation** go into a new folder: `varlen_ttt_invest/` at the repo root. Layout:
