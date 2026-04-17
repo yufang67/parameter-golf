@@ -204,3 +204,8 @@ val_tokens: 40540160
 SKIP_TRAINING=1 — reusing existing final_model.int6.ptz
 ttt_lora:rope_base_fix ROPE_FORCE_BASE_SEQLEN=98304 (train_seq_len=2048, ttt_eval_seq_len=2048)
 ttt_lora:warming up compile
+ttt_lora:compile warmup done (178.6s)
+ttt_lora:TTT_MAX_DOCS capping to 2000 docs
+ttt_lora:docs:2000 rank:96 lr:0.0001 chunk:64
+ttt_progress: batch 31/32 batch_loss:2.6386 batch_bpb:1.0439 running_loss:2.6386 running_bpb:1.0439 doc_len:2830-7765
+quantized_ttt_lora val_loss:2.73338522 val_bpb:1.07782751 eval_time:605901ms

@@ -214,6 +214,52 @@ historical context but should be considered overturned.
 
 ---
 
+## ✅ 2026-04-18 update #2 — ROOT CAUSE FOUND: RoPE base mismatch (FIXED)
+
+After falsifying the gated-attention hypothesis (above), tested the next
+candidate: **RoPE positional encoding mismatch between training and TTT eval**.
+
+`Rotary.forward(seq_len)` switches between vanilla cached cos/sin and
+NTK-aware-rescaled cos/sin based on whether `seq_len > train_seq_len=2048`:
+
+- Training (varlen): rows are ~98k tokens → NTK path.
+- Sliding eval (varlen): rows are ~65k tokens → NTK path (matches training).
+- TTT eval: rows are exactly 2048 tokens → vanilla cached path → **mismatch**.
+
+### Bidirectional confirmation
+
+| Run | RoPE base | val_bpb |
+|---|---|---:|
+| Sliding (default NTK) | scaled | **1.0742** |
+| Sliding `ROPE_FORCE_BASE_SEQLEN=2048` | vanilla | 1.2887 |
+| TTT lora (default vanilla) | vanilla | 1.1920 |
+| TTT lora `ROPE_FORCE_BASE_SEQLEN=65536` | scaled | 1.0786 |
+| **TTT lora auto-fix** | scaled (98304) | **1.0778** |
+
+Forcing the wrong RoPE base into either protocol moves it onto the other's
+curve. **Gap collapsed from +0.114 BPB to +0.004 BPB.**
+
+### Why PR #1530 doesn't have this
+
+PR #1530 has no NTK rescale — its Rotary always uses the same base, regardless
+of seq_len. Their training and TTT see identical RoPE. We added NTK rescaling
+(probably as a long-context win during training) but never propagated it to
+TTT eval.
+
+### Fix shipped
+
+Added `ttt_rope_base_seqlen` (env `TTT_ROPE_BASE_SEQLEN`); auto-derived at TTT
+eval entry from `train_batch_tokens / (world × grad_accum)`. Set via
+`ROPE_FORCE_BASE_SEQLEN` env in `Rotary.forward` for TTT duration only; sliding
+unaffected. Logs: `ttt_ropebase65k_d2000_04_17.txt`,
+`sw_ropevanilla2_04_17.txt`, `ttt_ropefix_auto_d2000_04_17.txt`.
+
+This overturns both the prior "scoring-protocol" conclusion and the original
+"forward-path bug" conclusion. The protocols *do* differ, but the dominant
++0.11 BPB came from RoPE; remaining +0.004 is noise.
+
+---
+
 ## ⚠️ 2026-04-18 update — gated-attention hypothesis FALSIFIED
 
 Tested whether per-head sigmoid `gated_attention` (which we have, PR #1530 does not)

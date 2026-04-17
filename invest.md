@@ -1,6 +1,65 @@
 # Investigation: TTT on top of VarLen attention degrades eval BPB
 
-## 2026-04-18 update — gated-attention is NOT the cause; PR #1530 comparison
+## 2026-04-18 update — ROOT CAUSE FOUND: RoPE-base mismatch
+
+**Confirmed bidirectionally.** `Rotary.forward(seq_len)` uses NTK-aware
+rescaling when `seq_len > train_seq_len=2048`, otherwise returns the cached
+vanilla cos/sin.
+
+- **Training (varlen)**: x is `[1, packed_flat]` where packed_flat ≈
+  `train_batch_tokens / (world × grad_accum)` ≈ 98304 → NTK-rescaled RoPE.
+- **Sliding eval (varlen)**: x_cat is `[1, batch_seqs × seq_len]` ≈ `[1, 65536]`
+  → NTK-rescaled RoPE (matches training ✓).
+- **TTT eval**: x is `[bsz, ttt_eval_seq_len=2048]` per row → vanilla cached
+  RoPE (different base from training ✗).
+
+### Diagnostic results (2000 docs, varlen-trained `final_model.int6.ptz`)
+
+| Run | RoPE base | val_bpb |
+|---|---|---:|
+| Sliding (default) | NTK ↑ (packed 65k row) | **1.0742** |
+| Sliding `ROPE_FORCE_BASE_SEQLEN=2048` | vanilla | 1.2887 |
+| TTT lora (default, broken) | vanilla cached | 1.1920 |
+| TTT lora `ROPE_FORCE_BASE_SEQLEN=65536` | NTK ↑ | **1.0786** |
+| TTT lora **auto-fix** (`base_force=98304`) | NTK ↑ | **1.0778** |
+
+Forcing the "wrong" RoPE base into either protocol moves it onto the other
+protocol's curve. **+0.114 BPB regression collapsed to +0.004.**
+
+### Why PR #1530 doesn't have this bug
+
+PR #1530's Rotary has **no NTK-rescale path** — it always uses cached cos/sin,
+recomputing the cache on demand for any seq_len. So their training and TTT eval
+share identical RoPE positions. Our model added NTK rescaling for >2048 rows
+but never propagated that decision to TTT eval, where rows are always 2048.
+
+### Fix shipped
+
+Added `ttt_rope_base_seqlen` hyperparameter (env: `TTT_ROPE_BASE_SEQLEN`).
+When 0 (default), auto-derive at TTT eval entry as
+`max(train_seq_len + 1, train_batch_tokens // (world × grad_accum))`. The
+override is set via `ROPE_FORCE_BASE_SEQLEN` env var (read by `Rotary.forward`)
+for the duration of TTT eval, then restored. Sliding eval is unaffected
+(continues to use the natural NTK path on long packed rows).
+
+Patch is now permanent in `train_gpt_improved_04_16.py`. Diagnostics in
+`logs/ttt_ropebase65k_d2000_04_17.txt`, `logs/sw_ropevanilla2_04_17.txt`,
+`logs/ttt_ropefix_auto_d2000_04_17.txt`.
+
+### What this overturns
+
+- "TTT-vs-sliding gap is a scoring-protocol issue" (2026-04-17 update below) —
+  partially true (the protocols do differ), but the dominant cause is the RoPE
+  encoding mismatch, not the chunked scoring or sample skew. Once RoPE is
+  aligned, the residual gap drops to noise level (+0.004 BPB on 2000 docs).
+- "Forward-path mismatch in `_block_with_lora`" (original H1) — still wrong;
+  bitwise sanity check stands. The bug was upstream of the block, in `Rotary`.
+- Gated-attention hypothesis — falsified earlier today; gates universally
+  essential, not the cause.
+
+---
+
+## 2026-04-17 update — root cause is the TTT scoring protocol, NOT a forward-path bug
 
 After comparing against PR #1530 (samacqua, also varlen + LoRA-TTT, reaches
 ttt_lora ~1.073) and our diagnostic floor of ~1.29 with no LoRA on the TTT

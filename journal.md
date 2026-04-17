@@ -13,6 +13,22 @@
      Keep entries concise — 3-5 sentences, not paragraphs.
      ============================================================ -->
 
+## TTT-vs-sliding gap ROOT CAUSE: RoPE base mismatch (2026-04-18)
+
+**Why investigated:** Re-opened the varlen+TTT question after sliding=1.0742 / quant=1.0813 / TTT=1.186 disparity on `final_model.int6.ptz` was inconsistent with PR #1530 reaching ttt_lora=1.073 with the same architecture family.
+
+**What I tried & why:** Falsified, in order: (a) `_block_with_lora` forward-path bug (bitwise sanity check, 0.0 max_abs across all layers); (b) varlen kernel inside TTT (`TTT_DENSE_ATTN=1` → no change); (c) adaptive_lr / nan_guard noise (no change); (d) gated_attention (`DISABLE_GATED_ATTN_EVAL=1` regressed sliding 1.07→1.58 and TTT 1.19→1.56 — universally essential, widens the gap). Then noticed `Rotary.forward` switches between vanilla cached cos/sin (seq_len≤2048) and NTK-rescaled (seq_len>2048): training packs ~98k tokens/row → NTK; sliding packs ~65k → NTK; **TTT runs 2048/row → vanilla cached, mismatched from training**.
+
+**Result:** Bidirectionally confirmed. Forcing vanilla into sliding via `ROPE_FORCE_BASE_SEQLEN=2048` regressed sliding to 1.2887. Forcing NTK into TTT via `ROPE_FORCE_BASE_SEQLEN=65536` recovered TTT to 1.0786. Auto-derived fix (`base_force = train_batch_tokens / (world * grad_accum) = 98304`) gives TTT=**1.0778** vs sliding=1.0742 — **gap collapsed +0.114 → +0.004 BPB**.
+
+**What I learned:** Any architecture knob that branches on `seq_len` (NTK rescale, position-extrapolation, sliding-window-size triggers, etc.) is a silent eval-vs-train mismatch hazard whenever an eval mode reshapes the batch (TTT one-doc-per-row vs training packed-multi-doc-per-row). PR #1530 didn't have this bug because their Rotary uses one base for all seq lengths. The "TTT regresses on varlen-trained checkpoints" folklore was real but mis-diagnosed for two prior batches as forward-path / scoring-protocol issues — both partially true but neither dominant.
+
+**Fix shipped:** `ttt_rope_base_seqlen` hyperparameter (env `TTT_ROPE_BASE_SEQLEN`); auto-set at TTT eval entry; `Rotary.forward` reads `ROPE_FORCE_BASE_SEQLEN` env. Sliding eval unaffected. No retraining needed. Logs: `logs/ttt_ropebase65k_d2000_04_17.txt`, `logs/sw_ropevanilla2_04_17.txt`, `logs/ttt_ropefix_auto_d2000_04_17.txt`. Full write-up: `invest.md` § "2026-04-18 update — ROOT CAUSE FOUND".
+
+**Next steps:** (1) Remove hard-coded `force > self.train_seq_len` guard in favor of explicit "match training row length" semantics (current implementation falls through to vanilla when `force ≤ train_seq_len`, which is a footgun if anyone overrides it small). (2) Consider making the NTK rescale stateless — derive once from `train_batch_tokens` at model construction and bake into a single cached cos/sin table — to eliminate the eval-time branch entirely. (3) Re-run the leaderboard TTT submission path; the 0.114 BPB recovery may make TTT competitive again.
+
+---
+
 ## TTT forward-path fix (train_gpt_improved_04_16.py) — follow-up to varlen_ttt_invest
 
 **Investigation output (`varlen_ttt_invest/results.md`):** 10 diagnostic runs on a single checkpoint found that zero-LoRA `forward_ttt` gives ttt_bpb=1.33587 vs sliding bpb=1.07407 — a ~+0.26 gap the report attributed to "a manual re-implementation of `Block.forward` in `_block_with_lora` that has drifted."
