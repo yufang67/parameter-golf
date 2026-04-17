@@ -27,11 +27,13 @@
 # 1. Pack
 python3 pack_submission_file.py train_gpt_improved.py train_gpt.py
 
-# 2. Run
+# 2. Run without TTT
 RUN_ID=<name> <ENV_OVERRIDES> MAX_WALLCLOCK_SECONDS=3600 \
   torchrun --standalone --nproc_per_node=4 train_gpt.py 2>&1 | tee logs/<name>.txt
 
 # 3. Record — append command to command.txt, update logs/results_summary.md
+
+# 4. Rerun the best with TTT
 ```
 
 ## Rules
@@ -41,15 +43,15 @@ RUN_ID=<name> <ENV_OVERRIDES> MAX_WALLCLOCK_SECONDS=3600 \
 - One variable per experiment. Name `RUN_ID` after what changed.
 - Sequential: finish → record → wait for next.
 
-## Feature Flags
+## Experiments Plan
+-  baseline is 
+```
+MATRIX_CLIP_SIGMAS=15 MLP_MULT=4.35 GPTQ_CALIBRATION_BATCHES=128 TTT_ENABLED=1 MAX_WALLCLOCK_SECONDS=3600 torchrun --standalone --nproc_per_node=4 train_gpt.py
+```
+- experiment bigram and trigram (done)
+- experiment varlen and try different parameters. Ignore TTT issue
+- experiment MoE. The TTT could have issue with MoE.
 
-| Flag | Default | Notes |
-|------|---------|-------|
-| `BIGRAM_VOCAB_SIZE` | 0 | Hash-bigram embedding |
-| `TRIGRAM_VOCAB_SIZE` | 0 | Hash-trigram embedding |
-| `MOE_ENABLED` | 0 | Mixture-of-experts MLP |
-| `TTT_ENABLED` | 0 | Test-time training |
-| `MLP_MULT` | 4 | MLP width multiplier |
 
 ## Keep/Discard
 

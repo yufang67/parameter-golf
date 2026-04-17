@@ -1,0 +1,481 @@
+
+You are currently in /mnt/azureml/cr/j/8399a43b133c47a78cf15b1e3d624807/exe/wd
+Job Executions run from here, your code snapshot and logs are here as well 🏡
+
+
+You are currently in /mnt/azureml/cr/j/8399a43b133c47a78cf15b1e3d624807/exe/wd
+Job Executions run from here, your code snapshot and logs are here as well 🏡
+
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Bootstrap: Using eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Bootstrap: Using eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Bootstrap: Using eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Bootstrap: Using eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO ncclCommInitRankConfig comm 0x212a98d0 rank 3 nranks 4 cudaDev 3 nvmlDev 3 busId 400000 commId 0xa6cfe4bc24cc8cbe - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO ncclCommInitRankConfig comm 0x46bbefb0 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 100000 commId 0xa6cfe4bc24cc8cbe - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO ncclCommInitRankConfig comm 0x4475bfa0 rank 1 nranks 4 cudaDev 1 nvmlDev 1 busId 200000 commId 0xa6cfe4bc24cc8cbe - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO ncclCommInitRankConfig comm 0x112316f0 rank 2 nranks 4 cudaDev 2 nvmlDev 2 busId 300000 commId 0xa6cfe4bc24cc8cbe - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Bootstrap timings total 0.001317 (create 0.000049, send 0.000210, recv 0.000398, ring 0.000231, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Bootstrap timings total 0.002017 (create 0.000051, send 0.000161, recv 0.000977, ring 0.000368, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Bootstrap timings total 0.001311 (create 0.000039, send 0.000210, recv 0.000522, ring 0.000127, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Bootstrap timings total 0.003740 (create 0.000049, send 0.000196, recv 0.001921, ring 0.000096, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 1 is 24-47. (GPU affinity = 24-47 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO NVLS multicast support is not available on dev 1 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 2 is 48-71. (GPU affinity = 48-71 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO NVLS multicast support is not available on dev 2 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 3 is 72-95. (GPU affinity = 72-95 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO NVLS multicast support is not available on dev 3 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 0 is 0-23. (GPU affinity = 0-23 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO NVLS multicast support is not available on dev 0 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO comm 0x112316f0 rank 2 nRanks 4 nNodes 1 localRanks 4 localRank 2 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO comm 0x4475bfa0 rank 1 nRanks 4 nNodes 1 localRanks 4 localRank 1 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO comm 0x46bbefb0 rank 0 nRanks 4 nNodes 1 localRanks 4 localRank 0 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO comm 0x212a98d0 rank 3 nRanks 4 nNodes 1 localRanks 4 localRank 3 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Channel 00/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Trees [0] 2/-1/-1->1->0 [1] 2/-1/-1->1->0 [2] 2/-1/-1->1->0 [3] 2/-1/-1->1->0 [4] 2/-1/-1->1->0 [5] 2/-1/-1->1->0 [6] 2/-1/-1->1->0 [7] 2/-1/-1->1->0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Channel 01/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Trees [0] -1/-1/-1->3->2 [1] -1/-1/-1->3->2 [2] -1/-1/-1->3->2 [3] -1/-1/-1->3->2 [4] -1/-1/-1->3->2 [5] -1/-1/-1->3->2 [6] -1/-1/-1->3->2 [7] -1/-1/-1->3->2
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Trees [0] 3/-1/-1->2->1 [1] 3/-1/-1->2->1 [2] 3/-1/-1->2->1 [3] 3/-1/-1->2->1 [4] 3/-1/-1->2->1 [5] 3/-1/-1->2->1 [6] 3/-1/-1->2->1 [7] 3/-1/-1->2->1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Channel 02/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Channel 03/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Channel 04/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Channel 05/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Channel 06/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Channel 07/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1 [2] 1/-1/-1->0->-1 [3] 1/-1/-1->0->-1 [4] 1/-1/-1->0->-1 [5] 1/-1/-1->0->-1 [6] 1/-1/-1->0->-1 [7] 1/-1/-1->0->-1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708430 [0] NCCL INFO [Proxy Service] Device 3 CPU core 91
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708436 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 8
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708432 [0] NCCL INFO [Proxy Service UDS] Device 3 CPU core 80
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708431 [0] NCCL INFO [Proxy Service] Device 1 CPU core 39
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708433 [0] NCCL INFO [Proxy Service] Device 0 CPU core 17
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708434 [0] NCCL INFO [Proxy Service UDS] Device 1 CPU core 46
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708435 [0] NCCL INFO [Proxy Service] Device 2 CPU core 68
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708437 [0] NCCL INFO [Proxy Service UDS] Device 2 CPU core 56
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO CC Off, workFifoBytes 1048576
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO ncclCommInitRankConfig comm 0x46bbefb0 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 100000 commId 0xa6cfe4bc24cc8cbe - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Init timings - ncclCommInitRankConfig: rank 0 nranks 4 total 0.18 (kernels 0.13, alloc 0.01, bootstrap 0.00, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.02, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO ncclCommInitRankConfig comm 0x112316f0 rank 2 nranks 4 cudaDev 2 nvmlDev 2 busId 300000 commId 0xa6cfe4bc24cc8cbe - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Init timings - ncclCommInitRankConfig: rank 2 nranks 4 total 0.18 (kernels 0.13, alloc 0.01, bootstrap 0.00, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.02, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO ncclCommInitRankConfig comm 0x4475bfa0 rank 1 nranks 4 cudaDev 1 nvmlDev 1 busId 200000 commId 0xa6cfe4bc24cc8cbe - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Init timings - ncclCommInitRankConfig: rank 1 nranks 4 total 0.18 (kernels 0.13, alloc 0.01, bootstrap 0.00, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO ncclCommInitRankConfig comm 0x212a98d0 rank 3 nranks 4 cudaDev 3 nvmlDev 3 busId 400000 commId 0xa6cfe4bc24cc8cbe - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Init timings - ncclCommInitRankConfig: rank 3 nranks 4 total 0.18 (kernels 0.13, alloc 0.01, bootstrap 0.00, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Channel 00 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Channel 00 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Channel 01 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Channel 01 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Channel 02 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Channel 02 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Channel 03 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Channel 03 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Channel 04 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Channel 04 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Channel 00/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Channel 00/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Channel 01/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Channel 01/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Channel 05 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Channel 05 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Channel 02/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Channel 02/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Channel 03/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Channel 03/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Channel 06 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Channel 06 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Channel 04/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Channel 04/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Channel 05/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Channel 07 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Channel 05/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Channel 07 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Channel 06/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Channel 06/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Channel 07/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Channel 07/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+Hyperparameters:
+  adam_eps: 1e-08
+  adam_wd: 0.02
+  beta1: 0.9
+  beta2: 0.95
+  bigram_dim: 128
+  bigram_vocab_size: 0
+  clip_mult_early: 1.0
+  clip_mult_late: 1.0
+  clip_mult_loop: 1.0
+  clip_mult_mid: 1.0
+  compress_ans: True
+  compress_brotli: False
+  compress_lzma: False
+  compressor: brotli
+  data_dir: /root/parameter-golf/data
+  datasets_dir: /root/parameter-golf/data/datasets/fineweb10B_sp8192
+  distributed: True
+  effective_train_seq_len: <property object at 0x146de2dcb150>
+  ema_decay: 0.9965
+  embed_bits: 8
+  embed_clip_sigmas: 20.0
+  embed_lr: 0.6
+  embed_wd: 0.085
+  embedding_dim: 512
+  enable_looping_at: 0.35
+  eval_seq_len: 2048
+  eval_stride: 64
+  fused_mlp: True
+  fused_rope: True
+  gated_attention: True
+  gptq_calibration_batches: 192
+  gptq_reserve_seconds: 12.0
+  grad_accum_steps: 2
+  grad_clip_norm: 0.3
+  head_lr: 0.008
+  hessian_clip_lambda: 0.3
+  is_main_process: True
+  iterations: 20000
+  ln_scale: True
+  local_rank: 0
+  logfile: logs/pg11_varlen_gptq192.txt
+  logit_softcap: 20.0
+  loop_embeddings: False
+  loop_end: 5
+  loop_layer_bits: 0
+  loop_layer_clip_sigmas: 0.0
+  loop_start: 3
+  matrix_bits: 6
+  matrix_clip_sigmas: 15.0
+  matrix_lr: 0.022
+  max_wallclock_seconds: 3600.0
+  min_lr: 0.0
+  mixed_seq_gpu_frac: 0.375
+  mixed_seq_len: 0
+  mlp_mult: 4.35
+  model_dim: 512
+  model_path: final_model.pt
+  moe_enabled: False
+  moe_layers: 3,5,7,9
+  moe_num_experts: 4
+  moe_top_k: 2
+  muon_backend_steps: 5
+  muon_beta2: 0.95
+  muon_momentum: 0.97
+  muon_momentum_warmup_start: 0.92
+  muon_momentum_warmup_steps: 1500
+  muon_row_normalize: True
+  muon_wd: 0.095
+  normuon: False
+  num_heads: 8
+  num_kv_heads: 4
+  num_layers: 11
+  num_loops: 2
+  parallel_residual_start: 7
+  qk_gain_init: 5.25
+  quantized_model_path: final_model.int6.ptz
+  rank: 0
+  rope_base: 10000.0
+  rope_dims: 32
+  rope_train_seq_len: 2048
+  run_id: pg11_varlen_gptq192
+  scalar_lr: 0.022
+  seed: 1337
+  skip_gates_enabled: True
+  sliding_window_enabled: True
+  tie_embeddings: True
+  tied_embed_init_std: 0.005
+  tied_embed_lr: 0.03
+  tokenizer_path: /root/parameter-golf/data/tokenizers/fineweb_8192_bpe.model
+  train_batch_tokens: 786432
+  train_files: /root/parameter-golf/data/datasets/fineweb10B_sp8192/fineweb_train_*.bin
+  train_log_every: 500
+  train_seq_len: 2048
+  trigram_dim: 128
+  trigram_vocab_size: 0
+  ttt_batch_size: 64
+  ttt_beta1: 0.0
+  ttt_beta2: 0.999
+  ttt_chunk_size: 48
+  ttt_enabled: False
+  ttt_eval_seq_len: 2048
+  ttt_fp_chunk_tokens: 32768
+  ttt_fp_epochs: 3
+  ttt_fp_lr: 0.001
+  ttt_fp_momentum: 0.9
+  ttt_grad_clip: 1.0
+  ttt_grad_steps: 1
+  ttt_k_lora: True
+  ttt_layer_debug: False
+  ttt_layer_debug_tol: 0.001
+  ttt_lora_lr: 5e-05
+  ttt_lora_rank: 64
+  ttt_mlp_lora: True
+  ttt_nan_guard: True
+  ttt_o_lora: True
+  ttt_sanity_check: False
+  ttt_weight_decay: 0.2
+  val_batch_tokens: 524288
+  val_files: /root/parameter-golf/data/datasets/fineweb10B_sp8192/fineweb_val_*.bin
+  val_loss_every: 4000
+  varlen_attention: True
+  vocab_size: 8192
+  warmdown_frac: 0.85
+  warmdown_wd_mult: 1.0
+  warmup_steps: 20
+  window_attn_layers: 
+  window_attn_size: 0
+  world_size: 4
+  xsa_last_n: 11
+train_shards: 80
+val_tokens: 40540160
+model_params:38152368
+gptq:reserving 12s, effective=3588000ms
+warmup_step: 1/20
+warmup_step: 2/20
+warmup_step: 3/20
+warmup_step: 4/20
+warmup_step: 5/20
+warmup_step: 6/20
+warmup_step: 10/20
+warmup_step: 20/20
+loop_warmup:enabled encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+loop_warmup_step: 1/20
+loop_warmup_step: 2/20
+loop_warmup_step: 3/20
+loop_warmup_step: 4/20
+loop_warmup_step: 5/20
+loop_warmup_step: 6/20
+loop_warmup_step: 10/20
+loop_warmup_step: 20/20
+0/20000 val_loss: 9.0079 val_bpb: 3.4871
+1/20000 train_loss: 9.0071 train_time: 0.0m tok/s: 1594467
+2/20000 train_loss: 11.3359 train_time: 0.0m tok/s: 1569462
+3/20000 train_loss: 9.9711 train_time: 0.0m tok/s: 1550626
+4/20000 train_loss: 8.5163 train_time: 0.0m tok/s: 1540198
+5/20000 train_loss: 7.4700 train_time: 0.0m tok/s: 1536446
+500/20000 train_loss: 3.3005 train_time: 6.5m tok/s: 1012980
+1000/20000 train_loss: 3.1385 train_time: 10.8m tok/s: 1214163
+1500/20000 train_loss: 3.0049 train_time: 15.1m tok/s: 1300836
+2000/20000 train_loss: 2.9838 train_time: 19.4m tok/s: 1349301
+layer_loop:enabled step:2175 frac:0.350 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+2500/20000 train_loss: 2.3309 train_time: 27.8m tok/s: 1178207
+3000/20000 train_loss: 2.8829 train_time: 34.4m tok/s: 1143495
+3500/20000 train_loss: 2.9041 train_time: 40.9m tok/s: 1120291
+4000/20000 train_loss: 2.8826 train_time: 47.5m tok/s: 1103256
+4000/20000 val_loss: 2.8603 val_bpb: 1.1073
+4500/20000 train_loss: 2.7922 train_time: 54.8m tok/s: 1077224
+4883/20000 val_loss: 2.7646 val_bpb: 1.0702
+stopping_early: wallclock_cap train_time: 3588363ms step: 4883/20000
+peak memory allocated: 38878 MiB reserved: 38978 MiB
+ema:applying EMA weights
+pre-quantization post-ema val_loss:2.76406954 val_bpb:1.07000166 eval_time:20153ms
+Serialized model: 144269669 bytes
+Code size: 38405 bytes
+GPTQ:collecting Hessians from calibration data...
+GPTQ:collected 67 Hessians in 74.2s
+Quantized weights:
+  gptq (int6): blocks.attn.c_k.weight, blocks.attn.c_q.weight, blocks.attn.c_v.weight, blocks.attn.proj.weight, blocks.mlp.fc.weight, blocks.mlp.proj.weight
+  gptq (int8): tok_emb.weight
+  passthrough (float16): blocks.attn.gate_proj.bias, blocks.attn.gate_proj.weight, blocks.attn.q_gain, blocks.attn_scale, blocks.mlp_scale, blocks.resid_mix, skip_gates, skip_weights
+compress:ans 15938972 bytes (14.7s)
+  ans: model=15938972 total=15977377
+compress:using ans (15938972 bytes)
+Serialized model quantized+compressed: 15938972 bytes
+Total submission size quantized+compressed: 15977377 bytes
+quantized val_loss:2.80125219 val_bpb:1.08439547 eval_time:19697ms
+sliding_progress: batch 1/4949 tokens:0 running_loss:0.0000 running_bpb:0.0000 elapsed:0.0s
+sliding_progress: batch 51/4949 tokens:104384 running_loss:2.7663 running_bpb:1.0890 elapsed:6.0s
+sliding_progress: batch 101/4949 tokens:206784 running_loss:2.7598 running_bpb:1.0706 elapsed:12.1s
+sliding_progress: batch 151/4949 tokens:309184 running_loss:2.7438 running_bpb:1.0779 elapsed:18.2s
+sliding_progress: batch 201/4949 tokens:411584 running_loss:2.7519 running_bpb:1.0811 elapsed:24.3s
+sliding_progress: batch 251/4949 tokens:513984 running_loss:2.7497 running_bpb:1.0762 elapsed:30.4s
+sliding_progress: batch 301/4949 tokens:616384 running_loss:2.7540 running_bpb:1.0784 elapsed:36.5s
+sliding_progress: batch 351/4949 tokens:718784 running_loss:2.7769 running_bpb:1.0849 elapsed:42.6s
+sliding_progress: batch 401/4949 tokens:821184 running_loss:2.7706 running_bpb:1.0839 elapsed:48.8s
+sliding_progress: batch 451/4949 tokens:923584 running_loss:2.7600 running_bpb:1.0815 elapsed:54.9s
+sliding_progress: batch 501/4949 tokens:1025984 running_loss:2.7525 running_bpb:1.0811 elapsed:61.0s
+sliding_progress: batch 551/4949 tokens:1128384 running_loss:2.7588 running_bpb:1.0828 elapsed:67.2s
+sliding_progress: batch 601/4949 tokens:1230784 running_loss:2.7732 running_bpb:1.0901 elapsed:73.3s
+sliding_progress: batch 651/4949 tokens:1333184 running_loss:2.7653 running_bpb:1.0876 elapsed:79.4s
+sliding_progress: batch 701/4949 tokens:1435584 running_loss:2.7628 running_bpb:1.0862 elapsed:85.6s
+sliding_progress: batch 751/4949 tokens:1537984 running_loss:2.7604 running_bpb:1.0863 elapsed:91.7s
+sliding_progress: batch 801/4949 tokens:1640384 running_loss:2.7534 running_bpb:1.0850 elapsed:97.9s
+sliding_progress: batch 851/4949 tokens:1742784 running_loss:2.7436 running_bpb:1.0826 elapsed:104.0s
+sliding_progress: batch 901/4949 tokens:1845184 running_loss:2.7387 running_bpb:1.0817 elapsed:110.2s
+sliding_progress: batch 951/4949 tokens:1947584 running_loss:2.7404 running_bpb:1.0816 elapsed:116.3s
+sliding_progress: batch 1001/4949 tokens:2049984 running_loss:2.7387 running_bpb:1.0804 elapsed:122.4s
+sliding_progress: batch 1051/4949 tokens:2152384 running_loss:2.7434 running_bpb:1.0827 elapsed:128.5s
+sliding_progress: batch 1101/4949 tokens:2254784 running_loss:2.7427 running_bpb:1.0824 elapsed:134.6s
+sliding_progress: batch 1151/4949 tokens:2357184 running_loss:2.7429 running_bpb:1.0831 elapsed:140.7s
+sliding_progress: batch 1201/4949 tokens:2459584 running_loss:2.7322 running_bpb:1.0784 elapsed:146.8s
+sliding_progress: batch 1251/4949 tokens:2561984 running_loss:2.7318 running_bpb:1.0784 elapsed:152.9s
+sliding_progress: batch 1301/4949 tokens:2664384 running_loss:2.7352 running_bpb:1.0791 elapsed:159.0s
+sliding_progress: batch 1351/4949 tokens:2766784 running_loss:2.7348 running_bpb:1.0787 elapsed:165.1s
+sliding_progress: batch 1401/4949 tokens:2869184 running_loss:2.7359 running_bpb:1.0778 elapsed:171.2s
+sliding_progress: batch 1451/4949 tokens:2971584 running_loss:2.7330 running_bpb:1.0771 elapsed:177.3s
+sliding_progress: batch 1501/4949 tokens:3073984 running_loss:2.7337 running_bpb:1.0768 elapsed:183.4s
+sliding_progress: batch 1551/4949 tokens:3176384 running_loss:2.7345 running_bpb:1.0769 elapsed:189.5s
+sliding_progress: batch 1601/4949 tokens:3278784 running_loss:2.7351 running_bpb:1.0772 elapsed:195.7s
+sliding_progress: batch 1651/4949 tokens:3381184 running_loss:2.7349 running_bpb:1.0773 elapsed:201.8s
+sliding_progress: batch 1701/4949 tokens:3483584 running_loss:2.7343 running_bpb:1.0779 elapsed:207.9s
+sliding_progress: batch 1751/4949 tokens:3585984 running_loss:2.7399 running_bpb:1.0799 elapsed:214.0s
+sliding_progress: batch 1801/4949 tokens:3688384 running_loss:2.7407 running_bpb:1.0800 elapsed:220.2s
+sliding_progress: batch 1851/4949 tokens:3790784 running_loss:2.7423 running_bpb:1.0808 elapsed:226.3s
+sliding_progress: batch 1901/4949 tokens:3893184 running_loss:2.7405 running_bpb:1.0800 elapsed:232.4s
+sliding_progress: batch 1951/4949 tokens:3995584 running_loss:2.7405 running_bpb:1.0804 elapsed:238.6s
+sliding_progress: batch 2001/4949 tokens:4097984 running_loss:2.7441 running_bpb:1.0829 elapsed:244.7s
+sliding_progress: batch 2051/4949 tokens:4200384 running_loss:2.7439 running_bpb:1.0825 elapsed:250.8s
+sliding_progress: batch 2101/4949 tokens:4302784 running_loss:2.7430 running_bpb:1.0823 elapsed:256.9s
+sliding_progress: batch 2151/4949 tokens:4405184 running_loss:2.7417 running_bpb:1.0813 elapsed:263.1s
+sliding_progress: batch 2201/4949 tokens:4507584 running_loss:2.7406 running_bpb:1.0807 elapsed:269.1s
+sliding_progress: batch 2251/4949 tokens:4609984 running_loss:2.7416 running_bpb:1.0815 elapsed:275.2s
+sliding_progress: batch 2301/4949 tokens:4712384 running_loss:2.7429 running_bpb:1.0814 elapsed:281.4s
+sliding_progress: batch 2351/4949 tokens:4814784 running_loss:2.7419 running_bpb:1.0818 elapsed:287.5s
+sliding_progress: batch 2401/4949 tokens:4917184 running_loss:2.7409 running_bpb:1.0813 elapsed:293.6s
+sliding_progress: batch 2451/4949 tokens:5019584 running_loss:2.7412 running_bpb:1.0818 elapsed:299.7s
+sliding_progress: batch 2501/4949 tokens:5121984 running_loss:2.7409 running_bpb:1.0819 elapsed:305.8s
+sliding_progress: batch 2551/4949 tokens:5224384 running_loss:2.7403 running_bpb:1.0815 elapsed:312.0s
+sliding_progress: batch 2601/4949 tokens:5326784 running_loss:2.7391 running_bpb:1.0815 elapsed:318.1s
+sliding_progress: batch 2651/4949 tokens:5429184 running_loss:2.7402 running_bpb:1.0817 elapsed:324.2s
+sliding_progress: batch 2701/4949 tokens:5531584 running_loss:2.7405 running_bpb:1.0819 elapsed:330.3s
+sliding_progress: batch 2751/4949 tokens:5633984 running_loss:2.7388 running_bpb:1.0808 elapsed:336.5s
+sliding_progress: batch 2801/4949 tokens:5736384 running_loss:2.7367 running_bpb:1.0797 elapsed:342.7s
+sliding_progress: batch 2851/4949 tokens:5838784 running_loss:2.7374 running_bpb:1.0800 elapsed:348.8s
+sliding_progress: batch 2901/4949 tokens:5941184 running_loss:2.7388 running_bpb:1.0809 elapsed:354.8s
+sliding_progress: batch 2951/4949 tokens:6043584 running_loss:2.7409 running_bpb:1.0815 elapsed:361.0s
+sliding_progress: batch 3001/4949 tokens:6145984 running_loss:2.7423 running_bpb:1.0816 elapsed:367.1s
+sliding_progress: batch 3051/4949 tokens:6248384 running_loss:2.7430 running_bpb:1.0813 elapsed:373.2s
+sliding_progress: batch 3101/4949 tokens:6350784 running_loss:2.7435 running_bpb:1.0810 elapsed:379.3s
+sliding_progress: batch 3151/4949 tokens:6453184 running_loss:2.7465 running_bpb:1.0817 elapsed:385.4s
+sliding_progress: batch 3201/4949 tokens:6555584 running_loss:2.7466 running_bpb:1.0815 elapsed:391.5s
+sliding_progress: batch 3251/4949 tokens:6657984 running_loss:2.7480 running_bpb:1.0820 elapsed:397.6s
+sliding_progress: batch 3301/4949 tokens:6760384 running_loss:2.7495 running_bpb:1.0823 elapsed:403.7s
+sliding_progress: batch 3351/4949 tokens:6862784 running_loss:2.7507 running_bpb:1.0828 elapsed:409.9s
+sliding_progress: batch 3401/4949 tokens:6965184 running_loss:2.7509 running_bpb:1.0827 elapsed:416.0s
+sliding_progress: batch 3451/4949 tokens:7067584 running_loss:2.7513 running_bpb:1.0823 elapsed:422.1s
+sliding_progress: batch 3501/4949 tokens:7169984 running_loss:2.7509 running_bpb:1.0820 elapsed:428.2s
+sliding_progress: batch 3551/4949 tokens:7272384 running_loss:2.7520 running_bpb:1.0819 elapsed:434.3s
+sliding_progress: batch 3601/4949 tokens:7374784 running_loss:2.7531 running_bpb:1.0820 elapsed:440.4s
+sliding_progress: batch 3651/4949 tokens:7477184 running_loss:2.7546 running_bpb:1.0822 elapsed:446.5s
+sliding_progress: batch 3701/4949 tokens:7579584 running_loss:2.7563 running_bpb:1.0827 elapsed:452.6s
+sliding_progress: batch 3751/4949 tokens:7681984 running_loss:2.7581 running_bpb:1.0832 elapsed:458.7s
+sliding_progress: batch 3801/4949 tokens:7784384 running_loss:2.7538 running_bpb:1.0831 elapsed:465.0s
+sliding_progress: batch 3851/4949 tokens:7886784 running_loss:2.7542 running_bpb:1.0830 elapsed:471.1s
+sliding_progress: batch 3901/4949 tokens:7989184 running_loss:2.7561 running_bpb:1.0833 elapsed:477.2s
+sliding_progress: batch 3951/4949 tokens:8091584 running_loss:2.7578 running_bpb:1.0836 elapsed:483.3s
+sliding_progress: batch 4001/4949 tokens:8193984 running_loss:2.7574 running_bpb:1.0832 elapsed:489.4s
+sliding_progress: batch 4051/4949 tokens:8296384 running_loss:2.7590 running_bpb:1.0831 elapsed:495.5s
+sliding_progress: batch 4101/4949 tokens:8398784 running_loss:2.7611 running_bpb:1.0837 elapsed:501.7s
+sliding_progress: batch 4151/4949 tokens:8501184 running_loss:2.7624 running_bpb:1.0837 elapsed:507.7s
+sliding_progress: batch 4201/4949 tokens:8603584 running_loss:2.7623 running_bpb:1.0836 elapsed:513.8s
+sliding_progress: batch 4251/4949 tokens:8705984 running_loss:2.7618 running_bpb:1.0832 elapsed:519.9s
+sliding_progress: batch 4301/4949 tokens:8808384 running_loss:2.7617 running_bpb:1.0826 elapsed:526.0s
+sliding_progress: batch 4351/4949 tokens:8910784 running_loss:2.7628 running_bpb:1.0827 elapsed:532.1s
+sliding_progress: batch 4401/4949 tokens:9013184 running_loss:2.7630 running_bpb:1.0826 elapsed:538.2s
+sliding_progress: batch 4451/4949 tokens:9115584 running_loss:2.7646 running_bpb:1.0830 elapsed:544.3s
+sliding_progress: batch 4501/4949 tokens:9217984 running_loss:2.7655 running_bpb:1.0832 elapsed:550.4s
+sliding_progress: batch 4551/4949 tokens:9320384 running_loss:2.7662 running_bpb:1.0830 elapsed:556.5s
+sliding_progress: batch 4601/4949 tokens:9422784 running_loss:2.7664 running_bpb:1.0829 elapsed:562.7s
+sliding_progress: batch 4651/4949 tokens:9525184 running_loss:2.7672 running_bpb:1.0825 elapsed:568.7s
+sliding_progress: batch 4701/4949 tokens:9627584 running_loss:2.7687 running_bpb:1.0829 elapsed:574.9s
+sliding_progress: batch 4751/4949 tokens:9729984 running_loss:2.7695 running_bpb:1.0827 elapsed:580.9s
+sliding_progress: batch 4801/4949 tokens:9832384 running_loss:2.7699 running_bpb:1.0824 elapsed:587.0s
+sliding_progress: batch 4851/4949 tokens:9934784 running_loss:2.7718 running_bpb:1.0828 elapsed:593.1s
+sliding_progress: batch 4901/4949 tokens:10037184 running_loss:2.7731 running_bpb:1.0829 elapsed:599.2s
+sliding_progress: batch 4949/4949 tokens:10135488 running_loss:2.7726 running_bpb:1.0823 elapsed:605.1s
+quantized_sliding_window val_loss:2.78256906 val_bpb:1.07721920 eval_time:653789ms
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO comm 0x46bbefb0 rank 0 nranks 4 cudaDev 0 busId 100000 - Destroy COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO comm 0x112316f0 rank 2 nranks 4 cudaDev 2 busId 300000 - Destroy COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO comm 0x4475bfa0 rank 1 nranks 4 cudaDev 1 busId 200000 - Destroy COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO comm 0x212a98d0 rank 3 nranks 4 cudaDev 3 busId 400000 - Destroy COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708392:708392 [2] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708390:708390 [0] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708391:708391 [1] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault
+e1a433d6d93644e090a8bcad4f3a7ab4000000:708393:708393 [3] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault

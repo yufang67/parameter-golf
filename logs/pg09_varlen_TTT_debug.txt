@@ -1,0 +1,288 @@
+Loading checkpoint: final_model.int6.ptz
+TTT mode: lora
+TTT config: rank=64 lr=5e-05 chunk=48 batch=64 grad_steps=1
+Eval config: seq_len=2048 stride=64
+val_tokens: 40540160
+model_params: 38152368
+ttt_sanity:prefix:doc_idx=0 doc_len=318 ctx_len=317 mean_abs=2.601527e-02 max_abs=2.110143e-01 direct_mean=3.008416 ttt_mean=3.011590
+ttt_layer_debug:prefix:embed:idx=0 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_0:idx=1 mean_abs=3.773773e-03 max_abs=6.250000e-02
+ttt_layer_debug:prefix:enc_layer_1:idx=2 mean_abs=4.742603e-03 max_abs=6.250000e-02
+ttt_layer_debug:prefix:enc_layer_2:idx=3 mean_abs=4.966890e-03 max_abs=6.250000e-02
+ttt_layer_debug:prefix:enc_layer_3:idx=4 mean_abs=5.089509e-03 max_abs=4.687500e-02
+ttt_layer_debug:prefix:enc_layer_4:idx=5 mean_abs=4.931139e-03 max_abs=3.906250e-02
+ttt_layer_debug:prefix:enc_layer_5:idx=6 mean_abs=5.207574e-03 max_abs=4.687500e-02
+ttt_layer_debug:prefix:enc_layer_3:idx=7 mean_abs=5.579896e-03 max_abs=6.250000e-02
+ttt_layer_debug:prefix:enc_layer_4:idx=8 mean_abs=5.715551e-03 max_abs=5.468750e-02
+ttt_layer_debug:prefix:dec_layer_5:idx=9 mean_abs=6.031090e-03 max_abs=6.542969e-02
+ttt_layer_debug:prefix:dec_layer_3:idx=10 mean_abs=5.907766e-03 max_abs=6.250000e-02
+ttt_layer_debug:prefix:dec_layer_4:idx=11 mean_abs=5.011224e-03 max_abs=5.078125e-02
+ttt_layer_debug:prefix:dec_layer_5:idx=12 mean_abs=4.886485e-03 max_abs=6.250000e-02
+ttt_layer_debug:prefix:dec_layer_6:idx=13 mean_abs=5.017677e-03 max_abs=6.591797e-02
+ttt_layer_debug:prefix:dec_layer_7:idx=14 mean_abs=4.889910e-03 max_abs=6.250000e-02
+ttt_layer_debug:prefix:dec_layer_8:idx=15 mean_abs=3.638527e-03 max_abs=6.250000e-02
+ttt_layer_debug:prefix:dec_layer_9:idx=16 mean_abs=1.747314e-03 max_abs=6.250000e-02
+ttt_layer_debug:prefix:dec_layer_10:idx=17 mean_abs=1.098192e-03 max_abs=6.250000e-02
+ttt_layer_debug:prefix:final_norm:idx=18 mean_abs=5.873725e-03 max_abs=4.375000e-01
+ttt_layer_debug:prefix:logits:idx=19 mean_abs=3.394190e-02 max_abs=4.687500e-01
+ttt_layer_debug:prefix:first_divergence=enc_layer_0 tol=1.000e-03
+ttt_sanity:tail_window:doc_idx=12 doc_len=11533 ctx_len=2048 mean_abs=2.473141e-02 max_abs=2.168984e-01 direct_mean=3.469956 ttt_mean=3.468615
+ttt_layer_debug:tail_window:embed:idx=0 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_0:idx=1 mean_abs=3.835571e-03 max_abs=7.812500e-02
+ttt_layer_debug:tail_window:enc_layer_1:idx=2 mean_abs=4.836901e-03 max_abs=1.171875e-01
+ttt_layer_debug:tail_window:enc_layer_2:idx=3 mean_abs=5.008223e-03 max_abs=6.250000e-02
+ttt_layer_debug:tail_window:enc_layer_3:idx=4 mean_abs=5.140378e-03 max_abs=7.812500e-02
+ttt_layer_debug:tail_window:enc_layer_4:idx=5 mean_abs=4.828314e-03 max_abs=6.250000e-02
+ttt_layer_debug:tail_window:enc_layer_5:idx=6 mean_abs=5.018307e-03 max_abs=7.421875e-02
+ttt_layer_debug:tail_window:enc_layer_3:idx=7 mean_abs=5.496324e-03 max_abs=6.250000e-02
+ttt_layer_debug:tail_window:enc_layer_4:idx=8 mean_abs=5.683801e-03 max_abs=8.593750e-02
+ttt_layer_debug:tail_window:dec_layer_5:idx=9 mean_abs=5.808054e-03 max_abs=1.308594e-01
+ttt_layer_debug:tail_window:dec_layer_3:idx=10 mean_abs=5.824147e-03 max_abs=1.250000e-01
+ttt_layer_debug:tail_window:dec_layer_4:idx=11 mean_abs=4.977895e-03 max_abs=1.093750e-01
+ttt_layer_debug:tail_window:dec_layer_5:idx=12 mean_abs=4.624918e-03 max_abs=1.054688e-01
+ttt_layer_debug:tail_window:dec_layer_6:idx=13 mean_abs=4.585170e-03 max_abs=1.406250e-01
+ttt_layer_debug:tail_window:dec_layer_7:idx=14 mean_abs=4.539670e-03 max_abs=1.250000e-01
+ttt_layer_debug:tail_window:dec_layer_8:idx=15 mean_abs=3.384935e-03 max_abs=1.250000e-01
+ttt_layer_debug:tail_window:dec_layer_9:idx=16 mean_abs=1.599684e-03 max_abs=7.812500e-02
+ttt_layer_debug:tail_window:dec_layer_10:idx=17 mean_abs=1.002664e-03 max_abs=9.375000e-02
+ttt_layer_debug:tail_window:final_norm:idx=18 mean_abs=4.785492e-03 max_abs=3.750000e-01
+ttt_layer_debug:tail_window:logits:idx=19 mean_abs=2.972170e-02 max_abs=5.625000e-01
+ttt_layer_debug:tail_window:first_divergence=enc_layer_0 tol=1.000e-03
+ttt_lora:warming up compile
+ttt_lora:compile warmup done (79.6s)
+ttt_lora:docs:50000 rank:64 lr:5e-05 chunk:48
+Loading checkpoint: final_model.int6.ptz
+TTT mode: lora
+TTT config: rank=64 lr=5e-05 chunk=48 batch=64 grad_steps=1
+Eval config: seq_len=2048 stride=64
+val_tokens: 40540160
+model_params: 38152368
+ttt_sanity:prefix:doc_idx=0 doc_len=318 ctx_len=317 mean_abs=0.000000e+00 max_abs=0.000000e+00 direct_mean=3.008416 ttt_mean=3.008416
+ttt_layer_debug:prefix:embed:idx=0 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_0:idx=1 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_1:idx=2 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_2:idx=3 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_3:idx=4 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_4:idx=5 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_5:idx=6 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_3:idx=7 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_4:idx=8 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_5:idx=9 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_3:idx=10 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_4:idx=11 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_5:idx=12 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_6:idx=13 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_7:idx=14 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_8:idx=15 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_9:idx=16 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_10:idx=17 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:final_norm:idx=18 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:logits:idx=19 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:no divergence above tol=1.000e-03
+ttt_sanity:tail_window:doc_idx=12 doc_len=11533 ctx_len=2048 mean_abs=0.000000e+00 max_abs=0.000000e+00 direct_mean=3.469956 ttt_mean=3.469956
+ttt_layer_debug:tail_window:embed:idx=0 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_0:idx=1 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_1:idx=2 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_2:idx=3 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_3:idx=4 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_4:idx=5 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_5:idx=6 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_3:idx=7 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_4:idx=8 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_5:idx=9 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_3:idx=10 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_4:idx=11 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_5:idx=12 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_6:idx=13 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_7:idx=14 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_8:idx=15 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_9:idx=16 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_10:idx=17 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:final_norm:idx=18 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:logits:idx=19 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:no divergence above tol=1.000e-03
+ttt_lora:warming up compile
+ttt_lora:compile warmup done (184.4s)
+ttt_lora:docs:50000 rank:64 lr:5e-05 chunk:48
+ttt_progress: batch 780/782 batch_loss:nan batch_bpb:nan running_loss:nan running_bpb:nan doc_len:11071-14414
+ttt_progress: batch 777/782 batch_loss:nan batch_bpb:nan running_loss:nan running_bpb:nan doc_len:7190-7938
+ttt_progress: batch 775/782 batch_loss:nan batch_bpb:nan running_loss:nan running_bpb:nan doc_len:5853-6355
+Loading checkpoint: final_model.int6.ptz
+TTT mode: lora
+TTT config: rank=64 lr=5e-05 chunk=48 batch=64 grad_steps=1
+Eval config: seq_len=2048 stride=64
+val_tokens: 40540160
+model_params: 38152368
+ttt_sanity:prefix:doc_idx=0 doc_len=318 ctx_len=317 mean_abs=0.000000e+00 max_abs=0.000000e+00 direct_mean=3.011590 ttt_mean=3.011590
+ttt_layer_debug:prefix:embed:idx=0 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_0:idx=1 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_1:idx=2 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_2:idx=3 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_3:idx=4 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_4:idx=5 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_5:idx=6 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_3:idx=7 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_4:idx=8 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_5:idx=9 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_3:idx=10 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_4:idx=11 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_5:idx=12 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_6:idx=13 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_7:idx=14 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_8:idx=15 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_9:idx=16 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_10:idx=17 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:final_norm:idx=18 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:logits:idx=19 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:no divergence above tol=1.000e-03
+ttt_sanity:tail_window:doc_idx=12 doc_len=11533 ctx_len=2048 mean_abs=0.000000e+00 max_abs=0.000000e+00 direct_mean=3.468615 ttt_mean=3.468615
+ttt_layer_debug:tail_window:embed:idx=0 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_0:idx=1 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_1:idx=2 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_2:idx=3 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_3:idx=4 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_4:idx=5 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_5:idx=6 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_3:idx=7 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_4:idx=8 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_5:idx=9 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_3:idx=10 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_4:idx=11 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_5:idx=12 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_6:idx=13 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_7:idx=14 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_8:idx=15 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_9:idx=16 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_10:idx=17 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:final_norm:idx=18 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:logits:idx=19 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:no divergence above tol=1.000e-03
+ttt_lora:warming up compile
+ttt_lora:compile warmup done (105.8s)
+ttt_lora:docs:50000 rank:64 lr:5e-05 chunk:48
+ttt_progress: batch 782/782 batch_loss:2.7511 batch_bpb:1.1107 running_loss:2.7511 running_bpb:1.1107 doc_len:26524-79464
+ttt_progress: batch 754/782 batch_loss:3.1037 batch_bpb:1.2178 running_loss:2.8261 running_bpb:1.1340 doc_len:2839-2899
+ttt_progress: batch 750/782 batch_loss:3.2189 batch_bpb:1.2144 running_loss:2.8909 running_bpb:1.1480 doc_len:2638-2688
+ttt_progress: batch 746/782 batch_loss:3.0801 batch_bpb:1.2127 running_loss:2.9161 running_bpb:1.1567 doc_len:2459-2501
+ttt_progress: batch 742/782 batch_loss:3.1760 batch_bpb:1.2165 running_loss:2.9451 running_bpb:1.1636 doc_len:2319-2353
+ttt_progress: batch 739/782 batch_loss:3.2158 batch_bpb:1.2211 running_loss:2.9712 running_bpb:1.1693 doc_len:2227-2253
+ttt_progress: batch 735/782 batch_loss:3.2054 batch_bpb:1.2207 running_loss:2.9909 running_bpb:1.1738 doc_len:2116-2140
+ttt_progress: batch 730/782 batch_loss:3.1248 batch_bpb:1.2302 running_loss:3.0007 running_bpb:1.1779 doc_len:1995-2016
+ttt_progress: batch 727/782 batch_loss:3.1195 batch_bpb:1.1875 running_loss:3.0086 running_bpb:1.1785 doc_len:1936-1960
+ttt_progress: batch 723/782 batch_loss:3.1072 batch_bpb:1.1854 running_loss:3.0146 running_bpb:1.1790 doc_len:1861-1885
+Loading checkpoint: final_model.int6.ptz
+TTT mode: lora
+TTT config: rank=64 lr=5e-05 chunk=48 batch=64 grad_steps=1
+Eval config: seq_len=2048 stride=64
+val_tokens: 40540160
+model_params: 38152368
+ttt_sanity:prefix:doc_idx=0 doc_len=318 ctx_len=317 mean_abs=0.000000e+00 max_abs=0.000000e+00 direct_mean=3.008416 ttt_mean=3.008416
+ttt_layer_debug:prefix:embed:idx=0 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_0:idx=1 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_1:idx=2 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_2:idx=3 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_3:idx=4 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_4:idx=5 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_5:idx=6 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_3:idx=7 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_4:idx=8 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_5:idx=9 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_3:idx=10 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_4:idx=11 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_5:idx=12 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_6:idx=13 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_7:idx=14 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_8:idx=15 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_9:idx=16 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_10:idx=17 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:final_norm:idx=18 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:logits:idx=19 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:no divergence above tol=1.000e-03
+ttt_sanity:tail_window:doc_idx=12 doc_len=11533 ctx_len=2048 mean_abs=0.000000e+00 max_abs=0.000000e+00 direct_mean=3.469956 ttt_mean=3.469956
+ttt_layer_debug:tail_window:embed:idx=0 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_0:idx=1 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_1:idx=2 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_2:idx=3 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_3:idx=4 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_4:idx=5 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_5:idx=6 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_3:idx=7 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_4:idx=8 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_5:idx=9 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_3:idx=10 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_4:idx=11 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_5:idx=12 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_6:idx=13 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_7:idx=14 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_8:idx=15 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_9:idx=16 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_10:idx=17 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:final_norm:idx=18 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:logits:idx=19 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:no divergence above tol=1.000e-03
+ttt_lora:warming up compile
+ttt_lora:compile warmup done (137.7s)
+ttt_lora:docs:50000 rank:64 lr:5e-05 chunk:48
+ttt_progress: batch 781/782 batch_loss:2.8172 batch_bpb:1.1630 running_loss:2.8172 running_bpb:1.1630 doc_len:14510-25988
+ttt_progress: batch 774/782 batch_loss:3.1122 batch_bpb:1.2291 running_loss:2.8859 running_bpb:1.1789 doc_len:5552-5852
+ttt_progress: batch 771/782 batch_loss:3.1546 batch_bpb:1.2334 running_loss:2.9301 running_bpb:1.1882 doc_len:4701-4937
+ttt_progress: batch 768/782 batch_loss:3.1282 batch_bpb:1.2553 running_loss:2.9549 running_bpb:1.1967 doc_len:4128-4306
+ttt_progress: batch 764/782 batch_loss:3.1876 batch_bpb:1.2665 running_loss:2.9780 running_bpb:1.2038 doc_len:3639-3742
+ttt_progress: batch 760/782 batch_loss:3.2774 batch_bpb:1.2871 running_loss:3.0024 running_bpb:1.2107 doc_len:3255-3334
+ttt_progress: batch 756/782 batch_loss:3.2067 batch_bpb:1.2429 running_loss:3.0165 running_bpb:1.2130 doc_len:2973-3032
+Loading checkpoint: final_model.int6.ptz
+TTT mode: lora
+TTT config: rank=64 lr=5e-05 chunk=48 batch=64 grad_steps=1
+Eval config: seq_len=2048 stride=64
+val_tokens: 40540160
+model_params: 38152368
+ttt_sanity:prefix:doc_idx=0 doc_len=318 ctx_len=317 mean_abs=0.000000e+00 max_abs=0.000000e+00 direct_mean=3.008416 ttt_mean=3.008416
+ttt_layer_debug:prefix:embed:idx=0 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_0:idx=1 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_1:idx=2 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_2:idx=3 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_3:idx=4 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_4:idx=5 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_5:idx=6 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_3:idx=7 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:enc_layer_4:idx=8 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_5:idx=9 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_3:idx=10 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_4:idx=11 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_5:idx=12 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_6:idx=13 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_7:idx=14 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_8:idx=15 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_9:idx=16 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:dec_layer_10:idx=17 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:final_norm:idx=18 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:logits:idx=19 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:prefix:no divergence above tol=1.000e-03
+ttt_sanity:tail_window:doc_idx=12 doc_len=11533 ctx_len=2048 mean_abs=0.000000e+00 max_abs=0.000000e+00 direct_mean=3.469956 ttt_mean=3.469956
+ttt_layer_debug:tail_window:embed:idx=0 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_0:idx=1 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_1:idx=2 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_2:idx=3 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_3:idx=4 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_4:idx=5 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_5:idx=6 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_3:idx=7 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:enc_layer_4:idx=8 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_5:idx=9 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_3:idx=10 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_4:idx=11 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_5:idx=12 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_6:idx=13 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_7:idx=14 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_8:idx=15 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_9:idx=16 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:dec_layer_10:idx=17 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:final_norm:idx=18 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:logits:idx=19 mean_abs=0.000000e+00 max_abs=0.000000e+00
+ttt_layer_debug:tail_window:no divergence above tol=1.000e-03
+ttt_lora:warming up compile
+ttt_lora:compile warmup done (86.5s)
+ttt_lora:docs:50000 rank:64 lr:5e-05 chunk:48
+ttt_progress: batch 780/782 batch_loss:2.9261 batch_bpb:1.2005 running_loss:2.9261 running_bpb:1.2005 doc_len:11071-14414
+ttt_progress: batch 777/782 batch_loss:3.0899 batch_bpb:1.2359 running_loss:2.9876 running_bpb:1.2140 doc_len:7190-7938
+ttt_progress: batch 775/782 batch_loss:3.1072 batch_bpb:1.2301 running_loss:3.0156 running_bpb:1.2179 doc_len:5853-6355

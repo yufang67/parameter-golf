@@ -1,0 +1,725 @@
+W0415 08:52:59.092000 536437 torch/distributed/run.py:851] 
+W0415 08:52:59.092000 536437 torch/distributed/run.py:851] *****************************************
+W0415 08:52:59.092000 536437 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0415 08:52:59.092000 536437 torch/distributed/run.py:851] *****************************************
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Bootstrap: Using eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO ncclCommInitRankConfig comm 0x187197b0 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 100000 commId 0x96e0a8cf38204067 - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Bootstrap: Using eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Bootstrap: Using eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Bootstrap: Using eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO ncclCommInitRankConfig comm 0x474fc6b0 rank 2 nranks 4 cudaDev 2 nvmlDev 2 busId 300000 commId 0x96e0a8cf38204067 - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO ncclCommInitRankConfig comm 0x25eb6830 rank 3 nranks 4 cudaDev 3 nvmlDev 3 busId 400000 commId 0x96e0a8cf38204067 - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO ncclCommInitRankConfig comm 0x43e00370 rank 1 nranks 4 cudaDev 1 nvmlDev 1 busId 200000 commId 0x96e0a8cf38204067 - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Bootstrap timings total 0.219770 (create 0.000048, send 0.000189, recv 0.218895, ring 0.000145, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Bootstrap timings total 0.001428 (create 0.000047, send 0.000198, recv 0.000644, ring 0.000155, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Bootstrap timings total 0.001430 (create 0.000050, send 0.000192, recv 0.000316, ring 0.000367, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Bootstrap timings total 0.082025 (create 0.000053, send 0.000211, recv 0.080794, ring 0.000099, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 0 is 0-23. (GPU affinity = 0-23 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO NVLS multicast support is not available on dev 0 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 3 is 72-95. (GPU affinity = 72-95 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO NVLS multicast support is not available on dev 3 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 2 is 48-71. (GPU affinity = 48-71 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO NVLS multicast support is not available on dev 2 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 1 is 24-47. (GPU affinity = 24-47 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO NVLS multicast support is not available on dev 1 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO comm 0x25eb6830 rank 3 nRanks 4 nNodes 1 localRanks 4 localRank 3 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO comm 0x43e00370 rank 1 nRanks 4 nNodes 1 localRanks 4 localRank 1 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO comm 0x187197b0 rank 0 nRanks 4 nNodes 1 localRanks 4 localRank 0 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO comm 0x474fc6b0 rank 2 nRanks 4 nNodes 1 localRanks 4 localRank 2 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Channel 00/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Trees [0] 2/-1/-1->1->0 [1] 2/-1/-1->1->0 [2] 2/-1/-1->1->0 [3] 2/-1/-1->1->0 [4] 2/-1/-1->1->0 [5] 2/-1/-1->1->0 [6] 2/-1/-1->1->0 [7] 2/-1/-1->1->0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Channel 01/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Channel 02/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Channel 03/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Trees [0] 3/-1/-1->2->1 [1] 3/-1/-1->2->1 [2] 3/-1/-1->2->1 [3] 3/-1/-1->2->1 [4] 3/-1/-1->2->1 [5] 3/-1/-1->2->1 [6] 3/-1/-1->2->1 [7] 3/-1/-1->2->1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Channel 04/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Channel 05/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Channel 06/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Channel 07/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Trees [0] -1/-1/-1->3->2 [1] -1/-1/-1->3->2 [2] -1/-1/-1->3->2 [3] -1/-1/-1->3->2 [4] -1/-1/-1->3->2 [5] -1/-1/-1->3->2 [6] -1/-1/-1->3->2 [7] -1/-1/-1->3->2
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1 [2] 1/-1/-1->0->-1 [3] 1/-1/-1->0->-1 [4] 1/-1/-1->0->-1 [5] 1/-1/-1->0->-1 [6] 1/-1/-1->0->-1 [7] 1/-1/-1->0->-1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536535 [0] NCCL INFO [Proxy Service] Device 2 CPU core 58
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536536 [0] NCCL INFO [Proxy Service] Device 1 CPU core 44
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536540 [0] NCCL INFO [Proxy Service UDS] Device 1 CPU core 34
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536537 [0] NCCL INFO [Proxy Service] Device 0 CPU core 16
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536542 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 8
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536539 [0] NCCL INFO [Proxy Service UDS] Device 2 CPU core 68
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536541 [0] NCCL INFO [Proxy Service UDS] Device 3 CPU core 91
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536538 [0] NCCL INFO [Proxy Service] Device 3 CPU core 82
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO CC Off, workFifoBytes 1048576
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO ncclCommInitRankConfig comm 0x187197b0 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 100000 commId 0x96e0a8cf38204067 - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO ncclCommInitRankConfig comm 0x474fc6b0 rank 2 nranks 4 cudaDev 2 nvmlDev 2 busId 300000 commId 0x96e0a8cf38204067 - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Init timings - ncclCommInitRankConfig: rank 0 nranks 4 total 0.51 (kernels 0.25, alloc 0.01, bootstrap 0.22, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Init timings - ncclCommInitRankConfig: rank 2 nranks 4 total 0.25 (kernels 0.13, alloc 0.00, bootstrap 0.08, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO ncclCommInitRankConfig comm 0x25eb6830 rank 3 nranks 4 cudaDev 3 nvmlDev 3 busId 400000 commId 0x96e0a8cf38204067 - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Init timings - ncclCommInitRankConfig: rank 3 nranks 4 total 0.17 (kernels 0.12, alloc 0.01, bootstrap 0.00, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO ncclCommInitRankConfig comm 0x43e00370 rank 1 nranks 4 cudaDev 1 nvmlDev 1 busId 200000 commId 0x96e0a8cf38204067 - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Init timings - ncclCommInitRankConfig: rank 1 nranks 4 total 0.17 (kernels 0.12, alloc 0.01, bootstrap 0.00, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Channel 00 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Channel 00 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Channel 01 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Channel 01 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Channel 02 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Channel 02 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Channel 03 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Channel 03 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Channel 04 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Channel 04 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Channel 05 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Channel 05 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Channel 00/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Channel 00/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Channel 06 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Channel 01/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Channel 01/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Channel 06 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Channel 02/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Channel 02/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Channel 07 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Channel 07 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Channel 03/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Channel 03/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Channel 04/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Channel 04/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Channel 05/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Channel 05/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Channel 06/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Channel 06/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Channel 07/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Channel 07/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536507:536507 [1] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536506 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+Hyperparameters:
+  adam_eps: 1e-08
+  adam_wd: 0.02
+  beta1: 0.9
+  beta2: 0.95
+  bigram_dim: 128
+  bigram_vocab_size: 2048
+  clip_mult_early: 1.0
+  clip_mult_late: 1.0
+  clip_mult_loop: 1.0
+  clip_mult_mid: 1.0
+  compress_ans: True
+  compress_brotli: False
+  compress_lzma: False
+  compressor: brotli
+  data_dir: ./data/
+  datasets_dir: ./data/datasets/fineweb10B_sp8192
+  distributed: True
+  effective_train_seq_len: <property object at 0x147cbdea11c0>
+  ema_decay: 0.9965
+  embed_bits: 8
+  embed_clip_sigmas: 20.0
+  embed_lr: 0.6
+  embed_wd: 0.085
+  embedding_dim: 512
+  enable_looping_at: 0.35
+  eval_seq_len: 2048
+  eval_stride: 64
+  fused_mlp: True
+  fused_rope: True
+  gated_attention: True
+  gptq_calibration_batches: 128
+  gptq_reserve_seconds: 12.0
+  grad_accum_steps: 2
+  grad_clip_norm: 0.3
+  head_lr: 0.008
+  hessian_clip_lambda: 0.3
+  is_main_process: True
+  iterations: 20000
+  ln_scale: True
+  local_rank: 0
+  logfile: logs/pg05_bigram2048.txt
+  logit_softcap: 20.0
+  loop_embeddings: False
+  loop_end: 5
+  loop_layer_bits: 0
+  loop_layer_clip_sigmas: 0.0
+  loop_start: 3
+  matrix_bits: 6
+  matrix_clip_sigmas: 15.0
+  matrix_lr: 0.022
+  max_wallclock_seconds: 3600.0
+  min_lr: 0.0
+  mixed_seq_gpu_frac: 0.375
+  mixed_seq_len: 0
+  mlp_mult: 4.35
+  model_dim: 512
+  model_path: final_model.pt
+  moe_enabled: False
+  moe_layers: 3,5,7,9
+  moe_num_experts: 4
+  moe_top_k: 2
+  muon_backend_steps: 5
+  muon_beta2: 0.95
+  muon_momentum: 0.97
+  muon_momentum_warmup_start: 0.92
+  muon_momentum_warmup_steps: 1500
+  muon_row_normalize: True
+  muon_wd: 0.095
+  normuon: False
+  num_heads: 8
+  num_kv_heads: 4
+  num_layers: 11
+  num_loops: 2
+  parallel_residual_start: 7
+  qk_gain_init: 5.25
+  quantized_model_path: final_model.int6.ptz
+  rank: 0
+  rope_base: 10000.0
+  rope_dims: 32
+  rope_train_seq_len: 2048
+  run_id: pg05_bigram2048
+  scalar_lr: 0.022
+  seed: 1337
+  skip_gates_enabled: True
+  sliding_window_enabled: True
+  tie_embeddings: True
+  tied_embed_init_std: 0.005
+  tied_embed_lr: 0.03
+  tokenizer_path: ./data/tokenizers/fineweb_8192_bpe.model
+  train_batch_tokens: 786432
+  train_files: ./data/datasets/fineweb10B_sp8192/fineweb_train_*.bin
+  train_log_every: 500
+  train_seq_len: 2048
+  trigram_dim: 128
+  trigram_vocab_size: 0
+  ttt_batch_size: 64
+  ttt_beta1: 0.0
+  ttt_beta2: 0.999
+  ttt_chunk_size: 32
+  ttt_enabled: False
+  ttt_eval_seq_len: 2048
+  ttt_fp_chunk_tokens: 32768
+  ttt_fp_epochs: 3
+  ttt_fp_lr: 0.001
+  ttt_fp_momentum: 0.9
+  ttt_grad_steps: 1
+  ttt_k_lora: True
+  ttt_lora_lr: 0.0001
+  ttt_lora_rank: 96
+  ttt_mlp_lora: True
+  ttt_mode: lora
+  ttt_o_lora: True
+  ttt_weight_decay: 0.5
+  val_batch_tokens: 524288
+  val_files: ./data/datasets/fineweb10B_sp8192/fineweb_val_*.bin
+  val_loss_every: 4000
+  varlen_attention: False
+  vocab_size: 8192
+  warmdown_frac: 0.85
+  warmdown_wd_mult: 1.0
+  warmup_steps: 20
+  window_attn_layers: 
+  window_attn_size: 0
+  world_size: 4
+  xsa_last_n: 11
+train_shards: 80
+val_tokens: 40540160
+model_params:38480049
+gptq:reserving 12s, effective=3588000ms
+warmup_step: 1/20
+warmup_step: 2/20
+warmup_step: 3/20
+warmup_step: 4/20
+warmup_step: 5/20
+warmup_step: 6/20
+warmup_step: 10/20
+warmup_step: 20/20
+loop_warmup:enabled encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+loop_warmup_step: 1/20
+loop_warmup_step: 2/20
+loop_warmup_step: 3/20
+loop_warmup_step: 4/20
+loop_warmup_step: 5/20
+loop_warmup_step: 6/20
+loop_warmup_step: 10/20
+loop_warmup_step: 20/20
+0/20000 val_loss: 9.0080 val_bpb: 3.4873
+1/20000 train_loss: 9.0088 train_time: 0.0m tok/s: 1585063
+2/20000 train_loss: 11.2904 train_time: 0.0m tok/s: 1561513
+3/20000 train_loss: 9.9331 train_time: 0.0m tok/s: 1543448
+4/20000 train_loss: 8.3458 train_time: 0.0m tok/s: 1533435
+5/20000 train_loss: 7.3932 train_time: 0.0m tok/s: 1526676
+500/20000 train_loss: 3.3257 train_time: 4.7m tok/s: 1390850
+1000/20000 train_loss: 3.2214 train_time: 9.4m tok/s: 1394229
+1500/20000 train_loss: 3.1060 train_time: 14.1m tok/s: 1395559
+2000/20000 train_loss: 3.1018 train_time: 18.8m tok/s: 1395993
+layer_loop:enabled step:2230 frac:0.350 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+2500/20000 train_loss: 3.0806 train_time: 24.8m tok/s: 1321733
+3000/20000 train_loss: 3.0157 train_time: 31.9m tok/s: 1230766
+3500/20000 train_loss: 2.9841 train_time: 39.1m tok/s: 1173903
+4000/20000 train_loss: 2.9122 train_time: 46.2m tok/s: 1134475
+4000/20000 val_loss: 2.8842 val_bpb: 1.1166
+4500/20000 train_loss: 2.8238 train_time: 53.4m tok/s: 1105433
+4952/20000 val_loss: 2.7848 val_bpb: 1.0781
+stopping_early: wallclock_cap train_time: 3588404ms step: 4952/20000
+peak memory allocated: 38901 MiB reserved: 39086 MiB
+ema:applying EMA weights
+pre-quantization post-ema val_loss:2.78356099 val_bpb:1.07760320 eval_time:31698ms
+Serialized model: 145057067 bytes
+Code size: 35245 bytes
+GPTQ:collecting Hessians from calibration data...
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/root/parameter-golf/train_gpt.py", line 6, in <module>
+[rank2]:     sys.argv[0]=_d;runpy.run_path(_d,run_name="__main__")
+[rank2]:                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "<frozen runpy>", line 286, in run_path
+[rank2]:   File "<frozen runpy>", line 98, in _run_module_code
+[rank2]:   File "<frozen runpy>", line 88, in _run_code
+[rank2]:   File "/root/parameter-golf/_train.py", line 2716, in <module>
+[rank2]:     main()
+[rank2]:   File "/root/parameter-golf/_train.py", line 2712, in main
+[rank2]:     train_and_eval(h, device)
+[rank2]:   File "/root/parameter-golf/_train.py", line 2604, in train_and_eval
+[rank2]:     serialize(h, base_model, code_path.read_text(encoding="utf-8"))
+[rank2]:   File "/root/parameter-golf/_train.py", line 1825, in serialize
+[rank2]:     quant_result, quant_meta = gptq_mixed_quantize(sd_cpu, hessians, h)
+[rank2]:                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/root/parameter-golf/_train.py", line 1594, in gptq_mixed_quantize
+[rank2]:     t, hessians[name], clip_sigmas=cs, clip_range=2**(bits - 1) - 1,
+[rank2]:        ~~~~~~~~^^^^^^
+[rank2]: KeyError: 'bigram.emb.weight'
+GPTQ:collected 67 Hessians in 50.4s
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/root/parameter-golf/train_gpt.py", line 6, in <module>
+[rank3]:     sys.argv[0]=_d;runpy.run_path(_d,run_name="__main__")
+[rank3]:                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "<frozen runpy>", line 286, in run_path
+[rank3]:   File "<frozen runpy>", line 98, in _run_module_code
+[rank3]:   File "<frozen runpy>", line 88, in _run_code
+[rank3]:   File "/root/parameter-golf/_train.py", line 2716, in <module>
+[rank3]:     main()
+[rank3]:   File "/root/parameter-golf/_train.py", line 2712, in main
+[rank3]:     train_and_eval(h, device)
+[rank3]:   File "/root/parameter-golf/_train.py", line 2604, in train_and_eval
+[rank3]:     serialize(h, base_model, code_path.read_text(encoding="utf-8"))
+[rank3]:   File "/root/parameter-golf/_train.py", line 1825, in serialize
+[rank3]:     quant_result, quant_meta = gptq_mixed_quantize(sd_cpu, hessians, h)
+[rank3]:                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/root/parameter-golf/_train.py", line 1594, in gptq_mixed_quantize
+[rank3]:     t, hessians[name], clip_sigmas=cs, clip_range=2**(bits - 1) - 1,
+[rank3]:        ~~~~~~~~^^^^^^
+[rank3]: KeyError: 'bigram.emb.weight'
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/root/parameter-golf/train_gpt.py", line 6, in <module>
+[rank0]:     sys.argv[0]=_d;runpy.run_path(_d,run_name="__main__")
+[rank0]:                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "<frozen runpy>", line 286, in run_path
+[rank0]:   File "<frozen runpy>", line 98, in _run_module_code
+[rank0]:   File "<frozen runpy>", line 88, in _run_code
+[rank0]:   File "/root/parameter-golf/_train.py", line 2716, in <module>
+[rank0]:     main()
+[rank0]:   File "/root/parameter-golf/_train.py", line 2712, in main
+[rank0]:     train_and_eval(h, device)
+[rank0]:   File "/root/parameter-golf/_train.py", line 2604, in train_and_eval
+[rank0]:     serialize(h, base_model, code_path.read_text(encoding="utf-8"))
+[rank0]:   File "/root/parameter-golf/_train.py", line 1825, in serialize
+[rank0]:     quant_result, quant_meta = gptq_mixed_quantize(sd_cpu, hessians, h)
+[rank0]:                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/root/parameter-golf/_train.py", line 1594, in gptq_mixed_quantize
+[rank0]:     t, hessians[name], clip_sigmas=cs, clip_range=2**(bits - 1) - 1,
+[rank0]:        ~~~~~~~~^^^^^^
+[rank0]: KeyError: 'bigram.emb.weight'
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:538685 [2] NCCL INFO comm 0x474fc6b0 rank 2 nRanks 4 cudaDev 2 busId 300000 - Abort START
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:538685 [2] NCCL INFO misc/socket.cc:64 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:538685 [2] NCCL INFO misc/socket.cc:81 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:538685 [2] NCCL INFO misc/socket.cc:868 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:538685 [2] NCCL INFO misc/socket.cc:64 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:538685 [2] NCCL INFO misc/socket.cc:81 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:538685 [2] NCCL INFO misc/socket.cc:868 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:538685 [2] NCCL INFO misc/socket.cc:64 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:538685 [2] NCCL INFO misc/socket.cc:81 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:538685 [2] NCCL INFO misc/socket.cc:868 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536535 [2] NCCL INFO misc/socket.cc:943 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:538686 [3] NCCL INFO comm 0x25eb6830 rank 3 nRanks 4 cudaDev 3 busId 400000 - Abort START
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:538686 [3] NCCL INFO misc/socket.cc:64 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:538686 [3] NCCL INFO misc/socket.cc:81 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:538686 [3] NCCL INFO misc/socket.cc:868 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:538686 [3] NCCL INFO misc/socket.cc:64 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:538686 [3] NCCL INFO misc/socket.cc:81 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:538686 [3] NCCL INFO misc/socket.cc:868 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:538686 [3] NCCL INFO misc/socket.cc:64 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:538686 [3] NCCL INFO misc/socket.cc:81 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:538686 [3] NCCL INFO misc/socket.cc:868 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536535 [2] NCCL INFO misc/socket.cc:943 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536538 [3] NCCL INFO misc/socket.cc:943 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:538685 [2] NCCL INFO comm 0x474fc6b0 rank 2 nranks 4 cudaDev 2 busId 300000 - Abort COMPLETE
+[rank0]:[W415 09:57:46.719898831 ProcessGroupNCCL.cpp:1575] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:538687 [0] NCCL INFO comm 0x187197b0 rank 0 nRanks 4 cudaDev 0 busId 100000 - Abort START
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:538687 [0] NCCL INFO misc/socket.cc:64 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:538687 [0] NCCL INFO misc/socket.cc:81 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:538687 [0] NCCL INFO misc/socket.cc:868 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:538687 [0] NCCL INFO misc/socket.cc:64 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:538687 [0] NCCL INFO misc/socket.cc:81 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:538687 [0] NCCL INFO misc/socket.cc:868 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:538687 [0] NCCL INFO misc/socket.cc:64 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:538687 [0] NCCL INFO misc/socket.cc:81 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:538687 [0] NCCL INFO misc/socket.cc:868 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:536537 [0] NCCL INFO misc/socket.cc:943 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536538 [3] NCCL INFO misc/socket.cc:943 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:538686 [3] NCCL INFO comm 0x25eb6830 rank 3 nranks 4 cudaDev 3 busId 400000 - Abort COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536508:536508 [2] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536506:538687 [0] NCCL INFO comm 0x187197b0 rank 0 nranks 4 cudaDev 0 busId 100000 - Abort COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:536509:536509 [3] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault
+W0415 09:57:47.770000 536437 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 536506 closing signal SIGTERM
+W0415 09:57:47.771000 536437 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 536507 closing signal SIGTERM
+W0415 09:57:47.775000 536437 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 536509 closing signal SIGTERM
+E0415 09:57:48.455000 536437 torch/distributed/elastic/multiprocessing/api.py:986] failed (exitcode: 1) local_rank: 2 (pid: 536508) of binary: /root/parameter-golf/.venv/bin/python3
+Traceback (most recent call last):
+  File "/root/parameter-golf/.venv/bin/torchrun", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/run.py", line 990, in main
+    run(args)
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/run.py", line 981, in run
+    elastic_launch(
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 170, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 317, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+/root/parameter-golf/train_gpt.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-04-15_09:57:48
+  host      : e1a433d6d93644e090a8bcad4f3a7ab4000000.internal.cloudapp.net
+  rank      : 0 (local_rank: 0)
+  exitcode  : -15 (pid: 536506)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 536506
+[2]:
+  time      : 2026-04-15_09:57:48
+  host      : e1a433d6d93644e090a8bcad4f3a7ab4000000.internal.cloudapp.net
+  rank      : 1 (local_rank: 1)
+  exitcode  : -15 (pid: 536507)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 536507
+[3]:
+  time      : 2026-04-15_09:57:48
+  host      : e1a433d6d93644e090a8bcad4f3a7ab4000000.internal.cloudapp.net
+  rank      : 3 (local_rank: 3)
+  exitcode  : 1 (pid: 536509)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-04-15_09:57:47
+  host      : e1a433d6d93644e090a8bcad4f3a7ab4000000.internal.cloudapp.net
+  rank      : 2 (local_rank: 2)
+  exitcode  : 1 (pid: 536508)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
+====================================================================================================
+Hyperparameters:
+  adam_eps: 1e-08
+  adam_wd: 0.02
+  beta1: 0.9
+  beta2: 0.95
+  bigram_dim: 128
+  bigram_vocab_size: 2048
+  clip_mult_early: 1.0
+  clip_mult_late: 1.0
+  clip_mult_loop: 1.0
+  clip_mult_mid: 1.0
+  compress_ans: True
+  compress_brotli: False
+  compress_lzma: False
+  compressor: brotli
+  data_dir: ./data/
+  datasets_dir: ./data/datasets/fineweb10B_sp8192
+  distributed: True
+  effective_train_seq_len: <property object at 0x1534d53c1260>
+  ema_decay: 0.9965
+  embed_bits: 8
+  embed_clip_sigmas: 20.0
+  embed_lr: 0.6
+  embed_wd: 0.085
+  embedding_dim: 512
+  enable_looping_at: 0.35
+  eval_seq_len: 2048
+  eval_stride: 64
+  fused_mlp: True
+  fused_rope: True
+  gated_attention: True
+  gptq_calibration_batches: 128
+  gptq_reserve_seconds: 12.0
+  grad_accum_steps: 2
+  grad_clip_norm: 0.3
+  head_lr: 0.008
+  hessian_clip_lambda: 0.3
+  is_main_process: True
+  iterations: 20000
+  ln_scale: True
+  local_rank: 0
+  logfile: logs/pg05_bigram2048.txt
+  logit_softcap: 20.0
+  loop_embeddings: False
+  loop_end: 5
+  loop_layer_bits: 0
+  loop_layer_clip_sigmas: 0.0
+  loop_start: 3
+  matrix_bits: 6
+  matrix_clip_sigmas: 15.0
+  matrix_lr: 0.022
+  max_wallclock_seconds: 3600.0
+  min_lr: 0.0
+  mixed_seq_gpu_frac: 0.375
+  mixed_seq_len: 0
+  mlp_mult: 4.35
+  model_dim: 512
+  model_path: final_model.pt
+  moe_enabled: False
+  moe_layers: 3,5,7,9
+  moe_num_experts: 4
+  moe_top_k: 2
+  muon_backend_steps: 5
+  muon_beta2: 0.95
+  muon_momentum: 0.97
+  muon_momentum_warmup_start: 0.92
+  muon_momentum_warmup_steps: 1500
+  muon_row_normalize: True
+  muon_wd: 0.095
+  normuon: False
+  num_heads: 8
+  num_kv_heads: 4
+  num_layers: 11
+  num_loops: 2
+  parallel_residual_start: 7
+  qk_gain_init: 5.25
+  quantized_model_path: final_model.int6.ptz
+  rank: 0
+  rope_base: 10000.0
+  rope_dims: 32
+  rope_train_seq_len: 2048
+  run_id: pg05_bigram2048
+  scalar_lr: 0.022
+  seed: 1337
+  skip_gates_enabled: True
+  sliding_window_enabled: True
+  tie_embeddings: True
+  tied_embed_init_std: 0.005
+  tied_embed_lr: 0.03
+  tokenizer_path: ./data/tokenizers/fineweb_8192_bpe.model
+  train_batch_tokens: 786432
+  train_files: ./data/datasets/fineweb10B_sp8192/fineweb_train_*.bin
+  train_log_every: 500
+  train_seq_len: 2048
+  trigram_dim: 128
+  trigram_vocab_size: 0
+  ttt_batch_size: 64
+  ttt_beta1: 0.0
+  ttt_beta2: 0.999
+  ttt_chunk_size: 32
+  ttt_enabled: False
+  ttt_eval_seq_len: 2048
+  ttt_fp_chunk_tokens: 32768
+  ttt_fp_epochs: 3
+  ttt_fp_lr: 0.001
+  ttt_fp_momentum: 0.9
+  ttt_grad_steps: 1
+  ttt_k_lora: True
+  ttt_lora_lr: 0.0001
+  ttt_lora_rank: 96
+  ttt_mlp_lora: True
+  ttt_mode: lora
+  ttt_o_lora: True
+  ttt_weight_decay: 0.5
+  val_batch_tokens: 524288
+  val_files: ./data/datasets/fineweb10B_sp8192/fineweb_val_*.bin
+  val_loss_every: 4000
+  varlen_attention: False
+  vocab_size: 8192
+  warmdown_frac: 0.85
+  warmdown_wd_mult: 1.0
+  warmup_steps: 20
+  window_attn_layers: 
+  window_attn_size: 0
+  world_size: 4
+  xsa_last_n: 11
+====================================================================================================
+Running Python 3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]
+Running PyTorch 2.11.0+cu130
+Wed Apr 15 13:30:53 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.2     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100 80GB PCIe          On  |   00000001:00:00.0 Off |                    0 |
+| N/A   40C    P0             74W /  300W |     733MiB /  81920MiB |      6%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100 80GB PCIe          On  |   00000002:00:00.0 Off |                    0 |
+| N/A   46C    P0             79W /  300W |     733MiB /  81920MiB |      7%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100 80GB PCIe          On  |   00000003:00:00.0 Off |                    0 |
+| N/A   41C    P0             76W /  300W |     733MiB /  81920MiB |      9%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100 80GB PCIe          On  |   00000004:00:00.0 Off |                    0 |
+| N/A   42C    P0             79W /  300W |     733MiB /  81920MiB |      8%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A          552514      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    1   N/A  N/A          552515      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    2   N/A  N/A          552516      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    3   N/A  N/A          552517      C   ...ameter-golf/.venv/bin/python3        724MiB |
++-----------------------------------------------------------------------------------------+
+
+====================================================================================================
+train_shards: 80
+val_tokens: 40540160
+model_params:38480049
+gptq:reserving 12s, effective=3588000ms
+warmup_step: 1/20
+warmup_step: 2/20
+warmup_step: 3/20
+warmup_step: 4/20
+warmup_step: 5/20
+warmup_step: 6/20
+warmup_step: 10/20
+warmup_step: 20/20
+loop_warmup:enabled encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+loop_warmup_step: 1/20
+loop_warmup_step: 2/20
+loop_warmup_step: 3/20
+loop_warmup_step: 4/20
+loop_warmup_step: 5/20
+loop_warmup_step: 6/20
+loop_warmup_step: 10/20
+loop_warmup_step: 20/20
+0/20000 val_loss: 9.0080 val_bpb: 3.4873
+1/20000 train_loss: 9.0088 train_time: 0.0m tok/s: 1561574
+2/20000 train_loss: 11.2904 train_time: 0.0m tok/s: 1545482
+3/20000 train_loss: 9.9331 train_time: 0.0m tok/s: 1525832
+4/20000 train_loss: 8.3457 train_time: 0.0m tok/s: 1516403
+5/20000 train_loss: 7.3932 train_time: 0.0m tok/s: 1509406
+500/20000 train_loss: 3.3191 train_time: 4.7m tok/s: 1396979
+1000/20000 train_loss: 3.2246 train_time: 9.4m tok/s: 1397626
+1500/20000 train_loss: 3.1011 train_time: 14.1m tok/s: 1397709
+2000/20000 train_loss: 3.1014 train_time: 18.8m tok/s: 1397454
+layer_loop:enabled step:2233 frac:0.350 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+2500/20000 train_loss: 3.0839 train_time: 24.8m tok/s: 1323906
+3000/20000 train_loss: 3.0115 train_time: 31.9m tok/s: 1233357
+3500/20000 train_loss: 2.9856 train_time: 39.0m tok/s: 1175746
+4000/20000 train_loss: 2.9132 train_time: 46.2m tok/s: 1136044
+4000/20000 val_loss: 2.8836 val_bpb: 1.1163
+4500/20000 train_loss: 2.8221 train_time: 53.3m tok/s: 1106997
+4958/20000 val_loss: 2.7837 val_bpb: 1.0776
+stopping_early: wallclock_cap train_time: 3588493ms step: 4958/20000
+peak memory allocated: 38901 MiB reserved: 39084 MiB
+ema:applying EMA weights
+pre-quantization post-ema val_loss:2.78239332 val_bpb:1.07715116 eval_time:19111ms
+Serialized model: 145057067 bytes
+Code size: 35417 bytes
+GPTQ:collecting Hessians from calibration data...
+GPTQ:collected 68 Hessians in 50.5s

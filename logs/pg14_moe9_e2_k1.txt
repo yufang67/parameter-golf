@@ -1,0 +1,705 @@
+
+You are currently in /mnt/azureml/cr/j/8399a43b133c47a78cf15b1e3d624807/exe/wd
+Job Executions run from here, your code snapshot and logs are here as well 🏡
+
+
+You are currently in /mnt/azureml/cr/j/8399a43b133c47a78cf15b1e3d624807/exe/wd
+Job Executions run from here, your code snapshot and logs are here as well 🏡
+
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Bootstrap: Using eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO ENV/Plugin: Could not find: libnccl-env.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO cudaDriverVersion 13020
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Stack size limit (unlimited) is unsafe; will use 8192KB for newly launched threads
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Bootstrap: Using eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Bootstrap: Using eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Bootstrap: Using eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO NCCL version 2.28.9+cuda13.0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Comm config Blocking set to 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO NET/Plugin: Could not find: libnccl-net.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO NCCL_IB_DISABLE set by environment to 1.
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO transport/net_ib.cc:852 -> 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Failed to initialize NET plugin IB
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO NCCL_SOCKET_IFNAME set by environment to eth0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO NET/Socket : Using [0]eth0:10.0.0.4<0>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Initialized NET plugin Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Assigned NET plugin Socket to comm
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Using network Socket
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO ncclCommInitRankConfig comm 0x325753e0 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 100000 commId 0xc08c792d01f4dc13 - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO ncclCommInitRankConfig comm 0x34f19640 rank 2 nranks 4 cudaDev 2 nvmlDev 2 busId 300000 commId 0xc08c792d01f4dc13 - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO ncclCommInitRankConfig comm 0xc660b60 rank 3 nranks 4 cudaDev 3 nvmlDev 3 busId 400000 commId 0xc08c792d01f4dc13 - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO ncclCommInitRankConfig comm 0x48713590 rank 1 nranks 4 cudaDev 1 nvmlDev 1 busId 200000 commId 0xc08c792d01f4dc13 - Init START
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO RAS client listening socket at 127.0.0.1<28028>
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Bootstrap timings total 0.001088 (create 0.000043, send 0.000153, recv 0.000329, ring 0.000127, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Bootstrap timings total 0.003563 (create 0.000044, send 0.000184, recv 0.002665, ring 0.000254, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Bootstrap timings total 0.001571 (create 0.000038, send 0.000125, recv 0.000156, ring 0.000642, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Bootstrap timings total 0.001615 (create 0.000055, send 0.000198, recv 0.000267, ring 0.000105, delay 0.000001)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 3 is 72-95. (GPU affinity = 72-95 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO NVLS multicast support is not available on dev 3 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 0 is 0-23. (GPU affinity = 0-23 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO NVLS multicast support is not available on dev 0 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 1 is 24-47. (GPU affinity = 24-47 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO ncclTopoGetCpuAffinity: Affinity for GPU 2 is 48-71. (GPU affinity = 48-71 ; CPU affinity = 0-95).
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO NVLS multicast support is not available on dev 1 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO NVLS multicast support is not available on dev 2 (NVLS_NCHANNELS 0)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO comm 0x325753e0 rank 0 nRanks 4 nNodes 1 localRanks 4 localRank 0 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO comm 0x34f19640 rank 2 nRanks 4 nNodes 1 localRanks 4 localRank 2 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO comm 0x48713590 rank 1 nRanks 4 nNodes 1 localRanks 4 localRank 1 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO comm 0xc660b60 rank 3 nRanks 4 nNodes 1 localRanks 4 localRank 3 MNNVL 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Channel 00/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Channel 01/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Trees [0] 3/-1/-1->2->1 [1] 3/-1/-1->2->1 [2] 3/-1/-1->2->1 [3] 3/-1/-1->2->1 [4] 3/-1/-1->2->1 [5] 3/-1/-1->2->1 [6] 3/-1/-1->2->1 [7] 3/-1/-1->2->1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Trees [0] 2/-1/-1->1->0 [1] 2/-1/-1->1->0 [2] 2/-1/-1->1->0 [3] 2/-1/-1->1->0 [4] 2/-1/-1->1->0 [5] 2/-1/-1->1->0 [6] 2/-1/-1->1->0 [7] 2/-1/-1->1->0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Channel 02/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Channel 03/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Trees [0] -1/-1/-1->3->2 [1] -1/-1/-1->3->2 [2] -1/-1/-1->3->2 [3] -1/-1/-1->3->2 [4] -1/-1/-1->3->2 [5] -1/-1/-1->3->2 [6] -1/-1/-1->3->2 [7] -1/-1/-1->3->2
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Channel 04/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Channel 05/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Channel 06/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Channel 07/08 : 0 1 2 3
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1 [2] 1/-1/-1->0->-1 [3] 1/-1/-1->0->-1 [4] 1/-1/-1->0->-1 [5] 1/-1/-1->0->-1 [6] 1/-1/-1->0->-1 [7] 1/-1/-1->0->-1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO P2P Chunksize set to 131072
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0 isAllCudaP2p 0
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729051 [0] NCCL INFO [Proxy Service] Device 2 CPU core 59
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729052 [0] NCCL INFO [Proxy Service] Device 1 CPU core 33
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729053 [0] NCCL INFO [Proxy Service] Device 0 CPU core 12
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729054 [0] NCCL INFO [Proxy Service] Device 3 CPU core 74
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729056 [0] NCCL INFO [Proxy Service UDS] Device 2 CPU core 65
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729055 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 4
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729058 [0] NCCL INFO [Proxy Service UDS] Device 3 CPU core 80
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729057 [0] NCCL INFO [Proxy Service UDS] Device 1 CPU core 43
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO threadThresholds 8/8/64 | 32/8/64 | 512 | 512
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO 8 coll channels, 8 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO CC Off, workFifoBytes 1048576
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO ncclCommInitRankConfig comm 0x325753e0 rank 0 nranks 4 cudaDev 0 nvmlDev 0 busId 100000 commId 0xc08c792d01f4dc13 - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO ncclCommInitRankConfig comm 0x34f19640 rank 2 nranks 4 cudaDev 2 nvmlDev 2 busId 300000 commId 0xc08c792d01f4dc13 - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Init timings - ncclCommInitRankConfig: rank 0 nranks 4 total 0.18 (kernels 0.13, alloc 0.01, bootstrap 0.00, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Init timings - ncclCommInitRankConfig: rank 2 nranks 4 total 0.17 (kernels 0.13, alloc 0.01, bootstrap 0.00, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO ncclCommInitRankConfig comm 0x48713590 rank 1 nranks 4 cudaDev 1 nvmlDev 1 busId 200000 commId 0xc08c792d01f4dc13 - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Init timings - ncclCommInitRankConfig: rank 1 nranks 4 total 0.17 (kernels 0.13, alloc 0.01, bootstrap 0.00, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO ncclCommInitRankConfig comm 0xc660b60 rank 3 nranks 4 cudaDev 3 nvmlDev 3 busId 400000 commId 0xc08c792d01f4dc13 - Init COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Init timings - ncclCommInitRankConfig: rank 3 nranks 4 total 0.17 (kernels 0.13, alloc 0.01, bootstrap 0.00, allgathers 0.00, topo 0.02, graphs 0.00, connections 0.01, rest 0.00)
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Channel 00 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Channel 00 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Channel 01 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Channel 01 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Channel 02 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Channel 02 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Channel 03 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Channel 03 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Channel 04 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Channel 04 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Channel 00/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Channel 00/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Channel 01/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Channel 01/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Channel 05 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Channel 05 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Channel 02/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Channel 02/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Channel 03/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Channel 03/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Channel 06 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Channel 06 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Channel 04/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Channel 04/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Channel 07 : 1[1] -> 2[2] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Channel 07 : 3[3] -> 0[0] via SHM/direct/direct
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Channel 05/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Channel 05/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Channel 06/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Channel 06/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Channel 07/0 : 0[0] -> 1[1] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Channel 07/0 : 2[2] -> 3[3] via P2P/CUMEM/read
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+Hyperparameters:
+  adam_eps: 1e-08
+  adam_wd: 0.02
+  beta1: 0.9
+  beta2: 0.95
+  bigram_dim: 128
+  bigram_vocab_size: 0
+  clip_mult_early: 1.0
+  clip_mult_late: 1.0
+  clip_mult_loop: 1.0
+  clip_mult_mid: 1.0
+  compress_ans: True
+  compress_brotli: False
+  compress_lzma: False
+  compressor: brotli
+  data_dir: /root/parameter-golf/data
+  datasets_dir: /root/parameter-golf/data/datasets/fineweb10B_sp8192
+  distributed: True
+  effective_train_seq_len: <property object at 0x146ad3eb6f70>
+  ema_decay: 0.9965
+  embed_bits: 8
+  embed_clip_sigmas: 20.0
+  embed_lr: 0.6
+  embed_wd: 0.085
+  embedding_dim: 512
+  enable_looping_at: 0.35
+  eval_seq_len: 2048
+  eval_stride: 64
+  fused_mlp: True
+  fused_rope: True
+  gated_attention: True
+  gptq_calibration_batches: 128
+  gptq_reserve_seconds: 12.0
+  grad_accum_steps: 2
+  grad_clip_norm: 0.3
+  head_lr: 0.008
+  hessian_clip_lambda: 0.3
+  is_main_process: True
+  iterations: 20000
+  ln_scale: True
+  local_rank: 0
+  logfile: logs/pg14_moe9_e2_k1.txt
+  logit_softcap: 20.0
+  loop_embeddings: False
+  loop_end: 5
+  loop_layer_bits: 0
+  loop_layer_clip_sigmas: 0.0
+  loop_start: 3
+  matrix_bits: 6
+  matrix_clip_sigmas: 15.0
+  matrix_lr: 0.022
+  max_wallclock_seconds: 3600.0
+  min_lr: 0.0
+  mixed_seq_gpu_frac: 0.375
+  mixed_seq_len: 0
+  mlp_mult: 4.35
+  model_dim: 512
+  model_path: final_model.pt
+  moe_enabled: True
+  moe_layers: 9
+  moe_num_experts: 2
+  moe_top_k: 1
+  muon_backend_steps: 5
+  muon_beta2: 0.95
+  muon_momentum: 0.97
+  muon_momentum_warmup_start: 0.92
+  muon_momentum_warmup_steps: 1500
+  muon_row_normalize: True
+  muon_wd: 0.095
+  normuon: False
+  num_heads: 8
+  num_kv_heads: 4
+  num_layers: 11
+  num_loops: 2
+  parallel_residual_start: 7
+  qk_gain_init: 5.25
+  quantized_model_path: final_model.int6.ptz
+  rank: 0
+  rope_base: 10000.0
+  rope_dims: 32
+  rope_train_seq_len: 2048
+  run_id: pg14_moe9_e2_k1
+  scalar_lr: 0.022
+  seed: 1337
+  skip_gates_enabled: True
+  sliding_window_enabled: True
+  tie_embeddings: True
+  tied_embed_init_std: 0.005
+  tied_embed_lr: 0.03
+  tokenizer_path: /root/parameter-golf/data/tokenizers/fineweb_8192_bpe.model
+  train_batch_tokens: 786432
+  train_files: /root/parameter-golf/data/datasets/fineweb10B_sp8192/fineweb_train_*.bin
+  train_log_every: 500
+  train_seq_len: 2048
+  trigram_dim: 128
+  trigram_vocab_size: 0
+  ttt_batch_size: 64
+  ttt_beta1: 0.0
+  ttt_beta2: 0.999
+  ttt_chunk_size: 48
+  ttt_enabled: False
+  ttt_eval_seq_len: 2048
+  ttt_fp_chunk_tokens: 32768
+  ttt_fp_epochs: 3
+  ttt_fp_lr: 0.001
+  ttt_fp_momentum: 0.9
+  ttt_grad_clip: 1.0
+  ttt_grad_steps: 1
+  ttt_k_lora: True
+  ttt_layer_debug: False
+  ttt_layer_debug_tol: 0.001
+  ttt_lora_lr: 5e-05
+  ttt_lora_rank: 64
+  ttt_mlp_lora: True
+  ttt_nan_guard: True
+  ttt_o_lora: True
+  ttt_sanity_check: False
+  ttt_weight_decay: 0.2
+  val_batch_tokens: 524288
+  val_files: /root/parameter-golf/data/datasets/fineweb10B_sp8192/fineweb_val_*.bin
+  val_loss_every: 4000
+  varlen_attention: False
+  vocab_size: 8192
+  warmdown_frac: 0.85
+  warmdown_wd_mult: 1.0
+  warmup_steps: 20
+  window_attn_layers: 
+  window_attn_size: 0
+  world_size: 4
+  xsa_last_n: 11
+train_shards: 80
+val_tokens: 40540160
+model_params:40447152
+gptq:reserving 12s, effective=3588000ms
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+warmup_step: 1/20
+warmup_step: 2/20
+warmup_step: 3/20
+warmup_step: 4/20
+warmup_step: 5/20
+warmup_step: 6/20
+warmup_step: 10/20
+warmup_step: 20/20
+loop_warmup:enabled encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+loop_warmup_step: 1/20
+loop_warmup_step: 2/20
+loop_warmup_step: 3/20
+loop_warmup_step: 4/20
+loop_warmup_step: 5/20
+loop_warmup_step: 6/20
+loop_warmup_step: 10/20
+loop_warmup_step: 20/20
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+0/20000 val_loss: 9.0095 val_bpb: 3.4877
+1/20000 train_loss: 9.0106 train_time: 0.0m tok/s: 1511594
+2/20000 train_loss: 11.2685 train_time: 0.0m tok/s: 1487387
+3/20000 train_loss: 9.9523 train_time: 0.0m tok/s: 1464584
+4/20000 train_loss: 8.3779 train_time: 0.0m tok/s: 1451074
+5/20000 train_loss: 7.4144 train_time: 0.0m tok/s: 1432684
+500/20000 train_loss: 3.3136 train_time: 4.8m tok/s: 1352873
+1000/20000 train_loss: 3.2121 train_time: 9.7m tok/s: 1355877
+1500/20000 train_loss: 3.0955 train_time: 14.5m tok/s: 1357001
+2000/20000 train_loss: 3.0985 train_time: 19.3m tok/s: 1357559
+layer_loop:enabled step:2168 frac:0.350 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+2500/20000 train_loss: 3.0741 train_time: 25.8m tok/s: 1271997
+3000/20000 train_loss: 3.0071 train_time: 33.0m tok/s: 1190765
+3500/20000 train_loss: 2.9718 train_time: 40.3m tok/s: 1139125
+4000/20000 train_loss: 2.9001 train_time: 47.5m tok/s: 1102985
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+4000/20000 val_loss: 2.8722 val_bpb: 1.1119
+4500/20000 train_loss: 2.8107 train_time: 54.8m tok/s: 1076459
+4846/20000 val_loss: 2.7822 val_bpb: 1.0770
+stopping_early: wallclock_cap train_time: 3588652ms step: 4846/20000
+peak memory allocated: 39947 MiB reserved: 40118 MiB
+ema:applying EMA weights
+pre-quantization post-ema val_loss:2.78096640 val_bpb:1.07654261 eval_time:22456ms
+Serialized model: 153448043 bytes
+Code size: 38405 bytes
+GPTQ:collecting Hessians from calibration data...
+GPTQ:collected 69 Hessians in 52.1s
+Quantized weights:
+  gptq (int6): blocks.attn.c_k.weight, blocks.attn.c_q.weight, blocks.attn.c_v.weight, blocks.attn.proj.weight, blocks.mlp.experts.0.fc.weight, blocks.mlp.experts.0.proj.weight, blocks.mlp.experts.1.fc.weight, blocks.mlp.experts.1.proj.weight, blocks.mlp.fc.weight, blocks.mlp.proj.weight
+  gptq (int8): tok_emb.weight
+  passthrough (float16): blocks.attn.gate_proj.bias, blocks.attn.gate_proj.weight, blocks.attn.q_gain, blocks.attn_scale, blocks.mlp.gate.weight, blocks.mlp_scale, blocks.resid_mix, skip_gates, skip_weights
+compress:ans 16846838 bytes (15.8s)
+  ans: model=16846838 total=16885243
+compress:using ans (16846838 bytes)
+Serialized model quantized+compressed: 16846838 bytes
+Total submission size quantized+compressed: 16885243 bytes
+quantized val_loss:2.81888062 val_bpb:1.09121962 eval_time:12754ms
+sliding_progress: batch 1/4949 tokens:0 running_loss:0.0000 running_bpb:0.0000 elapsed:0.0s
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+sliding_progress: batch 51/4949 tokens:104384 running_loss:2.7559 running_bpb:1.0849 elapsed:23.2s
+sliding_progress: batch 101/4949 tokens:206784 running_loss:2.7496 running_bpb:1.0666 elapsed:27.6s
+sliding_progress: batch 151/4949 tokens:309184 running_loss:2.7344 running_bpb:1.0742 elapsed:31.9s
+sliding_progress: batch 201/4949 tokens:411584 running_loss:2.7436 running_bpb:1.0779 elapsed:36.3s
+sliding_progress: batch 251/4949 tokens:513984 running_loss:2.7425 running_bpb:1.0733 elapsed:40.7s
+sliding_progress: batch 301/4949 tokens:616384 running_loss:2.7462 running_bpb:1.0753 elapsed:45.1s
+sliding_progress: batch 351/4949 tokens:718784 running_loss:2.7685 running_bpb:1.0816 elapsed:49.4s
+sliding_progress: batch 401/4949 tokens:821184 running_loss:2.7608 running_bpb:1.0800 elapsed:53.8s
+sliding_progress: batch 451/4949 tokens:923584 running_loss:2.7506 running_bpb:1.0778 elapsed:58.2s
+sliding_progress: batch 501/4949 tokens:1025984 running_loss:2.7436 running_bpb:1.0776 elapsed:62.6s
+sliding_progress: batch 551/4949 tokens:1128384 running_loss:2.7499 running_bpb:1.0793 elapsed:66.9s
+sliding_progress: batch 601/4949 tokens:1230784 running_loss:2.7644 running_bpb:1.0867 elapsed:71.3s
+sliding_progress: batch 651/4949 tokens:1333184 running_loss:2.7565 running_bpb:1.0841 elapsed:75.7s
+sliding_progress: batch 701/4949 tokens:1435584 running_loss:2.7539 running_bpb:1.0826 elapsed:80.0s
+sliding_progress: batch 751/4949 tokens:1537984 running_loss:2.7520 running_bpb:1.0829 elapsed:84.4s
+sliding_progress: batch 801/4949 tokens:1640384 running_loss:2.7451 running_bpb:1.0817 elapsed:88.8s
+sliding_progress: batch 851/4949 tokens:1742784 running_loss:2.7353 running_bpb:1.0794 elapsed:93.2s
+sliding_progress: batch 901/4949 tokens:1845184 running_loss:2.7303 running_bpb:1.0784 elapsed:97.5s
+sliding_progress: batch 951/4949 tokens:1947584 running_loss:2.7318 running_bpb:1.0782 elapsed:101.9s
+sliding_progress: batch 1001/4949 tokens:2049984 running_loss:2.7302 running_bpb:1.0771 elapsed:106.3s
+sliding_progress: batch 1051/4949 tokens:2152384 running_loss:2.7348 running_bpb:1.0793 elapsed:110.6s
+sliding_progress: batch 1101/4949 tokens:2254784 running_loss:2.7341 running_bpb:1.0790 elapsed:115.0s
+sliding_progress: batch 1151/4949 tokens:2357184 running_loss:2.7342 running_bpb:1.0797 elapsed:119.4s
+sliding_progress: batch 1201/4949 tokens:2459584 running_loss:2.7236 running_bpb:1.0750 elapsed:123.7s
+sliding_progress: batch 1251/4949 tokens:2561984 running_loss:2.7234 running_bpb:1.0750 elapsed:128.1s
+sliding_progress: batch 1301/4949 tokens:2664384 running_loss:2.7269 running_bpb:1.0758 elapsed:132.5s
+sliding_progress: batch 1351/4949 tokens:2766784 running_loss:2.7263 running_bpb:1.0754 elapsed:136.8s
+sliding_progress: batch 1401/4949 tokens:2869184 running_loss:2.7275 running_bpb:1.0745 elapsed:141.2s
+sliding_progress: batch 1451/4949 tokens:2971584 running_loss:2.7245 running_bpb:1.0737 elapsed:145.6s
+sliding_progress: batch 1501/4949 tokens:3073984 running_loss:2.7254 running_bpb:1.0735 elapsed:149.9s
+sliding_progress: batch 1551/4949 tokens:3176384 running_loss:2.7261 running_bpb:1.0737 elapsed:154.3s
+sliding_progress: batch 1601/4949 tokens:3278784 running_loss:2.7268 running_bpb:1.0739 elapsed:158.7s
+sliding_progress: batch 1651/4949 tokens:3381184 running_loss:2.7266 running_bpb:1.0740 elapsed:163.0s
+sliding_progress: batch 1701/4949 tokens:3483584 running_loss:2.7259 running_bpb:1.0746 elapsed:167.4s
+sliding_progress: batch 1751/4949 tokens:3585984 running_loss:2.7316 running_bpb:1.0766 elapsed:171.8s
+sliding_progress: batch 1801/4949 tokens:3688384 running_loss:2.7325 running_bpb:1.0767 elapsed:176.1s
+sliding_progress: batch 1851/4949 tokens:3790784 running_loss:2.7341 running_bpb:1.0776 elapsed:180.5s
+sliding_progress: batch 1901/4949 tokens:3893184 running_loss:2.7322 running_bpb:1.0768 elapsed:184.9s
+sliding_progress: batch 1951/4949 tokens:3995584 running_loss:2.7321 running_bpb:1.0771 elapsed:189.2s
+sliding_progress: batch 2001/4949 tokens:4097984 running_loss:2.7359 running_bpb:1.0797 elapsed:193.6s
+sliding_progress: batch 2051/4949 tokens:4200384 running_loss:2.7357 running_bpb:1.0793 elapsed:198.0s
+sliding_progress: batch 2101/4949 tokens:4302784 running_loss:2.7348 running_bpb:1.0791 elapsed:202.3s
+sliding_progress: batch 2151/4949 tokens:4405184 running_loss:2.7336 running_bpb:1.0782 elapsed:206.7s
+sliding_progress: batch 2201/4949 tokens:4507584 running_loss:2.7326 running_bpb:1.0776 elapsed:211.1s
+sliding_progress: batch 2251/4949 tokens:4609984 running_loss:2.7335 running_bpb:1.0783 elapsed:215.4s
+sliding_progress: batch 2301/4949 tokens:4712384 running_loss:2.7348 running_bpb:1.0782 elapsed:219.8s
+sliding_progress: batch 2351/4949 tokens:4814784 running_loss:2.7338 running_bpb:1.0786 elapsed:224.2s
+sliding_progress: batch 2401/4949 tokens:4917184 running_loss:2.7329 running_bpb:1.0782 elapsed:228.5s
+sliding_progress: batch 2451/4949 tokens:5019584 running_loss:2.7332 running_bpb:1.0786 elapsed:232.9s
+sliding_progress: batch 2501/4949 tokens:5121984 running_loss:2.7329 running_bpb:1.0788 elapsed:237.3s
+sliding_progress: batch 2551/4949 tokens:5224384 running_loss:2.7324 running_bpb:1.0784 elapsed:241.6s
+sliding_progress: batch 2601/4949 tokens:5326784 running_loss:2.7310 running_bpb:1.0783 elapsed:246.0s
+sliding_progress: batch 2651/4949 tokens:5429184 running_loss:2.7323 running_bpb:1.0786 elapsed:250.4s
+sliding_progress: batch 2701/4949 tokens:5531584 running_loss:2.7327 running_bpb:1.0788 elapsed:254.7s
+sliding_progress: batch 2751/4949 tokens:5633984 running_loss:2.7310 running_bpb:1.0777 elapsed:259.1s
+sliding_progress: batch 2801/4949 tokens:5736384 running_loss:2.7289 running_bpb:1.0766 elapsed:263.5s
+sliding_progress: batch 2851/4949 tokens:5838784 running_loss:2.7297 running_bpb:1.0769 elapsed:267.8s
+sliding_progress: batch 2901/4949 tokens:5941184 running_loss:2.7310 running_bpb:1.0778 elapsed:272.2s
+sliding_progress: batch 2951/4949 tokens:6043584 running_loss:2.7332 running_bpb:1.0785 elapsed:276.6s
+sliding_progress: batch 3001/4949 tokens:6145984 running_loss:2.7346 running_bpb:1.0785 elapsed:280.9s
+sliding_progress: batch 3051/4949 tokens:6248384 running_loss:2.7354 running_bpb:1.0783 elapsed:285.3s
+sliding_progress: batch 3101/4949 tokens:6350784 running_loss:2.7359 running_bpb:1.0780 elapsed:289.7s
+sliding_progress: batch 3151/4949 tokens:6453184 running_loss:2.7389 running_bpb:1.0787 elapsed:294.0s
+sliding_progress: batch 3201/4949 tokens:6555584 running_loss:2.7391 running_bpb:1.0786 elapsed:298.4s
+sliding_progress: batch 3251/4949 tokens:6657984 running_loss:2.7404 running_bpb:1.0790 elapsed:302.8s
+sliding_progress: batch 3301/4949 tokens:6760384 running_loss:2.7420 running_bpb:1.0794 elapsed:307.1s
+sliding_progress: batch 3351/4949 tokens:6862784 running_loss:2.7433 running_bpb:1.0798 elapsed:311.5s
+sliding_progress: batch 3401/4949 tokens:6965184 running_loss:2.7434 running_bpb:1.0798 elapsed:315.9s
+sliding_progress: batch 3451/4949 tokens:7067584 running_loss:2.7438 running_bpb:1.0794 elapsed:320.2s
+sliding_progress: batch 3501/4949 tokens:7169984 running_loss:2.7434 running_bpb:1.0791 elapsed:324.6s
+sliding_progress: batch 3551/4949 tokens:7272384 running_loss:2.7445 running_bpb:1.0790 elapsed:328.9s
+sliding_progress: batch 3601/4949 tokens:7374784 running_loss:2.7457 running_bpb:1.0791 elapsed:333.3s
+sliding_progress: batch 3651/4949 tokens:7477184 running_loss:2.7472 running_bpb:1.0793 elapsed:337.7s
+sliding_progress: batch 3701/4949 tokens:7579584 running_loss:2.7489 running_bpb:1.0798 elapsed:342.0s
+sliding_progress: batch 3751/4949 tokens:7681984 running_loss:2.7507 running_bpb:1.0803 elapsed:346.4s
+sliding_progress: batch 3801/4949 tokens:7784384 running_loss:2.7463 running_bpb:1.0802 elapsed:350.8s
+sliding_progress: batch 3851/4949 tokens:7886784 running_loss:2.7467 running_bpb:1.0801 elapsed:355.1s
+sliding_progress: batch 3901/4949 tokens:7989184 running_loss:2.7485 running_bpb:1.0803 elapsed:359.5s
+sliding_progress: batch 3951/4949 tokens:8091584 running_loss:2.7502 running_bpb:1.0806 elapsed:363.9s
+sliding_progress: batch 4001/4949 tokens:8193984 running_loss:2.7499 running_bpb:1.0802 elapsed:368.2s
+sliding_progress: batch 4051/4949 tokens:8296384 running_loss:2.7514 running_bpb:1.0801 elapsed:372.6s
+sliding_progress: batch 4101/4949 tokens:8398784 running_loss:2.7535 running_bpb:1.0808 elapsed:377.0s
+sliding_progress: batch 4151/4949 tokens:8501184 running_loss:2.7549 running_bpb:1.0808 elapsed:381.3s
+sliding_progress: batch 4201/4949 tokens:8603584 running_loss:2.7547 running_bpb:1.0807 elapsed:385.7s
+sliding_progress: batch 4251/4949 tokens:8705984 running_loss:2.7542 running_bpb:1.0802 elapsed:390.1s
+sliding_progress: batch 4301/4949 tokens:8808384 running_loss:2.7542 running_bpb:1.0797 elapsed:394.4s
+sliding_progress: batch 4351/4949 tokens:8910784 running_loss:2.7553 running_bpb:1.0797 elapsed:398.8s
+sliding_progress: batch 4401/4949 tokens:9013184 running_loss:2.7555 running_bpb:1.0797 elapsed:403.2s
+sliding_progress: batch 4451/4949 tokens:9115584 running_loss:2.7571 running_bpb:1.0801 elapsed:407.5s
+sliding_progress: batch 4501/4949 tokens:9217984 running_loss:2.7581 running_bpb:1.0803 elapsed:411.9s
+sliding_progress: batch 4551/4949 tokens:9320384 running_loss:2.7588 running_bpb:1.0801 elapsed:416.3s
+sliding_progress: batch 4601/4949 tokens:9422784 running_loss:2.7590 running_bpb:1.0800 elapsed:420.6s
+sliding_progress: batch 4651/4949 tokens:9525184 running_loss:2.7598 running_bpb:1.0796 elapsed:425.0s
+sliding_progress: batch 4701/4949 tokens:9627584 running_loss:2.7612 running_bpb:1.0800 elapsed:429.4s
+sliding_progress: batch 4751/4949 tokens:9729984 running_loss:2.7621 running_bpb:1.0798 elapsed:433.7s
+sliding_progress: batch 4801/4949 tokens:9832384 running_loss:2.7625 running_bpb:1.0795 elapsed:438.1s
+sliding_progress: batch 4851/4949 tokens:9934784 running_loss:2.7645 running_bpb:1.0800 elapsed:442.5s
+sliding_progress: batch 4901/4949 tokens:10037184 running_loss:2.7657 running_bpb:1.0800 elapsed:446.8s
+sliding_progress: batch 4949/4949 tokens:10135488 running_loss:2.7653 running_bpb:1.0794 elapsed:451.0s
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/_inductor/lowering.py:7836: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+quantized_sliding_window val_loss:2.77599097 val_bpb:1.07467261 eval_time:516925ms
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO comm 0xc660b60 rank 3 nranks 4 cudaDev 3 busId 400000 - Destroy COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO comm 0x34f19640 rank 2 nranks 4 cudaDev 2 busId 300000 - Destroy COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO comm 0x325753e0 rank 0 nranks 4 cudaDev 0 busId 100000 - Destroy COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO comm 0x48713590 rank 1 nranks 4 cudaDev 1 busId 200000 - Destroy COMPLETE
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729019:729019 [3] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729016:729016 [0] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729017:729017 [1] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault
+e1a433d6d93644e090a8bcad4f3a7ab4000000:729018:729018 [2] NCCL INFO ENV/Plugin: Closing env plugin ncclEnvDefault

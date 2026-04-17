@@ -1,0 +1,8 @@
+Testing 4 docs, lens=[318, 846, 206, 1180]
+forward_ttt per-doc mean loss: [3.017879009246826, 3.342991828918457, 2.7896645069122314, 3.1857497692108154]
+forward_logits (varlen) per-doc mean loss: [3.001459836959839, 3.297419309616089, 2.7687201499938965, 3.1334266662597656]
+forward_logits (dense, single-doc row) per-doc mean loss: [3.017080545425415, 3.3439784049987793, 2.790679693222046, 3.186516046524048]
+doc0 L=318: ttt=3.0179 varlen=3.0015 dense_single=3.0171 ttt-varlen=+0.0164 ttt-dense_single=+0.0008
+doc1 L=846: ttt=3.3430 varlen=3.2974 dense_single=3.3440 ttt-varlen=+0.0456 ttt-dense_single=-0.0010
+doc2 L=206: ttt=2.7897 varlen=2.7687 dense_single=2.7907 ttt-varlen=+0.0209 ttt-dense_single=-0.0010
+doc3 L=1180: ttt=3.1857 varlen=3.1334 dense_single=3.1865 ttt-varlen=+0.0523 ttt-dense_single=-0.0008

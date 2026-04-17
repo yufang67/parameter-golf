@@ -1,0 +1,2803 @@
+====================================================================================================
+Hyperparameters:
+  adam_eps: 1e-08
+  adam_wd: 0.02
+  beta1: 0.9
+  beta2: 0.95
+  bigram_dim: 128
+  bigram_vocab_size: 0
+  clip_mult_early: 1.0
+  clip_mult_late: 1.0
+  clip_mult_loop: 1.0
+  clip_mult_mid: 1.0
+  compress_ans: True
+  compress_brotli: False
+  compress_lzma: False
+  compressor: brotli
+  data_dir: ./data/
+  datasets_dir: ./data/datasets/fineweb10B_sp8192
+  distributed: True
+  effective_train_seq_len: <property object at 0x151ceeea5670>
+  ema_decay: 0.9965
+  embed_bits: 8
+  embed_clip_sigmas: 20.0
+  embed_lr: 0.6
+  embed_wd: 0.085
+  embedding_dim: 512
+  enable_looping_at: 0.35
+  eval_seq_len: 2048
+  eval_stride: 64
+  fused_mlp: True
+  fused_rope: True
+  gated_attention: True
+  gptq_calibration_batches: 128
+  gptq_reserve_seconds: 12.0
+  grad_accum_steps: 2
+  grad_clip_norm: 0.3
+  head_lr: 0.008
+  hessian_clip_lambda: 0.3
+  is_main_process: True
+  iterations: 20000
+  ln_scale: True
+  local_rank: 0
+  logfile: logs/pg08_trigram1536d256.txt
+  logit_softcap: 20.0
+  loop_embeddings: False
+  loop_end: 5
+  loop_layer_bits: 0
+  loop_layer_clip_sigmas: 0.0
+  loop_start: 3
+  matrix_bits: 6
+  matrix_clip_sigmas: 15.0
+  matrix_lr: 0.022
+  max_wallclock_seconds: 3600.0
+  min_lr: 0.0
+  mixed_seq_gpu_frac: 0.375
+  mixed_seq_len: 0
+  mlp_mult: 4.35
+  model_dim: 512
+  model_path: final_model.pt
+  moe_enabled: False
+  moe_layers: 3,5,7,9
+  moe_num_experts: 4
+  moe_top_k: 2
+  muon_backend_steps: 5
+  muon_beta2: 0.95
+  muon_momentum: 0.97
+  muon_momentum_warmup_start: 0.92
+  muon_momentum_warmup_steps: 1500
+  muon_row_normalize: True
+  muon_wd: 0.095
+  normuon: False
+  num_heads: 8
+  num_kv_heads: 4
+  num_layers: 11
+  num_loops: 2
+  parallel_residual_start: 7
+  qk_gain_init: 5.25
+  quantized_model_path: final_model.int6.ptz
+  rank: 0
+  rope_base: 10000.0
+  rope_dims: 32
+  rope_train_seq_len: 2048
+  run_id: pg08_trigram1536d256
+  scalar_lr: 0.022
+  seed: 1337
+  skip_gates_enabled: True
+  sliding_window_enabled: True
+  tie_embeddings: True
+  tied_embed_init_std: 0.005
+  tied_embed_lr: 0.03
+  tokenizer_path: ./data/tokenizers/fineweb_8192_bpe.model
+  train_batch_tokens: 786432
+  train_files: ./data/datasets/fineweb10B_sp8192/fineweb_train_*.bin
+  train_log_every: 500
+  train_seq_len: 2048
+  trigram_dim: 256
+  trigram_vocab_size: 1536
+  ttt_batch_size: 64
+  ttt_beta1: 0.0
+  ttt_beta2: 0.999
+  ttt_chunk_size: 32
+  ttt_enabled: True
+  ttt_eval_seq_len: 2048
+  ttt_fp_chunk_tokens: 32768
+  ttt_fp_epochs: 3
+  ttt_fp_lr: 0.001
+  ttt_fp_momentum: 0.9
+  ttt_grad_steps: 1
+  ttt_k_lora: True
+  ttt_lora_lr: 0.0001
+  ttt_lora_rank: 96
+  ttt_mlp_lora: True
+  ttt_o_lora: True
+  ttt_weight_decay: 0.5
+  val_batch_tokens: 524288
+  val_files: ./data/datasets/fineweb10B_sp8192/fineweb_val_*.bin
+  val_loss_every: 4000
+  varlen_attention: False
+  vocab_size: 8192
+  warmdown_frac: 0.85
+  warmdown_wd_mult: 1.0
+  warmup_steps: 20
+  window_attn_layers: 
+  window_attn_size: 0
+  world_size: 4
+  xsa_last_n: 11
+====================================================================================================
+Running Python 3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]
+Running PyTorch 2.11.0+cu130
+Wed Apr 15 16:22:02 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.2     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100 80GB PCIe          On  |   00000001:00:00.0 Off |                    0 |
+| N/A   40C    P0             74W /  300W |     733MiB /  81920MiB |      9%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100 80GB PCIe          On  |   00000002:00:00.0 Off |                    0 |
+| N/A   46C    P0             80W /  300W |     733MiB /  81920MiB |      9%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100 80GB PCIe          On  |   00000003:00:00.0 Off |                    0 |
+| N/A   42C    P0             74W /  300W |     733MiB /  81920MiB |      9%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100 80GB PCIe          On  |   00000004:00:00.0 Off |                    0 |
+| N/A   43C    P0             79W /  300W |     733MiB /  81920MiB |      9%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A          580046      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    1   N/A  N/A          580047      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    2   N/A  N/A          580048      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    3   N/A  N/A          580049      C   ...ameter-golf/.venv/bin/python3        724MiB |
++-----------------------------------------------------------------------------------------+
+
+====================================================================================================
+train_shards: 80
+val_tokens: 40540160
+model_params:38676657
+gptq:reserving 12s, effective=3588000ms
+warmup_step: 1/20
+warmup_step: 2/20
+warmup_step: 3/20
+warmup_step: 4/20
+warmup_step: 5/20
+warmup_step: 6/20
+warmup_step: 10/20
+warmup_step: 20/20
+loop_warmup:enabled encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+loop_warmup_step: 1/20
+loop_warmup_step: 2/20
+loop_warmup_step: 3/20
+loop_warmup_step: 4/20
+loop_warmup_step: 5/20
+loop_warmup_step: 6/20
+loop_warmup_step: 10/20
+loop_warmup_step: 20/20
+0/20000 val_loss: 9.0076 val_bpb: 3.4870
+1/20000 train_loss: 9.0082 train_time: 0.0m tok/s: 1508059
+2/20000 train_loss: 11.3711 train_time: 0.0m tok/s: 1490122
+3/20000 train_loss: 10.0263 train_time: 0.0m tok/s: 1468886
+4/20000 train_loss: 8.3649 train_time: 0.0m tok/s: 1456121
+5/20000 train_loss: 7.3831 train_time: 0.0m tok/s: 1421505
+500/20000 train_loss: 3.3217 train_time: 4.7m tok/s: 1394192
+1000/20000 train_loss: 3.2249 train_time: 9.4m tok/s: 1393478
+1500/20000 train_loss: 3.1064 train_time: 14.1m tok/s: 1393481
+2000/20000 train_loss: 3.1053 train_time: 18.8m tok/s: 1394225
+layer_loop:enabled step:2227 frac:0.350 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+2500/20000 train_loss: 3.0827 train_time: 24.8m tok/s: 1319471
+3000/20000 train_loss: 3.0129 train_time: 32.0m tok/s: 1230062
+3500/20000 train_loss: 2.9805 train_time: 39.1m tok/s: 1173012
+4000/20000 train_loss: 2.9095 train_time: 46.2m tok/s: 1133722
+4000/20000 val_loss: 2.8838 val_bpb: 1.1164
+4500/20000 train_loss: 2.8245 train_time: 53.4m tok/s: 1104626
+4949/20000 val_loss: 2.7848 val_bpb: 1.0780
+stopping_early: wallclock_cap train_time: 3588501ms step: 4949/20000
+peak memory allocated: 38929 MiB reserved: 39106 MiB
+ema:applying EMA weights
+pre-quantization post-ema val_loss:2.78349189 val_bpb:1.07752026 eval_time:22908ms
+Serialized model: 145581419 bytes
+Code size: 36328 bytes
+GPTQ:collecting Hessians from calibration data...
+GPTQ:collected 69 Hessians in 50.6s
+Quantized weights:
+  freq-weighted (int6): trigram.emb.weight
+  gptq (int6): blocks.attn.c_k.weight, blocks.attn.c_q.weight, blocks.attn.c_v.weight, blocks.attn.proj.weight, blocks.mlp.fc.weight, blocks.mlp.proj.weight, trigram.proj.weight
+  gptq (int8): tok_emb.weight
+  passthrough (float16): blocks.attn.gate_proj.bias, blocks.attn.gate_proj.weight, blocks.attn.q_gain, blocks.attn_scale, blocks.mlp_scale, blocks.resid_mix, skip_gates, skip_weights, trigram.scale
+compress:ans 16145370 bytes (16.1s)
+  ans: model=16145370 total=16181698
+compress:using ans (16145370 bytes)
+Serialized model quantized+compressed: 16145370 bytes
+Total submission size quantized+compressed: 16181698 bytes
+quantized val_loss:2.82172119 val_bpb:1.09231924 eval_time:12209ms
+sliding_progress: batch 1/4949 tokens:0 running_loss:0.0000 running_bpb:0.0000 elapsed:0.0s
+sliding_progress: batch 51/4949 tokens:104384 running_loss:2.7594 running_bpb:1.0863 elapsed:26.3s
+sliding_progress: batch 101/4949 tokens:206784 running_loss:2.7550 running_bpb:1.0688 elapsed:30.6s
+sliding_progress: batch 151/4949 tokens:309184 running_loss:2.7404 running_bpb:1.0766 elapsed:34.9s
+sliding_progress: batch 201/4949 tokens:411584 running_loss:2.7485 running_bpb:1.0798 elapsed:39.2s
+sliding_progress: batch 251/4949 tokens:513984 running_loss:2.7465 running_bpb:1.0749 elapsed:43.5s
+sliding_progress: batch 301/4949 tokens:616384 running_loss:2.7499 running_bpb:1.0767 elapsed:47.8s
+sliding_progress: batch 351/4949 tokens:718784 running_loss:2.7723 running_bpb:1.0831 elapsed:52.1s
+sliding_progress: batch 401/4949 tokens:821184 running_loss:2.7645 running_bpb:1.0815 elapsed:56.4s
+sliding_progress: batch 451/4949 tokens:923584 running_loss:2.7539 running_bpb:1.0791 elapsed:60.8s
+sliding_progress: batch 501/4949 tokens:1025984 running_loss:2.7467 running_bpb:1.0788 elapsed:65.1s
+sliding_progress: batch 551/4949 tokens:1128384 running_loss:2.7531 running_bpb:1.0805 elapsed:69.4s
+sliding_progress: batch 601/4949 tokens:1230784 running_loss:2.7676 running_bpb:1.0880 elapsed:73.7s
+sliding_progress: batch 651/4949 tokens:1333184 running_loss:2.7599 running_bpb:1.0854 elapsed:78.0s
+sliding_progress: batch 701/4949 tokens:1435584 running_loss:2.7573 running_bpb:1.0840 elapsed:82.3s
+sliding_progress: batch 751/4949 tokens:1537984 running_loss:2.7551 running_bpb:1.0842 elapsed:86.6s
+sliding_progress: batch 801/4949 tokens:1640384 running_loss:2.7482 running_bpb:1.0829 elapsed:90.9s
+sliding_progress: batch 851/4949 tokens:1742784 running_loss:2.7384 running_bpb:1.0806 elapsed:95.2s
+sliding_progress: batch 901/4949 tokens:1845184 running_loss:2.7337 running_bpb:1.0798 elapsed:99.5s
+sliding_progress: batch 951/4949 tokens:1947584 running_loss:2.7352 running_bpb:1.0795 elapsed:103.8s
+sliding_progress: batch 1001/4949 tokens:2049984 running_loss:2.7335 running_bpb:1.0784 elapsed:108.1s
+sliding_progress: batch 1051/4949 tokens:2152384 running_loss:2.7381 running_bpb:1.0806 elapsed:112.4s
+sliding_progress: batch 1101/4949 tokens:2254784 running_loss:2.7376 running_bpb:1.0804 elapsed:116.7s
+sliding_progress: batch 1151/4949 tokens:2357184 running_loss:2.7377 running_bpb:1.0811 elapsed:121.0s
+sliding_progress: batch 1201/4949 tokens:2459584 running_loss:2.7271 running_bpb:1.0764 elapsed:125.3s
+sliding_progress: batch 1251/4949 tokens:2561984 running_loss:2.7267 running_bpb:1.0763 elapsed:129.6s
+sliding_progress: batch 1301/4949 tokens:2664384 running_loss:2.7300 running_bpb:1.0771 elapsed:133.9s
+sliding_progress: batch 1351/4949 tokens:2766784 running_loss:2.7296 running_bpb:1.0766 elapsed:138.2s
+sliding_progress: batch 1401/4949 tokens:2869184 running_loss:2.7307 running_bpb:1.0757 elapsed:142.5s
+sliding_progress: batch 1451/4949 tokens:2971584 running_loss:2.7277 running_bpb:1.0750 elapsed:146.8s
+sliding_progress: batch 1501/4949 tokens:3073984 running_loss:2.7287 running_bpb:1.0748 elapsed:151.1s
+sliding_progress: batch 1551/4949 tokens:3176384 running_loss:2.7295 running_bpb:1.0750 elapsed:155.4s
+sliding_progress: batch 1601/4949 tokens:3278784 running_loss:2.7301 running_bpb:1.0752 elapsed:159.7s
+sliding_progress: batch 1651/4949 tokens:3381184 running_loss:2.7299 running_bpb:1.0753 elapsed:164.0s
+sliding_progress: batch 1701/4949 tokens:3483584 running_loss:2.7293 running_bpb:1.0759 elapsed:168.3s
+sliding_progress: batch 1751/4949 tokens:3585984 running_loss:2.7349 running_bpb:1.0779 elapsed:172.6s
+sliding_progress: batch 1801/4949 tokens:3688384 running_loss:2.7358 running_bpb:1.0781 elapsed:176.9s
+sliding_progress: batch 1851/4949 tokens:3790784 running_loss:2.7374 running_bpb:1.0789 elapsed:181.2s
+sliding_progress: batch 1901/4949 tokens:3893184 running_loss:2.7355 running_bpb:1.0781 elapsed:185.5s
+sliding_progress: batch 1951/4949 tokens:3995584 running_loss:2.7356 running_bpb:1.0785 elapsed:189.9s
+sliding_progress: batch 2001/4949 tokens:4097984 running_loss:2.7392 running_bpb:1.0810 elapsed:194.2s
+sliding_progress: batch 2051/4949 tokens:4200384 running_loss:2.7390 running_bpb:1.0806 elapsed:198.5s
+sliding_progress: batch 2101/4949 tokens:4302784 running_loss:2.7381 running_bpb:1.0804 elapsed:202.8s
+sliding_progress: batch 2151/4949 tokens:4405184 running_loss:2.7369 running_bpb:1.0795 elapsed:207.1s
+sliding_progress: batch 2201/4949 tokens:4507584 running_loss:2.7359 running_bpb:1.0789 elapsed:211.4s
+sliding_progress: batch 2251/4949 tokens:4609984 running_loss:2.7369 running_bpb:1.0796 elapsed:215.7s
+sliding_progress: batch 2301/4949 tokens:4712384 running_loss:2.7382 running_bpb:1.0796 elapsed:220.0s
+sliding_progress: batch 2351/4949 tokens:4814784 running_loss:2.7372 running_bpb:1.0799 elapsed:224.3s
+sliding_progress: batch 2401/4949 tokens:4917184 running_loss:2.7362 running_bpb:1.0795 elapsed:228.6s
+sliding_progress: batch 2451/4949 tokens:5019584 running_loss:2.7365 running_bpb:1.0799 elapsed:232.9s
+sliding_progress: batch 2501/4949 tokens:5121984 running_loss:2.7362 running_bpb:1.0800 elapsed:237.2s
+sliding_progress: batch 2551/4949 tokens:5224384 running_loss:2.7357 running_bpb:1.0797 elapsed:241.5s
+sliding_progress: batch 2601/4949 tokens:5326784 running_loss:2.7343 running_bpb:1.0796 elapsed:245.8s
+sliding_progress: batch 2651/4949 tokens:5429184 running_loss:2.7355 running_bpb:1.0799 elapsed:250.1s
+sliding_progress: batch 2701/4949 tokens:5531584 running_loss:2.7359 running_bpb:1.0801 elapsed:254.4s
+sliding_progress: batch 2751/4949 tokens:5633984 running_loss:2.7342 running_bpb:1.0790 elapsed:258.7s
+sliding_progress: batch 2801/4949 tokens:5736384 running_loss:2.7323 running_bpb:1.0779 elapsed:263.0s
+sliding_progress: batch 2851/4949 tokens:5838784 running_loss:2.7330 running_bpb:1.0782 elapsed:267.3s
+sliding_progress: batch 2901/4949 tokens:5941184 running_loss:2.7343 running_bpb:1.0791 elapsed:271.6s
+sliding_progress: batch 2951/4949 tokens:6043584 running_loss:2.7365 running_bpb:1.0798 elapsed:275.9s
+sliding_progress: batch 3001/4949 tokens:6145984 running_loss:2.7379 running_bpb:1.0798 elapsed:280.2s
+sliding_progress: batch 3051/4949 tokens:6248384 running_loss:2.7387 running_bpb:1.0796 elapsed:284.5s
+sliding_progress: batch 3101/4949 tokens:6350784 running_loss:2.7392 running_bpb:1.0792 elapsed:288.8s
+sliding_progress: batch 3151/4949 tokens:6453184 running_loss:2.7421 running_bpb:1.0800 elapsed:293.1s
+sliding_progress: batch 3201/4949 tokens:6555584 running_loss:2.7423 running_bpb:1.0799 elapsed:297.4s
+sliding_progress: batch 3251/4949 tokens:6657984 running_loss:2.7437 running_bpb:1.0803 elapsed:301.7s
+sliding_progress: batch 3301/4949 tokens:6760384 running_loss:2.7452 running_bpb:1.0807 elapsed:306.0s
+sliding_progress: batch 3351/4949 tokens:6862784 running_loss:2.7464 running_bpb:1.0811 elapsed:310.3s
+sliding_progress: batch 3401/4949 tokens:6965184 running_loss:2.7466 running_bpb:1.0810 elapsed:314.6s
+sliding_progress: batch 3451/4949 tokens:7067584 running_loss:2.7470 running_bpb:1.0807 elapsed:319.0s
+sliding_progress: batch 3501/4949 tokens:7169984 running_loss:2.7466 running_bpb:1.0804 elapsed:323.3s
+sliding_progress: batch 3551/4949 tokens:7272384 running_loss:2.7477 running_bpb:1.0803 elapsed:327.6s
+sliding_progress: batch 3601/4949 tokens:7374784 running_loss:2.7489 running_bpb:1.0804 elapsed:331.9s
+sliding_progress: batch 3651/4949 tokens:7477184 running_loss:2.7504 running_bpb:1.0805 elapsed:336.2s
+sliding_progress: batch 3701/4949 tokens:7579584 running_loss:2.7521 running_bpb:1.0811 elapsed:340.5s
+sliding_progress: batch 3751/4949 tokens:7681984 running_loss:2.7539 running_bpb:1.0816 elapsed:344.8s
+sliding_progress: batch 3801/4949 tokens:7784384 running_loss:2.7495 running_bpb:1.0815 elapsed:349.1s
+sliding_progress: batch 3851/4949 tokens:7886784 running_loss:2.7499 running_bpb:1.0813 elapsed:353.4s
+sliding_progress: batch 3901/4949 tokens:7989184 running_loss:2.7518 running_bpb:1.0816 elapsed:357.7s
+sliding_progress: batch 3951/4949 tokens:8091584 running_loss:2.7536 running_bpb:1.0819 elapsed:362.0s
+sliding_progress: batch 4001/4949 tokens:8193984 running_loss:2.7532 running_bpb:1.0815 elapsed:366.3s
+sliding_progress: batch 4051/4949 tokens:8296384 running_loss:2.7547 running_bpb:1.0814 elapsed:370.6s
+sliding_progress: batch 4101/4949 tokens:8398784 running_loss:2.7568 running_bpb:1.0821 elapsed:374.9s
+sliding_progress: batch 4151/4949 tokens:8501184 running_loss:2.7582 running_bpb:1.0821 elapsed:379.2s
+sliding_progress: batch 4201/4949 tokens:8603584 running_loss:2.7580 running_bpb:1.0820 elapsed:383.5s
+sliding_progress: batch 4251/4949 tokens:8705984 running_loss:2.7576 running_bpb:1.0816 elapsed:387.8s
+sliding_progress: batch 4301/4949 tokens:8808384 running_loss:2.7576 running_bpb:1.0810 elapsed:392.1s
+sliding_progress: batch 4351/4949 tokens:8910784 running_loss:2.7587 running_bpb:1.0811 elapsed:396.4s
+sliding_progress: batch 4401/4949 tokens:9013184 running_loss:2.7589 running_bpb:1.0810 elapsed:400.7s
+sliding_progress: batch 4451/4949 tokens:9115584 running_loss:2.7604 running_bpb:1.0814 elapsed:405.0s
+sliding_progress: batch 4501/4949 tokens:9217984 running_loss:2.7614 running_bpb:1.0816 elapsed:409.3s
+sliding_progress: batch 4551/4949 tokens:9320384 running_loss:2.7621 running_bpb:1.0814 elapsed:413.6s
+sliding_progress: batch 4601/4949 tokens:9422784 running_loss:2.7623 running_bpb:1.0813 elapsed:417.9s
+sliding_progress: batch 4651/4949 tokens:9525184 running_loss:2.7630 running_bpb:1.0809 elapsed:422.2s
+sliding_progress: batch 4701/4949 tokens:9627584 running_loss:2.7644 running_bpb:1.0812 elapsed:426.5s
+sliding_progress: batch 4751/4949 tokens:9729984 running_loss:2.7653 running_bpb:1.0811 elapsed:430.8s
+sliding_progress: batch 4801/4949 tokens:9832384 running_loss:2.7658 running_bpb:1.0808 elapsed:435.1s
+sliding_progress: batch 4851/4949 tokens:9934784 running_loss:2.7678 running_bpb:1.0812 elapsed:439.4s
+sliding_progress: batch 4901/4949 tokens:10037184 running_loss:2.7690 running_bpb:1.0813 elapsed:443.7s
+sliding_progress: batch 4949/4949 tokens:10135488 running_loss:2.7686 running_bpb:1.0807 elapsed:447.8s
+quantized_sliding_window val_loss:2.77901572 val_bpb:1.07584359 eval_time:509108ms
+ttt_fullparam:start chunks=1238 lr=0.001 epochs=3 optimizer=AdamW
+ttt_fullparam:chunk 1/1238 scored running_loss:2.9238 running_bpb:1.1447
+ttt_fullparam:chunk 1/1238 done
+ttt_fullparam:chunk 2/1238 scored running_loss:8.0568 running_bpb:3.1672
+ttt_fullparam:chunk 2/1238 done
+ttt_fullparam:chunk 3/1238 scored running_loss:10.1849 running_bpb:3.9628
+ttt_fullparam:chunk 3/1238 done
+ttt_fullparam:chunk 4/1238 scored running_loss:11.4883 running_bpb:4.5093
+ttt_fullparam:chunk 4/1238 done
+ttt_fullparam:chunk 5/1238 scored running_loss:11.5244 running_bpb:4.4690
+ttt_fullparam:chunk 5/1238 done
+ttt_fullparam:chunk 6/1238 scored running_loss:11.7271 running_bpb:4.5378
+ttt_fullparam:chunk 6/1238 done
+ttt_fullparam:chunk 7/1238 scored running_loss:11.8931 running_bpb:4.6652
+ttt_fullparam:chunk 7/1238 done
+ttt_fullparam:chunk 8/1238 scored running_loss:11.6335 running_bpb:4.5825
+ttt_fullparam:chunk 8/1238 done
+ttt_fullparam:chunk 9/1238 scored running_loss:11.3876 running_bpb:4.4721
+ttt_fullparam:chunk 9/1238 done
+ttt_fullparam:chunk 10/1238 scored running_loss:11.1751 running_bpb:4.3900
+ttt_fullparam:chunk 10/1238 done
+ttt_fullparam:chunk 11/1238 scored running_loss:10.9515 running_bpb:4.2915
+ttt_fullparam:chunk 11/1238 done
+ttt_fullparam:chunk 12/1238 scored running_loss:10.7003 running_bpb:4.1987
+ttt_fullparam:chunk 12/1238 done
+ttt_fullparam:chunk 13/1238 scored running_loss:10.4937 running_bpb:4.1441
+ttt_fullparam:chunk 13/1238 done
+ttt_fullparam:chunk 14/1238 scored running_loss:10.3357 running_bpb:4.0441
+ttt_fullparam:chunk 14/1238 done
+ttt_fullparam:chunk 15/1238 scored running_loss:10.1990 running_bpb:4.0172
+ttt_fullparam:chunk 15/1238 done
+ttt_fullparam:chunk 16/1238 scored running_loss:10.0596 running_bpb:3.9603
+ttt_fullparam:chunk 16/1238 done
+ttt_fullparam:chunk 17/1238 scored running_loss:9.9146 running_bpb:3.8891
+ttt_fullparam:chunk 17/1238 done
+ttt_fullparam:chunk 18/1238 scored running_loss:9.7767 running_bpb:3.8465
+ttt_fullparam:chunk 18/1238 done
+ttt_fullparam:chunk 19/1238 scored running_loss:9.6531 running_bpb:3.7977
+ttt_fullparam:chunk 19/1238 done
+ttt_fullparam:chunk 20/1238 scored running_loss:9.5392 running_bpb:3.7617
+ttt_fullparam:chunk 20/1238 done
+ttt_fullparam:chunk 21/1238 scored running_loss:9.4423 running_bpb:3.7107
+ttt_fullparam:chunk 21/1238 done
+ttt_fullparam:chunk 22/1238 scored running_loss:9.3579 running_bpb:3.6613
+ttt_fullparam:chunk 22/1238 done
+ttt_fullparam:chunk 23/1238 scored running_loss:9.2486 running_bpb:3.6241
+ttt_fullparam:chunk 23/1238 done
+ttt_fullparam:chunk 24/1238 scored running_loss:9.1695 running_bpb:3.5890
+ttt_fullparam:chunk 24/1238 done
+ttt_fullparam:chunk 25/1238 scored running_loss:9.1053 running_bpb:3.5856
+ttt_fullparam:chunk 25/1238 done
+ttt_fullparam:chunk 26/1238 scored running_loss:9.0400 running_bpb:3.5592
+ttt_fullparam:chunk 26/1238 done
+ttt_fullparam:chunk 27/1238 scored running_loss:8.9872 running_bpb:3.5397
+ttt_fullparam:chunk 27/1238 done
+ttt_fullparam:chunk 28/1238 scored running_loss:8.9379 running_bpb:3.5240
+ttt_fullparam:chunk 28/1238 done
+ttt_fullparam:chunk 29/1238 scored running_loss:8.8868 running_bpb:3.4985
+ttt_fullparam:chunk 29/1238 done
+ttt_fullparam:chunk 30/1238 scored running_loss:8.8427 running_bpb:3.4780
+ttt_fullparam:chunk 30/1238 done
+ttt_fullparam:chunk 31/1238 scored running_loss:8.7945 running_bpb:3.4578
+ttt_fullparam:chunk 31/1238 done
+ttt_fullparam:chunk 32/1238 scored running_loss:8.7490 running_bpb:3.4422
+ttt_fullparam:chunk 32/1238 done
+ttt_fullparam:chunk 33/1238 scored running_loss:8.7112 running_bpb:3.4244
+ttt_fullparam:chunk 33/1238 done
+ttt_fullparam:chunk 34/1238 scored running_loss:8.6768 running_bpb:3.4175
+ttt_fullparam:chunk 34/1238 done
+ttt_fullparam:chunk 35/1238 scored running_loss:8.6413 running_bpb:3.4001
+ttt_fullparam:chunk 35/1238 done
+ttt_fullparam:chunk 36/1238 scored running_loss:8.6057 running_bpb:3.3900
+ttt_fullparam:chunk 36/1238 done
+ttt_fullparam:chunk 37/1238 scored running_loss:8.5687 running_bpb:3.3803
+ttt_fullparam:chunk 37/1238 done
+ttt_fullparam:chunk 38/1238 scored running_loss:8.5398 running_bpb:3.3647
+ttt_fullparam:chunk 38/1238 done
+ttt_fullparam:chunk 39/1238 scored running_loss:8.5115 running_bpb:3.3459
+ttt_fullparam:chunk 39/1238 done
+ttt_fullparam:chunk 40/1238 scored running_loss:8.4865 running_bpb:3.3383
+ttt_fullparam:chunk 40/1238 done
+ttt_fullparam:chunk 41/1238 scored running_loss:8.4602 running_bpb:3.3280
+ttt_fullparam:chunk 41/1238 done
+ttt_fullparam:chunk 42/1238 scored running_loss:8.4345 running_bpb:3.3186
+ttt_fullparam:chunk 42/1238 done
+ttt_fullparam:chunk 43/1238 scored running_loss:8.4112 running_bpb:3.3044
+ttt_fullparam:chunk 43/1238 done
+ttt_fullparam:chunk 44/1238 scored running_loss:8.3903 running_bpb:3.2933
+ttt_fullparam:chunk 44/1238 done
+ttt_fullparam:chunk 45/1238 scored running_loss:8.3683 running_bpb:3.2756
+ttt_fullparam:chunk 45/1238 done
+ttt_fullparam:chunk 46/1238 scored running_loss:8.3397 running_bpb:3.2695
+ttt_fullparam:chunk 46/1238 done
+ttt_fullparam:chunk 47/1238 scored running_loss:8.3186 running_bpb:3.2626
+ttt_fullparam:chunk 47/1238 done
+ttt_fullparam:chunk 48/1238 scored running_loss:8.3004 running_bpb:3.2503
+ttt_fullparam:chunk 48/1238 done
+ttt_fullparam:chunk 49/1238 scored running_loss:8.2796 running_bpb:3.2436
+ttt_fullparam:chunk 49/1238 done
+ttt_fullparam:chunk 50/1238 scored running_loss:8.2609 running_bpb:3.2340
+ttt_fullparam:chunk 50/1238 done
+ttt_fullparam:chunk 51/1238 scored running_loss:8.2402 running_bpb:3.2387
+ttt_fullparam:chunk 51/1238 done
+ttt_fullparam:chunk 52/1238 scored running_loss:8.2243 running_bpb:3.2289
+ttt_fullparam:chunk 52/1238 done
+ttt_fullparam:chunk 53/1238 scored running_loss:8.2064 running_bpb:3.2249
+ttt_fullparam:chunk 53/1238 done
+ttt_fullparam:chunk 54/1238 scored running_loss:8.1908 running_bpb:3.2190
+ttt_fullparam:chunk 54/1238 done
+ttt_fullparam:chunk 55/1238 scored running_loss:8.1748 running_bpb:3.2122
+ttt_fullparam:chunk 55/1238 done
+ttt_fullparam:chunk 56/1238 scored running_loss:8.1617 running_bpb:3.2077
+ttt_fullparam:chunk 56/1238 done
+ttt_fullparam:chunk 57/1238 scored running_loss:8.1467 running_bpb:3.2062
+ttt_fullparam:chunk 57/1238 done
+ttt_fullparam:chunk 58/1238 scored running_loss:8.1342 running_bpb:3.1998
+ttt_fullparam:chunk 58/1238 done
+ttt_fullparam:chunk 59/1238 scored running_loss:8.1204 running_bpb:3.1959
+ttt_fullparam:chunk 59/1238 done
+ttt_fullparam:chunk 60/1238 scored running_loss:8.1065 running_bpb:3.1902
+ttt_fullparam:chunk 60/1238 done
+ttt_fullparam:chunk 61/1238 scored running_loss:8.0930 running_bpb:3.1778
+ttt_fullparam:chunk 61/1238 done
+ttt_fullparam:chunk 62/1238 scored running_loss:8.0779 running_bpb:3.1716
+ttt_fullparam:chunk 62/1238 done
+ttt_fullparam:chunk 63/1238 scored running_loss:8.0669 running_bpb:3.1671
+ttt_fullparam:chunk 63/1238 done
+ttt_fullparam:chunk 64/1238 scored running_loss:8.0550 running_bpb:3.1641
+ttt_fullparam:chunk 64/1238 done
+ttt_fullparam:chunk 65/1238 scored running_loss:8.0457 running_bpb:3.1608
+ttt_fullparam:chunk 65/1238 done
+ttt_fullparam:chunk 66/1238 scored running_loss:8.0360 running_bpb:3.1596
+ttt_fullparam:chunk 66/1238 done
+ttt_fullparam:chunk 67/1238 scored running_loss:8.0247 running_bpb:3.1554
+ttt_fullparam:chunk 67/1238 done
+ttt_fullparam:chunk 68/1238 scored running_loss:8.0144 running_bpb:3.1484
+ttt_fullparam:chunk 68/1238 done
+ttt_fullparam:chunk 69/1238 scored running_loss:8.0029 running_bpb:3.1466
+ttt_fullparam:chunk 69/1238 done
+ttt_fullparam:chunk 70/1238 scored running_loss:7.9937 running_bpb:3.1436
+ttt_fullparam:chunk 70/1238 done
+ttt_fullparam:chunk 71/1238 scored running_loss:7.9868 running_bpb:3.1425
+ttt_fullparam:chunk 71/1238 done
+ttt_fullparam:chunk 72/1238 scored running_loss:7.9785 running_bpb:3.1418
+ttt_fullparam:chunk 72/1238 done
+ttt_fullparam:chunk 73/1238 scored running_loss:7.9699 running_bpb:3.1381
+ttt_fullparam:chunk 73/1238 done
+ttt_fullparam:chunk 74/1238 scored running_loss:7.9591 running_bpb:3.1391
+ttt_fullparam:chunk 74/1238 done
+ttt_fullparam:chunk 75/1238 scored running_loss:7.9503 running_bpb:3.1293
+ttt_fullparam:chunk 75/1238 done
+ttt_fullparam:chunk 76/1238 scored running_loss:7.9405 running_bpb:3.1246
+ttt_fullparam:chunk 76/1238 done
+ttt_fullparam:chunk 77/1238 scored running_loss:7.9334 running_bpb:3.1192
+ttt_fullparam:chunk 77/1238 done
+ttt_fullparam:chunk 78/1238 scored running_loss:7.9295 running_bpb:3.1157
+ttt_fullparam:chunk 78/1238 done
+ttt_fullparam:chunk 79/1238 scored running_loss:7.9228 running_bpb:3.1126
+ttt_fullparam:chunk 79/1238 done
+ttt_fullparam:chunk 80/1238 scored running_loss:7.9159 running_bpb:3.1097
+ttt_fullparam:chunk 80/1238 done
+ttt_fullparam:chunk 81/1238 scored running_loss:7.9089 running_bpb:3.1084
+ttt_fullparam:chunk 81/1238 done
+ttt_fullparam:chunk 82/1238 scored running_loss:7.9024 running_bpb:3.1057
+ttt_fullparam:chunk 82/1238 done
+ttt_fullparam:chunk 83/1238 scored running_loss:7.8974 running_bpb:3.1025
+ttt_fullparam:chunk 83/1238 done
+ttt_fullparam:chunk 84/1238 scored running_loss:7.8894 running_bpb:3.1003
+ttt_fullparam:chunk 84/1238 done
+ttt_fullparam:chunk 85/1238 scored running_loss:7.8830 running_bpb:3.0984
+ttt_fullparam:chunk 85/1238 done
+ttt_fullparam:chunk 86/1238 scored running_loss:7.8763 running_bpb:3.0951
+ttt_fullparam:chunk 86/1238 done
+ttt_fullparam:chunk 87/1238 scored running_loss:7.8706 running_bpb:3.0920
+ttt_fullparam:chunk 87/1238 done
+ttt_fullparam:chunk 88/1238 scored running_loss:7.8643 running_bpb:3.0898
+ttt_fullparam:chunk 88/1238 done
+ttt_fullparam:chunk 89/1238 scored running_loss:7.8567 running_bpb:3.0910
+ttt_fullparam:chunk 89/1238 done
+ttt_fullparam:chunk 90/1238 scored running_loss:7.8497 running_bpb:3.0887
+ttt_fullparam:chunk 90/1238 done
+ttt_fullparam:chunk 91/1238 scored running_loss:7.8448 running_bpb:3.0861
+ttt_fullparam:chunk 91/1238 done
+ttt_fullparam:chunk 92/1238 scored running_loss:7.8384 running_bpb:3.0831
+ttt_fullparam:chunk 92/1238 done
+ttt_fullparam:chunk 93/1238 scored running_loss:7.8329 running_bpb:3.0807
+ttt_fullparam:chunk 93/1238 done
+ttt_fullparam:chunk 94/1238 scored running_loss:7.8277 running_bpb:3.0786
+ttt_fullparam:chunk 94/1238 done
+ttt_fullparam:chunk 95/1238 scored running_loss:7.8227 running_bpb:3.0779
+ttt_fullparam:chunk 95/1238 done
+ttt_fullparam:chunk 96/1238 scored running_loss:7.8174 running_bpb:3.0754
+ttt_fullparam:chunk 96/1238 done
+ttt_fullparam:chunk 97/1238 scored running_loss:7.8123 running_bpb:3.0733
+ttt_fullparam:chunk 97/1238 done
+ttt_fullparam:chunk 98/1238 scored running_loss:7.8068 running_bpb:3.0680
+ttt_fullparam:chunk 98/1238 done
+ttt_fullparam:chunk 99/1238 scored running_loss:7.8010 running_bpb:3.0669
+ttt_fullparam:chunk 99/1238 done
+ttt_fullparam:chunk 100/1238 scored running_loss:7.7955 running_bpb:3.0642
+ttt_fullparam:chunk 100/1238 done
+ttt_fullparam:chunk 101/1238 scored running_loss:7.7900 running_bpb:3.0611
+ttt_fullparam:chunk 101/1238 done
+ttt_fullparam:chunk 102/1238 scored running_loss:7.7857 running_bpb:3.0598
+ttt_fullparam:chunk 102/1238 done
+ttt_fullparam:chunk 103/1238 scored running_loss:7.7814 running_bpb:3.0586
+ttt_fullparam:chunk 103/1238 done
+ttt_fullparam:chunk 104/1238 scored running_loss:7.7772 running_bpb:3.0580
+ttt_fullparam:chunk 104/1238 done
+ttt_fullparam:chunk 105/1238 scored running_loss:7.7745 running_bpb:3.0555
+ttt_fullparam:chunk 105/1238 done
+ttt_fullparam:chunk 106/1238 scored running_loss:7.7685 running_bpb:3.0588
+ttt_fullparam:chunk 106/1238 done
+ttt_fullparam:chunk 107/1238 scored running_loss:7.7643 running_bpb:3.0577
+ttt_fullparam:chunk 107/1238 done
+ttt_fullparam:chunk 108/1238 scored running_loss:7.7597 running_bpb:3.0576
+ttt_fullparam:chunk 108/1238 done
+ttt_fullparam:chunk 109/1238 scored running_loss:7.7560 running_bpb:3.0552
+ttt_fullparam:chunk 109/1238 done
+ttt_fullparam:chunk 110/1238 scored running_loss:7.7504 running_bpb:3.0520
+ttt_fullparam:chunk 110/1238 done
+ttt_fullparam:chunk 111/1238 scored running_loss:7.7460 running_bpb:3.0490
+ttt_fullparam:chunk 111/1238 done
+ttt_fullparam:chunk 112/1238 scored running_loss:7.7432 running_bpb:3.0458
+ttt_fullparam:chunk 112/1238 done
+ttt_fullparam:chunk 113/1238 scored running_loss:7.7407 running_bpb:3.0461
+ttt_fullparam:chunk 113/1238 done
+ttt_fullparam:chunk 114/1238 scored running_loss:7.7391 running_bpb:3.0452
+ttt_fullparam:chunk 114/1238 done
+ttt_fullparam:chunk 115/1238 scored running_loss:7.7366 running_bpb:3.0427
+ttt_fullparam:chunk 115/1238 done
+ttt_fullparam:chunk 116/1238 scored running_loss:7.7332 running_bpb:3.0428
+ttt_fullparam:chunk 116/1238 done
+ttt_fullparam:chunk 117/1238 scored running_loss:7.7300 running_bpb:3.0401
+ttt_fullparam:chunk 117/1238 done
+ttt_fullparam:chunk 118/1238 scored running_loss:7.7271 running_bpb:3.0373
+ttt_fullparam:chunk 118/1238 done
+ttt_fullparam:chunk 119/1238 scored running_loss:7.7239 running_bpb:3.0362
+ttt_fullparam:chunk 119/1238 done
+ttt_fullparam:chunk 120/1238 scored running_loss:7.7216 running_bpb:3.0350
+ttt_fullparam:chunk 120/1238 done
+ttt_fullparam:chunk 121/1238 scored running_loss:7.7201 running_bpb:3.0332
+ttt_fullparam:chunk 121/1238 done
+ttt_fullparam:chunk 122/1238 scored running_loss:7.7168 running_bpb:3.0337
+ttt_fullparam:chunk 122/1238 done
+ttt_fullparam:chunk 123/1238 scored running_loss:7.7133 running_bpb:3.0336
+ttt_fullparam:chunk 123/1238 done
+ttt_fullparam:chunk 124/1238 scored running_loss:7.7087 running_bpb:3.0333
+ttt_fullparam:chunk 124/1238 done
+ttt_fullparam:chunk 125/1238 scored running_loss:7.7050 running_bpb:3.0353
+ttt_fullparam:chunk 125/1238 done
+ttt_fullparam:chunk 126/1238 scored running_loss:7.7018 running_bpb:3.0332
+ttt_fullparam:chunk 126/1238 done
+ttt_fullparam:chunk 127/1238 scored running_loss:7.6986 running_bpb:3.0322
+ttt_fullparam:chunk 127/1238 done
+ttt_fullparam:chunk 128/1238 scored running_loss:7.6944 running_bpb:3.0305
+ttt_fullparam:chunk 128/1238 done
+ttt_fullparam:chunk 129/1238 scored running_loss:7.6912 running_bpb:3.0273
+ttt_fullparam:chunk 129/1238 done
+ttt_fullparam:chunk 130/1238 scored running_loss:7.6887 running_bpb:3.0259
+ttt_fullparam:chunk 130/1238 done
+ttt_fullparam:chunk 131/1238 scored running_loss:7.6860 running_bpb:3.0279
+ttt_fullparam:chunk 131/1238 done
+ttt_fullparam:chunk 132/1238 scored running_loss:7.6825 running_bpb:3.0266
+ttt_fullparam:chunk 132/1238 done
+ttt_fullparam:chunk 133/1238 scored running_loss:7.6796 running_bpb:3.0251
+ttt_fullparam:chunk 133/1238 done
+ttt_fullparam:chunk 134/1238 scored running_loss:7.6772 running_bpb:3.0245
+ttt_fullparam:chunk 134/1238 done
+ttt_fullparam:chunk 135/1238 scored running_loss:7.6745 running_bpb:3.0220
+ttt_fullparam:chunk 135/1238 done
+ttt_fullparam:chunk 136/1238 scored running_loss:7.6716 running_bpb:3.0205
+ttt_fullparam:chunk 136/1238 done
+ttt_fullparam:chunk 137/1238 scored running_loss:7.6684 running_bpb:3.0202
+ttt_fullparam:chunk 137/1238 done
+ttt_fullparam:chunk 138/1238 scored running_loss:7.6652 running_bpb:3.0193
+ttt_fullparam:chunk 138/1238 done
+ttt_fullparam:chunk 139/1238 scored running_loss:7.6636 running_bpb:3.0185
+ttt_fullparam:chunk 139/1238 done
+ttt_fullparam:chunk 140/1238 scored running_loss:7.6604 running_bpb:3.0153
+ttt_fullparam:chunk 140/1238 done
+ttt_fullparam:chunk 141/1238 scored running_loss:7.6574 running_bpb:3.0146
+ttt_fullparam:chunk 141/1238 done
+ttt_fullparam:chunk 142/1238 scored running_loss:7.6548 running_bpb:3.0122
+ttt_fullparam:chunk 142/1238 done
+ttt_fullparam:chunk 143/1238 scored running_loss:7.6523 running_bpb:3.0108
+ttt_fullparam:chunk 143/1238 done
+ttt_fullparam:chunk 144/1238 scored running_loss:7.6496 running_bpb:3.0087
+ttt_fullparam:chunk 144/1238 done
+ttt_fullparam:chunk 145/1238 scored running_loss:7.6474 running_bpb:3.0097
+ttt_fullparam:chunk 145/1238 done
+ttt_fullparam:chunk 146/1238 scored running_loss:7.6439 running_bpb:3.0095
+ttt_fullparam:chunk 146/1238 done
+ttt_fullparam:chunk 147/1238 scored running_loss:7.6418 running_bpb:3.0083
+ttt_fullparam:chunk 147/1238 done
+ttt_fullparam:chunk 148/1238 scored running_loss:7.6401 running_bpb:3.0063
+ttt_fullparam:chunk 148/1238 done
+ttt_fullparam:chunk 149/1238 scored running_loss:7.6363 running_bpb:3.0053
+ttt_fullparam:chunk 149/1238 done
+ttt_fullparam:chunk 150/1238 scored running_loss:7.6354 running_bpb:3.0055
+ttt_fullparam:chunk 150/1238 done
+ttt_fullparam:chunk 151/1238 scored running_loss:7.6315 running_bpb:3.0044
+ttt_fullparam:chunk 151/1238 done
+ttt_fullparam:chunk 152/1238 scored running_loss:7.6289 running_bpb:3.0027
+ttt_fullparam:chunk 152/1238 done
+ttt_fullparam:chunk 153/1238 scored running_loss:7.6258 running_bpb:3.0024
+ttt_fullparam:chunk 153/1238 done
+ttt_fullparam:chunk 154/1238 scored running_loss:7.6235 running_bpb:3.0031
+ttt_fullparam:chunk 154/1238 done
+ttt_fullparam:chunk 155/1238 scored running_loss:7.6219 running_bpb:3.0027
+ttt_fullparam:chunk 155/1238 done
+ttt_fullparam:chunk 156/1238 scored running_loss:7.6192 running_bpb:3.0033
+ttt_fullparam:chunk 156/1238 done
+ttt_fullparam:chunk 157/1238 scored running_loss:7.6169 running_bpb:3.0027
+ttt_fullparam:chunk 157/1238 done
+ttt_fullparam:chunk 158/1238 scored running_loss:7.6146 running_bpb:3.0002
+ttt_fullparam:chunk 158/1238 done
+ttt_fullparam:chunk 159/1238 scored running_loss:7.6125 running_bpb:2.9992
+ttt_fullparam:chunk 159/1238 done
+ttt_fullparam:chunk 160/1238 scored running_loss:7.6109 running_bpb:2.9977
+ttt_fullparam:chunk 160/1238 done
+ttt_fullparam:chunk 161/1238 scored running_loss:7.6077 running_bpb:2.9982
+ttt_fullparam:chunk 161/1238 done
+ttt_fullparam:chunk 162/1238 scored running_loss:7.6019 running_bpb:3.0024
+ttt_fullparam:chunk 162/1238 done
+ttt_fullparam:chunk 163/1238 scored running_loss:7.6002 running_bpb:3.0020
+ttt_fullparam:chunk 163/1238 done
+ttt_fullparam:chunk 164/1238 scored running_loss:7.5977 running_bpb:3.0005
+ttt_fullparam:chunk 164/1238 done
+ttt_fullparam:chunk 165/1238 scored running_loss:7.5956 running_bpb:2.9994
+ttt_fullparam:chunk 165/1238 done
+ttt_fullparam:chunk 166/1238 scored running_loss:7.5941 running_bpb:2.9986
+ttt_fullparam:chunk 166/1238 done
+ttt_fullparam:chunk 167/1238 scored running_loss:7.5923 running_bpb:2.9975
+ttt_fullparam:chunk 167/1238 done
+ttt_fullparam:chunk 168/1238 scored running_loss:7.5903 running_bpb:2.9961
+ttt_fullparam:chunk 168/1238 done
+ttt_fullparam:chunk 169/1238 scored running_loss:7.5884 running_bpb:2.9963
+ttt_fullparam:chunk 169/1238 done
+ttt_fullparam:chunk 170/1238 scored running_loss:7.5865 running_bpb:2.9953
+ttt_fullparam:chunk 170/1238 done
+ttt_fullparam:chunk 171/1238 scored running_loss:7.5845 running_bpb:2.9939
+ttt_fullparam:chunk 171/1238 done
+ttt_fullparam:chunk 172/1238 scored running_loss:7.5831 running_bpb:2.9930
+ttt_fullparam:chunk 172/1238 done
+ttt_fullparam:chunk 173/1238 scored running_loss:7.5804 running_bpb:2.9919
+ttt_fullparam:chunk 173/1238 done
+ttt_fullparam:chunk 174/1238 scored running_loss:7.5773 running_bpb:2.9891
+ttt_fullparam:chunk 174/1238 done
+ttt_fullparam:chunk 175/1238 scored running_loss:7.5755 running_bpb:2.9879
+ttt_fullparam:chunk 175/1238 done
+ttt_fullparam:chunk 176/1238 scored running_loss:7.5740 running_bpb:2.9877
+ttt_fullparam:chunk 176/1238 done
+ttt_fullparam:chunk 177/1238 scored running_loss:7.5719 running_bpb:2.9880
+ttt_fullparam:chunk 177/1238 done
+ttt_fullparam:chunk 178/1238 scored running_loss:7.5701 running_bpb:2.9873
+ttt_fullparam:chunk 178/1238 done
+ttt_fullparam:chunk 179/1238 scored running_loss:7.5679 running_bpb:2.9856
+ttt_fullparam:chunk 179/1238 done
+ttt_fullparam:chunk 180/1238 scored running_loss:7.5667 running_bpb:2.9856
+ttt_fullparam:chunk 180/1238 done
+ttt_fullparam:chunk 181/1238 scored running_loss:7.5651 running_bpb:2.9841
+ttt_fullparam:chunk 181/1238 done
+ttt_fullparam:chunk 182/1238 scored running_loss:7.5642 running_bpb:2.9834
+ttt_fullparam:chunk 182/1238 done
+ttt_fullparam:chunk 183/1238 scored running_loss:7.5619 running_bpb:2.9824
+ttt_fullparam:chunk 183/1238 done
+ttt_fullparam:chunk 184/1238 scored running_loss:7.5606 running_bpb:2.9815
+ttt_fullparam:chunk 184/1238 done
+ttt_fullparam:chunk 185/1238 scored running_loss:7.5574 running_bpb:2.9801
+ttt_fullparam:chunk 185/1238 done
+ttt_fullparam:chunk 186/1238 scored running_loss:7.5566 running_bpb:2.9791
+ttt_fullparam:chunk 186/1238 done
+ttt_fullparam:chunk 187/1238 scored running_loss:7.5566 running_bpb:2.9788
+ttt_fullparam:chunk 187/1238 done
+ttt_fullparam:chunk 188/1238 scored running_loss:7.5543 running_bpb:2.9767
+ttt_fullparam:chunk 188/1238 done
+ttt_fullparam:chunk 189/1238 scored running_loss:7.5528 running_bpb:2.9753
+ttt_fullparam:chunk 189/1238 done
+ttt_fullparam:chunk 190/1238 scored running_loss:7.5518 running_bpb:2.9731
+ttt_fullparam:chunk 190/1238 done
+ttt_fullparam:chunk 191/1238 scored running_loss:7.5501 running_bpb:2.9725
+ttt_fullparam:chunk 191/1238 done
+ttt_fullparam:chunk 192/1238 scored running_loss:7.5493 running_bpb:2.9714
+ttt_fullparam:chunk 192/1238 done
+ttt_fullparam:chunk 193/1238 scored running_loss:7.5485 running_bpb:2.9704
+ttt_fullparam:chunk 193/1238 done
+ttt_fullparam:chunk 194/1238 scored running_loss:7.5486 running_bpb:2.9707
+ttt_fullparam:chunk 194/1238 done
+ttt_fullparam:chunk 195/1238 scored running_loss:7.5477 running_bpb:2.9696
+ttt_fullparam:chunk 195/1238 done
+ttt_fullparam:chunk 196/1238 scored running_loss:7.5464 running_bpb:2.9676
+ttt_fullparam:chunk 196/1238 done
+ttt_fullparam:chunk 197/1238 scored running_loss:7.5454 running_bpb:2.9676
+ttt_fullparam:chunk 197/1238 done
+ttt_fullparam:chunk 198/1238 scored running_loss:7.5440 running_bpb:2.9668
+ttt_fullparam:chunk 198/1238 done
+ttt_fullparam:chunk 199/1238 scored running_loss:7.5433 running_bpb:2.9648
+ttt_fullparam:chunk 199/1238 done
+ttt_fullparam:chunk 200/1238 scored running_loss:7.5424 running_bpb:2.9646
+ttt_fullparam:chunk 200/1238 done
+ttt_fullparam:chunk 201/1238 scored running_loss:7.5399 running_bpb:2.9637
+ttt_fullparam:chunk 201/1238 done
+ttt_fullparam:chunk 202/1238 scored running_loss:7.5384 running_bpb:2.9644
+ttt_fullparam:chunk 202/1238 done
+ttt_fullparam:chunk 203/1238 scored running_loss:7.5364 running_bpb:2.9635
+ttt_fullparam:chunk 203/1238 done
+ttt_fullparam:chunk 204/1238 scored running_loss:7.5353 running_bpb:2.9622
+ttt_fullparam:chunk 204/1238 done
+ttt_fullparam:chunk 205/1238 scored running_loss:7.5341 running_bpb:2.9621
+ttt_fullparam:chunk 205/1238 done
+ttt_fullparam:chunk 206/1238 scored running_loss:7.5329 running_bpb:2.9618
+ttt_fullparam:chunk 206/1238 done
+ttt_fullparam:chunk 207/1238 scored running_loss:7.5322 running_bpb:2.9616
+ttt_fullparam:chunk 207/1238 done
+ttt_fullparam:chunk 208/1238 scored running_loss:7.5311 running_bpb:2.9618
+ttt_fullparam:chunk 208/1238 done
+ttt_fullparam:chunk 209/1238 scored running_loss:7.5301 running_bpb:2.9609
+ttt_fullparam:chunk 209/1238 done
+ttt_fullparam:chunk 210/1238 scored running_loss:7.5288 running_bpb:2.9594
+ttt_fullparam:chunk 210/1238 done
+ttt_fullparam:chunk 211/1238 scored running_loss:7.5273 running_bpb:2.9583
+ttt_fullparam:chunk 211/1238 done
+ttt_fullparam:chunk 212/1238 scored running_loss:7.5259 running_bpb:2.9569
+ttt_fullparam:chunk 212/1238 done
+ttt_fullparam:chunk 213/1238 scored running_loss:7.5246 running_bpb:2.9562
+ttt_fullparam:chunk 213/1238 done
+ttt_fullparam:chunk 214/1238 scored running_loss:7.5230 running_bpb:2.9554
+ttt_fullparam:chunk 214/1238 done
+ttt_fullparam:chunk 215/1238 scored running_loss:7.5218 running_bpb:2.9540
+ttt_fullparam:chunk 215/1238 done
+ttt_fullparam:chunk 216/1238 scored running_loss:7.5210 running_bpb:2.9547
+ttt_fullparam:chunk 216/1238 done
+ttt_fullparam:chunk 217/1238 scored running_loss:7.5200 running_bpb:2.9541
+ttt_fullparam:chunk 217/1238 done
+ttt_fullparam:chunk 218/1238 scored running_loss:7.5186 running_bpb:2.9527
+ttt_fullparam:chunk 218/1238 done
+ttt_fullparam:chunk 219/1238 scored running_loss:7.5173 running_bpb:2.9508
+ttt_fullparam:chunk 219/1238 done
+ttt_fullparam:chunk 220/1238 scored running_loss:7.5159 running_bpb:2.9494
+ttt_fullparam:chunk 220/1238 done
+ttt_fullparam:chunk 221/1238 scored running_loss:7.5141 running_bpb:2.9484
+ttt_fullparam:chunk 221/1238 done
+ttt_fullparam:chunk 222/1238 scored running_loss:7.5136 running_bpb:2.9470
+ttt_fullparam:chunk 222/1238 done
+ttt_fullparam:chunk 223/1238 scored running_loss:7.5127 running_bpb:2.9462
+ttt_fullparam:chunk 223/1238 done
+ttt_fullparam:chunk 224/1238 scored running_loss:7.5117 running_bpb:2.9449
+ttt_fullparam:chunk 224/1238 done
+ttt_fullparam:chunk 225/1238 scored running_loss:7.5103 running_bpb:2.9443
+ttt_fullparam:chunk 225/1238 done
+ttt_fullparam:chunk 226/1238 scored running_loss:7.5089 running_bpb:2.9432
+ttt_fullparam:chunk 226/1238 done
+ttt_fullparam:chunk 227/1238 scored running_loss:7.5081 running_bpb:2.9429
+ttt_fullparam:chunk 227/1238 done
+ttt_fullparam:chunk 228/1238 scored running_loss:7.5076 running_bpb:2.9425
+ttt_fullparam:chunk 228/1238 done
+ttt_fullparam:chunk 229/1238 scored running_loss:7.5068 running_bpb:2.9423
+ttt_fullparam:chunk 229/1238 done
+ttt_fullparam:chunk 230/1238 scored running_loss:7.5055 running_bpb:2.9425
+ttt_fullparam:chunk 230/1238 done
+ttt_fullparam:chunk 231/1238 scored running_loss:7.5047 running_bpb:2.9434
+ttt_fullparam:chunk 231/1238 done
+ttt_fullparam:chunk 232/1238 scored running_loss:7.5038 running_bpb:2.9425
+ttt_fullparam:chunk 232/1238 done
+ttt_fullparam:chunk 233/1238 scored running_loss:7.5034 running_bpb:2.9412
+ttt_fullparam:chunk 233/1238 done
+ttt_fullparam:chunk 234/1238 scored running_loss:7.5033 running_bpb:2.9406
+ttt_fullparam:chunk 234/1238 done
+ttt_fullparam:chunk 235/1238 scored running_loss:7.5021 running_bpb:2.9405
+ttt_fullparam:chunk 235/1238 done
+ttt_fullparam:chunk 236/1238 scored running_loss:7.5007 running_bpb:2.9423
+ttt_fullparam:chunk 236/1238 done
+ttt_fullparam:chunk 237/1238 scored running_loss:7.4979 running_bpb:2.9435
+ttt_fullparam:chunk 237/1238 done
+ttt_fullparam:chunk 238/1238 scored running_loss:7.4976 running_bpb:2.9430
+ttt_fullparam:chunk 238/1238 done
+ttt_fullparam:chunk 239/1238 scored running_loss:7.4978 running_bpb:2.9431
+ttt_fullparam:chunk 239/1238 done
+ttt_fullparam:chunk 240/1238 scored running_loss:7.4984 running_bpb:2.9427
+ttt_fullparam:chunk 240/1238 done
+ttt_fullparam:chunk 241/1238 scored running_loss:7.4984 running_bpb:2.9433
+ttt_fullparam:chunk 241/1238 done
+ttt_fullparam:chunk 242/1238 scored running_loss:7.4987 running_bpb:2.9430
+ttt_fullparam:chunk 242/1238 done
+ttt_fullparam:chunk 243/1238 scored running_loss:7.4986 running_bpb:2.9422
+ttt_fullparam:chunk 243/1238 done
+ttt_fullparam:chunk 244/1238 scored running_loss:7.4982 running_bpb:2.9406
+ttt_fullparam:chunk 244/1238 done
+ttt_fullparam:chunk 245/1238 scored running_loss:7.4976 running_bpb:2.9398
+ttt_fullparam:chunk 245/1238 done
+ttt_fullparam:chunk 246/1238 scored running_loss:7.4971 running_bpb:2.9399
+ttt_fullparam:chunk 246/1238 done
+ttt_fullparam:chunk 247/1238 scored running_loss:7.4961 running_bpb:2.9393
+ttt_fullparam:chunk 247/1238 done
+ttt_fullparam:chunk 248/1238 scored running_loss:7.4950 running_bpb:2.9388
+ttt_fullparam:chunk 248/1238 done
+ttt_fullparam:chunk 249/1238 scored running_loss:7.4954 running_bpb:2.9401
+ttt_fullparam:chunk 249/1238 done
+ttt_fullparam:chunk 250/1238 scored running_loss:7.4945 running_bpb:2.9397
+ttt_fullparam:chunk 250/1238 done
+ttt_fullparam:chunk 251/1238 scored running_loss:7.4937 running_bpb:2.9387
+ttt_fullparam:chunk 251/1238 done
+ttt_fullparam:chunk 252/1238 scored running_loss:7.4935 running_bpb:2.9377
+ttt_fullparam:chunk 252/1238 done
+ttt_fullparam:chunk 253/1238 scored running_loss:7.4927 running_bpb:2.9363
+ttt_fullparam:chunk 253/1238 done
+ttt_fullparam:chunk 254/1238 scored running_loss:7.4924 running_bpb:2.9347
+ttt_fullparam:chunk 254/1238 done
+ttt_fullparam:chunk 255/1238 scored running_loss:7.4919 running_bpb:2.9334
+ttt_fullparam:chunk 255/1238 done
+ttt_fullparam:chunk 256/1238 scored running_loss:7.4918 running_bpb:2.9332
+ttt_fullparam:chunk 256/1238 done
+ttt_fullparam:chunk 257/1238 scored running_loss:7.4908 running_bpb:2.9323
+ttt_fullparam:chunk 257/1238 done
+ttt_fullparam:chunk 258/1238 scored running_loss:7.4909 running_bpb:2.9320
+ttt_fullparam:chunk 258/1238 done
+ttt_fullparam:chunk 259/1238 scored running_loss:7.4905 running_bpb:2.9315
+ttt_fullparam:chunk 259/1238 done
+ttt_fullparam:chunk 260/1238 scored running_loss:7.4901 running_bpb:2.9316
+ttt_fullparam:chunk 260/1238 done
+ttt_fullparam:chunk 261/1238 scored running_loss:7.4895 running_bpb:2.9303
+ttt_fullparam:chunk 261/1238 done
+ttt_fullparam:chunk 262/1238 scored running_loss:7.4889 running_bpb:2.9308
+ttt_fullparam:chunk 262/1238 done
+ttt_fullparam:chunk 263/1238 scored running_loss:7.4878 running_bpb:2.9301
+ttt_fullparam:chunk 263/1238 done
+ttt_fullparam:chunk 264/1238 scored running_loss:7.4870 running_bpb:2.9293
+ttt_fullparam:chunk 264/1238 done
+ttt_fullparam:chunk 265/1238 scored running_loss:7.4858 running_bpb:2.9296
+ttt_fullparam:chunk 265/1238 done
+ttt_fullparam:chunk 266/1238 scored running_loss:7.4851 running_bpb:2.9294
+ttt_fullparam:chunk 266/1238 done
+ttt_fullparam:chunk 267/1238 scored running_loss:7.4846 running_bpb:2.9289
+ttt_fullparam:chunk 267/1238 done
+ttt_fullparam:chunk 268/1238 scored running_loss:7.4845 running_bpb:2.9282
+ttt_fullparam:chunk 268/1238 done
+ttt_fullparam:chunk 269/1238 scored running_loss:7.4835 running_bpb:2.9271
+ttt_fullparam:chunk 269/1238 done
+ttt_fullparam:chunk 270/1238 scored running_loss:7.4829 running_bpb:2.9261
+ttt_fullparam:chunk 270/1238 done
+ttt_fullparam:chunk 271/1238 scored running_loss:7.4818 running_bpb:2.9256
+ttt_fullparam:chunk 271/1238 done
+ttt_fullparam:chunk 272/1238 scored running_loss:7.4808 running_bpb:2.9260
+ttt_fullparam:chunk 272/1238 done
+ttt_fullparam:chunk 273/1238 scored running_loss:7.4803 running_bpb:2.9258
+ttt_fullparam:chunk 273/1238 done
+ttt_fullparam:chunk 274/1238 scored running_loss:7.4798 running_bpb:2.9255
+ttt_fullparam:chunk 274/1238 done
+ttt_fullparam:chunk 275/1238 scored running_loss:7.4784 running_bpb:2.9261
+ttt_fullparam:chunk 275/1238 done
+ttt_fullparam:chunk 276/1238 scored running_loss:7.4779 running_bpb:2.9255
+ttt_fullparam:chunk 276/1238 done
+ttt_fullparam:chunk 277/1238 scored running_loss:7.4771 running_bpb:2.9256
+ttt_fullparam:chunk 277/1238 done
+ttt_fullparam:chunk 278/1238 scored running_loss:7.4759 running_bpb:2.9247
+ttt_fullparam:chunk 278/1238 done
+ttt_fullparam:chunk 279/1238 scored running_loss:7.4752 running_bpb:2.9242
+ttt_fullparam:chunk 279/1238 done
+ttt_fullparam:chunk 280/1238 scored running_loss:7.4747 running_bpb:2.9238
+ttt_fullparam:chunk 280/1238 done
+ttt_fullparam:chunk 281/1238 scored running_loss:7.4744 running_bpb:2.9230
+ttt_fullparam:chunk 281/1238 done
+ttt_fullparam:chunk 282/1238 scored running_loss:7.4741 running_bpb:2.9227
+ttt_fullparam:chunk 282/1238 done
+ttt_fullparam:chunk 283/1238 scored running_loss:7.4721 running_bpb:2.9213
+ttt_fullparam:chunk 283/1238 done
+ttt_fullparam:chunk 284/1238 scored running_loss:7.4715 running_bpb:2.9207
+ttt_fullparam:chunk 284/1238 done
+ttt_fullparam:chunk 285/1238 scored running_loss:7.4705 running_bpb:2.9206
+ttt_fullparam:chunk 285/1238 done
+ttt_fullparam:chunk 286/1238 scored running_loss:7.4703 running_bpb:2.9217
+ttt_fullparam:chunk 286/1238 done
+ttt_fullparam:chunk 287/1238 scored running_loss:7.4695 running_bpb:2.9214
+ttt_fullparam:chunk 287/1238 done
+ttt_fullparam:chunk 288/1238 scored running_loss:7.4678 running_bpb:2.9207
+ttt_fullparam:chunk 288/1238 done
+ttt_fullparam:chunk 289/1238 scored running_loss:7.4677 running_bpb:2.9202
+ttt_fullparam:chunk 289/1238 done
+ttt_fullparam:chunk 290/1238 scored running_loss:7.4669 running_bpb:2.9195
+ttt_fullparam:chunk 290/1238 done
+ttt_fullparam:chunk 291/1238 scored running_loss:7.4664 running_bpb:2.9185
+ttt_fullparam:chunk 291/1238 done
+ttt_fullparam:chunk 292/1238 scored running_loss:7.4666 running_bpb:2.9191
+ttt_fullparam:chunk 292/1238 done
+ttt_fullparam:chunk 293/1238 scored running_loss:7.4656 running_bpb:2.9182
+ttt_fullparam:chunk 293/1238 done
+ttt_fullparam:chunk 294/1238 scored running_loss:7.4650 running_bpb:2.9176
+ttt_fullparam:chunk 294/1238 done
+ttt_fullparam:chunk 295/1238 scored running_loss:7.4647 running_bpb:2.9170
+ttt_fullparam:chunk 295/1238 done
+ttt_fullparam:chunk 296/1238 scored running_loss:7.4641 running_bpb:2.9156
+ttt_fullparam:chunk 296/1238 done
+ttt_fullparam:chunk 297/1238 scored running_loss:7.4632 running_bpb:2.9149
+ttt_fullparam:chunk 297/1238 done
+ttt_fullparam:chunk 298/1238 scored running_loss:7.4631 running_bpb:2.9145
+ttt_fullparam:chunk 298/1238 done
+ttt_fullparam:chunk 299/1238 scored running_loss:7.4626 running_bpb:2.9137
+ttt_fullparam:chunk 299/1238 done
+ttt_fullparam:chunk 300/1238 scored running_loss:7.4619 running_bpb:2.9134
+ttt_fullparam:chunk 300/1238 done
+ttt_fullparam:chunk 301/1238 scored running_loss:7.4617 running_bpb:2.9131
+ttt_fullparam:chunk 301/1238 done
+ttt_fullparam:chunk 302/1238 scored running_loss:7.4608 running_bpb:2.9127
+ttt_fullparam:chunk 302/1238 done
+ttt_fullparam:chunk 303/1238 scored running_loss:7.4605 running_bpb:2.9125
+ttt_fullparam:chunk 303/1238 done
+ttt_fullparam:chunk 304/1238 scored running_loss:7.4600 running_bpb:2.9119
+ttt_fullparam:chunk 304/1238 done
+ttt_fullparam:chunk 305/1238 scored running_loss:7.4593 running_bpb:2.9111
+ttt_fullparam:chunk 305/1238 done
+ttt_fullparam:chunk 306/1238 scored running_loss:7.4586 running_bpb:2.9104
+ttt_fullparam:chunk 306/1238 done
+ttt_fullparam:chunk 307/1238 scored running_loss:7.4580 running_bpb:2.9091
+ttt_fullparam:chunk 307/1238 done
+ttt_fullparam:chunk 308/1238 scored running_loss:7.4575 running_bpb:2.9084
+ttt_fullparam:chunk 308/1238 done
+ttt_fullparam:chunk 309/1238 scored running_loss:7.4574 running_bpb:2.9078
+ttt_fullparam:chunk 309/1238 done
+ttt_fullparam:chunk 310/1238 scored running_loss:7.4567 running_bpb:2.9074
+ttt_fullparam:chunk 310/1238 done
+ttt_fullparam:chunk 311/1238 scored running_loss:7.4562 running_bpb:2.9071
+ttt_fullparam:chunk 311/1238 done
+ttt_fullparam:chunk 312/1238 scored running_loss:7.4555 running_bpb:2.9065
+ttt_fullparam:chunk 312/1238 done
+ttt_fullparam:chunk 313/1238 scored running_loss:7.4554 running_bpb:2.9068
+ttt_fullparam:chunk 313/1238 done
+ttt_fullparam:chunk 314/1238 scored running_loss:7.4550 running_bpb:2.9066
+ttt_fullparam:chunk 314/1238 done
+ttt_fullparam:chunk 315/1238 scored running_loss:7.4544 running_bpb:2.9066
+ttt_fullparam:chunk 315/1238 done
+ttt_fullparam:chunk 316/1238 scored running_loss:7.4540 running_bpb:2.9067
+ttt_fullparam:chunk 316/1238 done
+ttt_fullparam:chunk 317/1238 scored running_loss:7.4534 running_bpb:2.9055
+ttt_fullparam:chunk 317/1238 done
+ttt_fullparam:chunk 318/1238 scored running_loss:7.4525 running_bpb:2.9050
+ttt_fullparam:chunk 318/1238 done
+ttt_fullparam:chunk 319/1238 scored running_loss:7.4529 running_bpb:2.9068
+ttt_fullparam:chunk 319/1238 done
+ttt_fullparam:chunk 320/1238 scored running_loss:7.4522 running_bpb:2.9058
+ttt_fullparam:chunk 320/1238 done
+ttt_fullparam:chunk 321/1238 scored running_loss:7.4513 running_bpb:2.9063
+ttt_fullparam:chunk 321/1238 done
+ttt_fullparam:chunk 322/1238 scored running_loss:7.4511 running_bpb:2.9065
+ttt_fullparam:chunk 322/1238 done
+ttt_fullparam:chunk 323/1238 scored running_loss:7.4509 running_bpb:2.9063
+ttt_fullparam:chunk 323/1238 done
+ttt_fullparam:chunk 324/1238 scored running_loss:7.4507 running_bpb:2.9061
+ttt_fullparam:chunk 324/1238 done
+ttt_fullparam:chunk 325/1238 scored running_loss:7.4504 running_bpb:2.9062
+ttt_fullparam:chunk 325/1238 done
+ttt_fullparam:chunk 326/1238 scored running_loss:7.4502 running_bpb:2.9064
+ttt_fullparam:chunk 326/1238 done
+ttt_fullparam:chunk 327/1238 scored running_loss:7.4499 running_bpb:2.9066
+ttt_fullparam:chunk 327/1238 done
+ttt_fullparam:chunk 328/1238 scored running_loss:7.4497 running_bpb:2.9065
+ttt_fullparam:chunk 328/1238 done
+ttt_fullparam:chunk 329/1238 scored running_loss:7.4489 running_bpb:2.9054
+ttt_fullparam:chunk 329/1238 done
+ttt_fullparam:chunk 330/1238 scored running_loss:7.4490 running_bpb:2.9050
+ttt_fullparam:chunk 330/1238 done
+ttt_fullparam:chunk 331/1238 scored running_loss:7.4485 running_bpb:2.9047
+ttt_fullparam:chunk 331/1238 done
+ttt_fullparam:chunk 332/1238 scored running_loss:7.4476 running_bpb:2.9049
+ttt_fullparam:chunk 332/1238 done
+ttt_fullparam:chunk 333/1238 scored running_loss:7.4469 running_bpb:2.9042
+ttt_fullparam:chunk 333/1238 done
+ttt_fullparam:chunk 334/1238 scored running_loss:7.4464 running_bpb:2.9035
+ttt_fullparam:chunk 334/1238 done
+ttt_fullparam:chunk 335/1238 scored running_loss:7.4458 running_bpb:2.9035
+ttt_fullparam:chunk 335/1238 done
+ttt_fullparam:chunk 336/1238 scored running_loss:7.4453 running_bpb:2.9027
+ttt_fullparam:chunk 336/1238 done
+ttt_fullparam:chunk 337/1238 scored running_loss:7.4449 running_bpb:2.9036
+ttt_fullparam:chunk 337/1238 done
+ttt_fullparam:chunk 338/1238 scored running_loss:7.4444 running_bpb:2.9046
+ttt_fullparam:chunk 338/1238 done
+ttt_fullparam:chunk 339/1238 scored running_loss:7.4438 running_bpb:2.9039
+ttt_fullparam:chunk 339/1238 done
+ttt_fullparam:chunk 340/1238 scored running_loss:7.4433 running_bpb:2.9037
+ttt_fullparam:chunk 340/1238 done
+ttt_fullparam:chunk 341/1238 scored running_loss:7.4430 running_bpb:2.9035
+ttt_fullparam:chunk 341/1238 done
+ttt_fullparam:chunk 342/1238 scored running_loss:7.4429 running_bpb:2.9034
+ttt_fullparam:chunk 342/1238 done
+ttt_fullparam:chunk 343/1238 scored running_loss:7.4425 running_bpb:2.9034
+ttt_fullparam:chunk 343/1238 done
+ttt_fullparam:chunk 344/1238 scored running_loss:7.4422 running_bpb:2.9034
+ttt_fullparam:chunk 344/1238 done
+ttt_fullparam:chunk 345/1238 scored running_loss:7.4420 running_bpb:2.9040
+ttt_fullparam:chunk 345/1238 done
+ttt_fullparam:chunk 346/1238 scored running_loss:7.4415 running_bpb:2.9041
+ttt_fullparam:chunk 346/1238 done
+ttt_fullparam:chunk 347/1238 scored running_loss:7.4410 running_bpb:2.9038
+ttt_fullparam:chunk 347/1238 done
+ttt_fullparam:chunk 348/1238 scored running_loss:7.4398 running_bpb:2.9030
+ttt_fullparam:chunk 348/1238 done
+ttt_fullparam:chunk 349/1238 scored running_loss:7.4393 running_bpb:2.9028
+ttt_fullparam:chunk 349/1238 done
+ttt_fullparam:chunk 350/1238 scored running_loss:7.4390 running_bpb:2.9029
+ttt_fullparam:chunk 350/1238 done
+ttt_fullparam:chunk 351/1238 scored running_loss:7.4386 running_bpb:2.9025
+ttt_fullparam:chunk 351/1238 done
+ttt_fullparam:chunk 352/1238 scored running_loss:7.4361 running_bpb:2.9008
+ttt_fullparam:chunk 352/1238 done
+ttt_fullparam:chunk 353/1238 scored running_loss:7.4354 running_bpb:2.9002
+ttt_fullparam:chunk 353/1238 done
+ttt_fullparam:chunk 354/1238 scored running_loss:7.4342 running_bpb:2.8999
+ttt_fullparam:chunk 354/1238 done
+ttt_fullparam:chunk 355/1238 scored running_loss:7.4334 running_bpb:2.9000
+ttt_fullparam:chunk 355/1238 done
+ttt_fullparam:chunk 356/1238 scored running_loss:7.4333 running_bpb:2.8995
+ttt_fullparam:chunk 356/1238 done
+ttt_fullparam:chunk 357/1238 scored running_loss:7.4323 running_bpb:2.8999
+ttt_fullparam:chunk 357/1238 done
+ttt_fullparam:chunk 358/1238 scored running_loss:7.4317 running_bpb:2.8995
+ttt_fullparam:chunk 358/1238 done
+ttt_fullparam:chunk 359/1238 scored running_loss:7.4313 running_bpb:2.8994
+ttt_fullparam:chunk 359/1238 done
+ttt_fullparam:chunk 360/1238 scored running_loss:7.4313 running_bpb:2.8995
+ttt_fullparam:chunk 360/1238 done
+ttt_fullparam:chunk 361/1238 scored running_loss:7.4309 running_bpb:2.8989
+ttt_fullparam:chunk 361/1238 done
+ttt_fullparam:chunk 362/1238 scored running_loss:7.4307 running_bpb:2.8990
+ttt_fullparam:chunk 362/1238 done
+ttt_fullparam:chunk 363/1238 scored running_loss:7.4305 running_bpb:2.8983
+ttt_fullparam:chunk 363/1238 done
+ttt_fullparam:chunk 364/1238 scored running_loss:7.4300 running_bpb:2.8973
+ttt_fullparam:chunk 364/1238 done
+ttt_fullparam:chunk 365/1238 scored running_loss:7.4298 running_bpb:2.8971
+ttt_fullparam:chunk 365/1238 done
+ttt_fullparam:chunk 366/1238 scored running_loss:7.4294 running_bpb:2.8966
+ttt_fullparam:chunk 366/1238 done
+ttt_fullparam:chunk 367/1238 scored running_loss:7.4289 running_bpb:2.8965
+ttt_fullparam:chunk 367/1238 done
+ttt_fullparam:chunk 368/1238 scored running_loss:7.4285 running_bpb:2.8956
+ttt_fullparam:chunk 368/1238 done
+ttt_fullparam:chunk 369/1238 scored running_loss:7.4283 running_bpb:2.8960
+ttt_fullparam:chunk 369/1238 done
+ttt_fullparam:chunk 370/1238 scored running_loss:7.4277 running_bpb:2.8960
+ttt_fullparam:chunk 370/1238 done
+ttt_fullparam:chunk 371/1238 scored running_loss:7.4272 running_bpb:2.8956
+ttt_fullparam:chunk 371/1238 done
+ttt_fullparam:chunk 372/1238 scored running_loss:7.4272 running_bpb:2.8954
+ttt_fullparam:chunk 372/1238 done
+ttt_fullparam:chunk 373/1238 scored running_loss:7.4266 running_bpb:2.8952
+ttt_fullparam:chunk 373/1238 done
+ttt_fullparam:chunk 374/1238 scored running_loss:7.4259 running_bpb:2.8949
+ttt_fullparam:chunk 374/1238 done
+ttt_fullparam:chunk 375/1238 scored running_loss:7.4256 running_bpb:2.8944
+ttt_fullparam:chunk 375/1238 done
+ttt_fullparam:chunk 376/1238 scored running_loss:7.4253 running_bpb:2.8942
+ttt_fullparam:chunk 376/1238 done
+ttt_fullparam:chunk 377/1238 scored running_loss:7.4245 running_bpb:2.8936
+ttt_fullparam:chunk 377/1238 done
+ttt_fullparam:chunk 378/1238 scored running_loss:7.4240 running_bpb:2.8930
+ttt_fullparam:chunk 378/1238 done
+ttt_fullparam:chunk 379/1238 scored running_loss:7.4233 running_bpb:2.8929
+ttt_fullparam:chunk 379/1238 done
+ttt_fullparam:chunk 380/1238 scored running_loss:7.4228 running_bpb:2.8922
+ttt_fullparam:chunk 380/1238 done
+ttt_fullparam:chunk 381/1238 scored running_loss:7.4220 running_bpb:2.8934
+ttt_fullparam:chunk 381/1238 done
+ttt_fullparam:chunk 382/1238 scored running_loss:7.4220 running_bpb:2.8937
+ttt_fullparam:chunk 382/1238 done
+ttt_fullparam:chunk 383/1238 scored running_loss:7.4216 running_bpb:2.8935
+ttt_fullparam:chunk 383/1238 done
+ttt_fullparam:chunk 384/1238 scored running_loss:7.4212 running_bpb:2.8929
+ttt_fullparam:chunk 384/1238 done
+ttt_fullparam:chunk 385/1238 scored running_loss:7.4208 running_bpb:2.8931
+ttt_fullparam:chunk 385/1238 done
+ttt_fullparam:chunk 386/1238 scored running_loss:7.4204 running_bpb:2.8929
+ttt_fullparam:chunk 386/1238 done
+ttt_fullparam:chunk 387/1238 scored running_loss:7.4199 running_bpb:2.8921
+ttt_fullparam:chunk 387/1238 done
+ttt_fullparam:chunk 388/1238 scored running_loss:7.4196 running_bpb:2.8920
+ttt_fullparam:chunk 388/1238 done
+ttt_fullparam:chunk 389/1238 scored running_loss:7.4193 running_bpb:2.8912
+ttt_fullparam:chunk 389/1238 done
+ttt_fullparam:chunk 390/1238 scored running_loss:7.4187 running_bpb:2.8903
+ttt_fullparam:chunk 390/1238 done
+ttt_fullparam:chunk 391/1238 scored running_loss:7.4179 running_bpb:2.8899
+ttt_fullparam:chunk 391/1238 done
+ttt_fullparam:chunk 392/1238 scored running_loss:7.4177 running_bpb:2.8899
+ttt_fullparam:chunk 392/1238 done
+ttt_fullparam:chunk 393/1238 scored running_loss:7.4175 running_bpb:2.8893
+ttt_fullparam:chunk 393/1238 done
+ttt_fullparam:chunk 394/1238 scored running_loss:7.4171 running_bpb:2.8896
+ttt_fullparam:chunk 394/1238 done
+ttt_fullparam:chunk 395/1238 scored running_loss:7.4166 running_bpb:2.8889
+ttt_fullparam:chunk 395/1238 done
+ttt_fullparam:chunk 396/1238 scored running_loss:7.4161 running_bpb:2.8881
+ttt_fullparam:chunk 396/1238 done
+ttt_fullparam:chunk 397/1238 scored running_loss:7.4156 running_bpb:2.8875
+ttt_fullparam:chunk 397/1238 done
+ttt_fullparam:chunk 398/1238 scored running_loss:7.4153 running_bpb:2.8873
+ttt_fullparam:chunk 398/1238 done
+ttt_fullparam:chunk 399/1238 scored running_loss:7.4152 running_bpb:2.8869
+ttt_fullparam:chunk 399/1238 done
+ttt_fullparam:chunk 400/1238 scored running_loss:7.4149 running_bpb:2.8861
+ttt_fullparam:chunk 400/1238 done
+ttt_fullparam:chunk 401/1238 scored running_loss:7.4147 running_bpb:2.8858
+ttt_fullparam:chunk 401/1238 done
+ttt_fullparam:chunk 402/1238 scored running_loss:7.4143 running_bpb:2.8855
+ttt_fullparam:chunk 402/1238 done
+ttt_fullparam:chunk 403/1238 scored running_loss:7.4140 running_bpb:2.8857
+ttt_fullparam:chunk 403/1238 done
+ttt_fullparam:chunk 404/1238 scored running_loss:7.4136 running_bpb:2.8852
+ttt_fullparam:chunk 404/1238 done
+ttt_fullparam:chunk 405/1238 scored running_loss:7.4131 running_bpb:2.8849
+ttt_fullparam:chunk 405/1238 done
+ttt_fullparam:chunk 406/1238 scored running_loss:7.4125 running_bpb:2.8844
+ttt_fullparam:chunk 406/1238 done
+ttt_fullparam:chunk 407/1238 scored running_loss:7.4123 running_bpb:2.8842
+ttt_fullparam:chunk 407/1238 done
+ttt_fullparam:chunk 408/1238 scored running_loss:7.4119 running_bpb:2.8848
+ttt_fullparam:chunk 408/1238 done
+ttt_fullparam:chunk 409/1238 scored running_loss:7.4112 running_bpb:2.8842
+ttt_fullparam:chunk 409/1238 done
+ttt_fullparam:chunk 410/1238 scored running_loss:7.4109 running_bpb:2.8840
+ttt_fullparam:chunk 410/1238 done
+ttt_fullparam:chunk 411/1238 scored running_loss:7.4107 running_bpb:2.8838
+ttt_fullparam:chunk 411/1238 done
+ttt_fullparam:chunk 412/1238 scored running_loss:7.4104 running_bpb:2.8839
+ttt_fullparam:chunk 412/1238 done
+ttt_fullparam:chunk 413/1238 scored running_loss:7.4096 running_bpb:2.8834
+ttt_fullparam:chunk 413/1238 done
+ttt_fullparam:chunk 414/1238 scored running_loss:7.4095 running_bpb:2.8824
+ttt_fullparam:chunk 414/1238 done
+ttt_fullparam:chunk 415/1238 scored running_loss:7.4091 running_bpb:2.8820
+ttt_fullparam:chunk 415/1238 done
+ttt_fullparam:chunk 416/1238 scored running_loss:7.4086 running_bpb:2.8818
+ttt_fullparam:chunk 416/1238 done
+ttt_fullparam:chunk 417/1238 scored running_loss:7.4082 running_bpb:2.8811
+ttt_fullparam:chunk 417/1238 done
+ttt_fullparam:chunk 418/1238 scored running_loss:7.4078 running_bpb:2.8807
+ttt_fullparam:chunk 418/1238 done
+ttt_fullparam:chunk 419/1238 scored running_loss:7.4072 running_bpb:2.8806
+ttt_fullparam:chunk 419/1238 done
+ttt_fullparam:chunk 420/1238 scored running_loss:7.4069 running_bpb:2.8809
+ttt_fullparam:chunk 420/1238 done
+ttt_fullparam:chunk 421/1238 scored running_loss:7.4066 running_bpb:2.8807
+ttt_fullparam:chunk 421/1238 done
+ttt_fullparam:chunk 422/1238 scored running_loss:7.4064 running_bpb:2.8802
+ttt_fullparam:chunk 422/1238 done
+ttt_fullparam:chunk 423/1238 scored running_loss:7.4062 running_bpb:2.8796
+ttt_fullparam:chunk 423/1238 done
+ttt_fullparam:chunk 424/1238 scored running_loss:7.4059 running_bpb:2.8794
+ttt_fullparam:chunk 424/1238 done
+ttt_fullparam:chunk 425/1238 scored running_loss:7.4055 running_bpb:2.8789
+ttt_fullparam:chunk 425/1238 done
+ttt_fullparam:chunk 426/1238 scored running_loss:7.4052 running_bpb:2.8782
+ttt_fullparam:chunk 426/1238 done
+ttt_fullparam:chunk 427/1238 scored running_loss:7.4050 running_bpb:2.8775
+ttt_fullparam:chunk 427/1238 done
+ttt_fullparam:chunk 428/1238 scored running_loss:7.4045 running_bpb:2.8768
+ttt_fullparam:chunk 428/1238 done
+ttt_fullparam:chunk 429/1238 scored running_loss:7.4040 running_bpb:2.8765
+ttt_fullparam:chunk 429/1238 done
+ttt_fullparam:chunk 430/1238 scored running_loss:7.4037 running_bpb:2.8760
+ttt_fullparam:chunk 430/1238 done
+ttt_fullparam:chunk 431/1238 scored running_loss:7.4033 running_bpb:2.8768
+ttt_fullparam:chunk 431/1238 done
+ttt_fullparam:chunk 432/1238 scored running_loss:7.4030 running_bpb:2.8767
+ttt_fullparam:chunk 432/1238 done
+ttt_fullparam:chunk 433/1238 scored running_loss:7.4030 running_bpb:2.8770
+ttt_fullparam:chunk 433/1238 done
+ttt_fullparam:chunk 434/1238 scored running_loss:7.4028 running_bpb:2.8771
+ttt_fullparam:chunk 434/1238 done
+ttt_fullparam:chunk 435/1238 scored running_loss:7.4028 running_bpb:2.8774
+ttt_fullparam:chunk 435/1238 done
+ttt_fullparam:chunk 436/1238 scored running_loss:7.4025 running_bpb:2.8770
+ttt_fullparam:chunk 436/1238 done
+ttt_fullparam:chunk 437/1238 scored running_loss:7.4022 running_bpb:2.8765
+ttt_fullparam:chunk 437/1238 done
+ttt_fullparam:chunk 438/1238 scored running_loss:7.4020 running_bpb:2.8761
+ttt_fullparam:chunk 438/1238 done
+ttt_fullparam:chunk 439/1238 scored running_loss:7.4018 running_bpb:2.8757
+ttt_fullparam:chunk 439/1238 done
+ttt_fullparam:chunk 440/1238 scored running_loss:7.4015 running_bpb:2.8756
+ttt_fullparam:chunk 440/1238 done
+ttt_fullparam:chunk 441/1238 scored running_loss:7.4013 running_bpb:2.8750
+ttt_fullparam:chunk 441/1238 done
+ttt_fullparam:chunk 442/1238 scored running_loss:7.4021 running_bpb:2.8762
+ttt_fullparam:chunk 442/1238 done
+ttt_fullparam:chunk 443/1238 scored running_loss:7.4019 running_bpb:2.8762
+ttt_fullparam:chunk 443/1238 done
+ttt_fullparam:chunk 444/1238 scored running_loss:7.4015 running_bpb:2.8761
+ttt_fullparam:chunk 444/1238 done
+ttt_fullparam:chunk 445/1238 scored running_loss:7.4010 running_bpb:2.8760
+ttt_fullparam:chunk 445/1238 done
+ttt_fullparam:chunk 446/1238 scored running_loss:7.4009 running_bpb:2.8759
+ttt_fullparam:chunk 446/1238 done
+ttt_fullparam:chunk 447/1238 scored running_loss:7.4009 running_bpb:2.8757
+ttt_fullparam:chunk 447/1238 done
+ttt_fullparam:chunk 448/1238 scored running_loss:7.4008 running_bpb:2.8756
+ttt_fullparam:chunk 448/1238 done
+ttt_fullparam:chunk 449/1238 scored running_loss:7.4004 running_bpb:2.8753
+ttt_fullparam:chunk 449/1238 done
+ttt_fullparam:chunk 450/1238 scored running_loss:7.4004 running_bpb:2.8753
+ttt_fullparam:chunk 450/1238 done
+ttt_fullparam:chunk 451/1238 scored running_loss:7.4001 running_bpb:2.8760
+ttt_fullparam:chunk 451/1238 done
+ttt_fullparam:chunk 452/1238 scored running_loss:7.4002 running_bpb:2.8759
+ttt_fullparam:chunk 452/1238 done
+ttt_fullparam:chunk 453/1238 scored running_loss:7.4000 running_bpb:2.8756
+ttt_fullparam:chunk 453/1238 done
+ttt_fullparam:chunk 454/1238 scored running_loss:7.3996 running_bpb:2.8752
+ttt_fullparam:chunk 454/1238 done
+ttt_fullparam:chunk 455/1238 scored running_loss:7.3996 running_bpb:2.8748
+ttt_fullparam:chunk 455/1238 done
+ttt_fullparam:chunk 456/1238 scored running_loss:7.3995 running_bpb:2.8740
+ttt_fullparam:chunk 456/1238 done
+ttt_fullparam:chunk 457/1238 scored running_loss:7.3993 running_bpb:2.8741
+ttt_fullparam:chunk 457/1238 done
+ttt_fullparam:chunk 458/1238 scored running_loss:7.3991 running_bpb:2.8741
+ttt_fullparam:chunk 458/1238 done
+ttt_fullparam:chunk 459/1238 scored running_loss:7.3993 running_bpb:2.8733
+ttt_fullparam:chunk 459/1238 done
+ttt_fullparam:chunk 460/1238 scored running_loss:7.3989 running_bpb:2.8723
+ttt_fullparam:chunk 460/1238 done
+ttt_fullparam:chunk 461/1238 scored running_loss:7.3986 running_bpb:2.8719
+ttt_fullparam:chunk 461/1238 done
+ttt_fullparam:chunk 462/1238 scored running_loss:7.3984 running_bpb:2.8718
+ttt_fullparam:chunk 462/1238 done
+ttt_fullparam:chunk 463/1238 scored running_loss:7.3980 running_bpb:2.8718
+ttt_fullparam:chunk 463/1238 done
+ttt_fullparam:chunk 464/1238 scored running_loss:7.3977 running_bpb:2.8728
+ttt_fullparam:chunk 464/1238 done
+ttt_fullparam:chunk 465/1238 scored running_loss:7.3972 running_bpb:2.8725
+ttt_fullparam:chunk 465/1238 done
+ttt_fullparam:chunk 466/1238 scored running_loss:7.3969 running_bpb:2.8725
+ttt_fullparam:chunk 466/1238 done
+ttt_fullparam:chunk 467/1238 scored running_loss:7.3964 running_bpb:2.8726
+ttt_fullparam:chunk 467/1238 done
+ttt_fullparam:chunk 468/1238 scored running_loss:7.3957 running_bpb:2.8719
+ttt_fullparam:chunk 468/1238 done
+ttt_fullparam:chunk 469/1238 scored running_loss:7.3956 running_bpb:2.8716
+ttt_fullparam:chunk 469/1238 done
+ttt_fullparam:chunk 470/1238 scored running_loss:7.3954 running_bpb:2.8714
+ttt_fullparam:chunk 470/1238 done
+ttt_fullparam:chunk 471/1238 scored running_loss:7.3948 running_bpb:2.8711
+ttt_fullparam:chunk 471/1238 done
+ttt_fullparam:chunk 472/1238 scored running_loss:7.3945 running_bpb:2.8708
+ttt_fullparam:chunk 472/1238 done
+ttt_fullparam:chunk 473/1238 scored running_loss:7.3943 running_bpb:2.8704
+ttt_fullparam:chunk 473/1238 done
+ttt_fullparam:chunk 474/1238 scored running_loss:7.3941 running_bpb:2.8703
+ttt_fullparam:chunk 474/1238 done
+ttt_fullparam:chunk 475/1238 scored running_loss:7.3941 running_bpb:2.8699
+ttt_fullparam:chunk 475/1238 done
+ttt_fullparam:chunk 476/1238 scored running_loss:7.3938 running_bpb:2.8697
+ttt_fullparam:chunk 476/1238 done
+ttt_fullparam:chunk 477/1238 scored running_loss:7.3934 running_bpb:2.8696
+ttt_fullparam:chunk 477/1238 done
+ttt_fullparam:chunk 478/1238 scored running_loss:7.3929 running_bpb:2.8697
+ttt_fullparam:chunk 478/1238 done
+ttt_fullparam:chunk 479/1238 scored running_loss:7.3923 running_bpb:2.8695
+ttt_fullparam:chunk 479/1238 done
+ttt_fullparam:chunk 480/1238 scored running_loss:7.3922 running_bpb:2.8692
+ttt_fullparam:chunk 480/1238 done
+ttt_fullparam:chunk 481/1238 scored running_loss:7.3917 running_bpb:2.8685
+ttt_fullparam:chunk 481/1238 done
+ttt_fullparam:chunk 482/1238 scored running_loss:7.3912 running_bpb:2.8682
+ttt_fullparam:chunk 482/1238 done
+ttt_fullparam:chunk 483/1238 scored running_loss:7.3910 running_bpb:2.8679
+ttt_fullparam:chunk 483/1238 done
+ttt_fullparam:chunk 484/1238 scored running_loss:7.3906 running_bpb:2.8677
+ttt_fullparam:chunk 484/1238 done
+ttt_fullparam:chunk 485/1238 scored running_loss:7.3901 running_bpb:2.8675
+ttt_fullparam:chunk 485/1238 done
+ttt_fullparam:chunk 486/1238 scored running_loss:7.3900 running_bpb:2.8675
+ttt_fullparam:chunk 486/1238 done
+ttt_fullparam:chunk 487/1238 scored running_loss:7.3890 running_bpb:2.8672
+ttt_fullparam:chunk 487/1238 done
+ttt_fullparam:chunk 488/1238 scored running_loss:7.3887 running_bpb:2.8671
+ttt_fullparam:chunk 488/1238 done
+ttt_fullparam:chunk 489/1238 scored running_loss:7.3886 running_bpb:2.8667
+ttt_fullparam:chunk 489/1238 done
+ttt_fullparam:chunk 490/1238 scored running_loss:7.3885 running_bpb:2.8665
+ttt_fullparam:chunk 490/1238 done
+ttt_fullparam:chunk 491/1238 scored running_loss:7.3878 running_bpb:2.8665
+ttt_fullparam:chunk 491/1238 done
+ttt_fullparam:chunk 492/1238 scored running_loss:7.3877 running_bpb:2.8662
+ttt_fullparam:chunk 492/1238 done
+ttt_fullparam:chunk 493/1238 scored running_loss:7.3873 running_bpb:2.8659
+ttt_fullparam:chunk 493/1238 done
+ttt_fullparam:chunk 494/1238 scored running_loss:7.3871 running_bpb:2.8658
+ttt_fullparam:chunk 494/1238 done
+ttt_fullparam:chunk 495/1238 scored running_loss:7.3869 running_bpb:2.8653
+ttt_fullparam:chunk 495/1238 done
+ttt_fullparam:chunk 496/1238 scored running_loss:7.3866 running_bpb:2.8653
+ttt_fullparam:chunk 496/1238 done
+ttt_fullparam:chunk 497/1238 scored running_loss:7.3864 running_bpb:2.8651
+ttt_fullparam:chunk 497/1238 done
+ttt_fullparam:chunk 498/1238 scored running_loss:7.3864 running_bpb:2.8648
+ttt_fullparam:chunk 498/1238 done
+ttt_fullparam:chunk 499/1238 scored running_loss:7.3861 running_bpb:2.8645
+ttt_fullparam:chunk 499/1238 done
+ttt_fullparam:chunk 500/1238 scored running_loss:7.3859 running_bpb:2.8644
+ttt_fullparam:chunk 500/1238 done
+ttt_fullparam:chunk 501/1238 scored running_loss:7.3857 running_bpb:2.8641
+ttt_fullparam:chunk 501/1238 done
+ttt_fullparam:chunk 502/1238 scored running_loss:7.3854 running_bpb:2.8642
+ttt_fullparam:chunk 502/1238 done
+ttt_fullparam:chunk 503/1238 scored running_loss:7.3850 running_bpb:2.8641
+ttt_fullparam:chunk 503/1238 done
+ttt_fullparam:chunk 504/1238 scored running_loss:7.3847 running_bpb:2.8639
+ttt_fullparam:chunk 504/1238 done
+ttt_fullparam:chunk 505/1238 scored running_loss:7.3844 running_bpb:2.8636
+ttt_fullparam:chunk 505/1238 done
+ttt_fullparam:chunk 506/1238 scored running_loss:7.3842 running_bpb:2.8637
+ttt_fullparam:chunk 506/1238 done
+ttt_fullparam:chunk 507/1238 scored running_loss:7.3840 running_bpb:2.8632
+ttt_fullparam:chunk 507/1238 done
+ttt_fullparam:chunk 508/1238 scored running_loss:7.3839 running_bpb:2.8631
+ttt_fullparam:chunk 508/1238 done
+ttt_fullparam:chunk 509/1238 scored running_loss:7.3831 running_bpb:2.8636
+ttt_fullparam:chunk 509/1238 done
+ttt_fullparam:chunk 510/1238 scored running_loss:7.3825 running_bpb:2.8632
+ttt_fullparam:chunk 510/1238 done
+ttt_fullparam:chunk 511/1238 scored running_loss:7.3823 running_bpb:2.8638
+ttt_fullparam:chunk 511/1238 done
+ttt_fullparam:chunk 512/1238 scored running_loss:7.3816 running_bpb:2.8643
+ttt_fullparam:chunk 512/1238 done
+ttt_fullparam:chunk 513/1238 scored running_loss:7.3812 running_bpb:2.8641
+ttt_fullparam:chunk 513/1238 done
+ttt_fullparam:chunk 514/1238 scored running_loss:7.3810 running_bpb:2.8636
+ttt_fullparam:chunk 514/1238 done
+ttt_fullparam:chunk 515/1238 scored running_loss:7.3806 running_bpb:2.8636
+ttt_fullparam:chunk 515/1238 done
+ttt_fullparam:chunk 516/1238 scored running_loss:7.3802 running_bpb:2.8636
+ttt_fullparam:chunk 516/1238 done
+ttt_fullparam:chunk 517/1238 scored running_loss:7.3802 running_bpb:2.8637
+ttt_fullparam:chunk 517/1238 done
+ttt_fullparam:chunk 518/1238 scored running_loss:7.3798 running_bpb:2.8635
+ttt_fullparam:chunk 518/1238 done
+ttt_fullparam:chunk 519/1238 scored running_loss:7.3794 running_bpb:2.8632
+ttt_fullparam:chunk 519/1238 done
+ttt_fullparam:chunk 520/1238 scored running_loss:7.3792 running_bpb:2.8629
+ttt_fullparam:chunk 520/1238 done
+ttt_fullparam:chunk 521/1238 scored running_loss:7.3790 running_bpb:2.8628
+ttt_fullparam:chunk 521/1238 done
+ttt_fullparam:chunk 522/1238 scored running_loss:7.3786 running_bpb:2.8626
+ttt_fullparam:chunk 522/1238 done
+ttt_fullparam:chunk 523/1238 scored running_loss:7.3783 running_bpb:2.8624
+ttt_fullparam:chunk 523/1238 done
+ttt_fullparam:chunk 524/1238 scored running_loss:7.3781 running_bpb:2.8622
+ttt_fullparam:chunk 524/1238 done
+ttt_fullparam:chunk 525/1238 scored running_loss:7.3777 running_bpb:2.8618
+ttt_fullparam:chunk 525/1238 done
+ttt_fullparam:chunk 526/1238 scored running_loss:7.3776 running_bpb:2.8619
+ttt_fullparam:chunk 526/1238 done
+ttt_fullparam:chunk 527/1238 scored running_loss:7.3771 running_bpb:2.8621
+ttt_fullparam:chunk 527/1238 done
+ttt_fullparam:chunk 528/1238 scored running_loss:7.3768 running_bpb:2.8616
+ttt_fullparam:chunk 528/1238 done
+ttt_fullparam:chunk 529/1238 scored running_loss:7.3765 running_bpb:2.8616
+ttt_fullparam:chunk 529/1238 done
+ttt_fullparam:chunk 530/1238 scored running_loss:7.3764 running_bpb:2.8614
+ttt_fullparam:chunk 530/1238 done
+ttt_fullparam:chunk 531/1238 scored running_loss:7.3762 running_bpb:2.8618
+ttt_fullparam:chunk 531/1238 done
+ttt_fullparam:chunk 532/1238 scored running_loss:7.3761 running_bpb:2.8615
+ttt_fullparam:chunk 532/1238 done
+ttt_fullparam:chunk 533/1238 scored running_loss:7.3757 running_bpb:2.8605
+ttt_fullparam:chunk 533/1238 done
+ttt_fullparam:chunk 534/1238 scored running_loss:7.3751 running_bpb:2.8606
+ttt_fullparam:chunk 534/1238 done
+ttt_fullparam:chunk 535/1238 scored running_loss:7.3747 running_bpb:2.8605
+ttt_fullparam:chunk 535/1238 done
+ttt_fullparam:chunk 536/1238 scored running_loss:7.3744 running_bpb:2.8603
+ttt_fullparam:chunk 536/1238 done
+ttt_fullparam:chunk 537/1238 scored running_loss:7.3740 running_bpb:2.8604
+ttt_fullparam:chunk 537/1238 done
+ttt_fullparam:chunk 538/1238 scored running_loss:7.3737 running_bpb:2.8606
+ttt_fullparam:chunk 538/1238 done
+ttt_fullparam:chunk 539/1238 scored running_loss:7.3733 running_bpb:2.8607
+ttt_fullparam:chunk 539/1238 done
+ttt_fullparam:chunk 540/1238 scored running_loss:7.3732 running_bpb:2.8606
+ttt_fullparam:chunk 540/1238 done
+ttt_fullparam:chunk 541/1238 scored running_loss:7.3730 running_bpb:2.8606
+ttt_fullparam:chunk 541/1238 done
+ttt_fullparam:chunk 542/1238 scored running_loss:7.3724 running_bpb:2.8603
+ttt_fullparam:chunk 542/1238 done
+ttt_fullparam:chunk 543/1238 scored running_loss:7.3722 running_bpb:2.8603
+ttt_fullparam:chunk 543/1238 done
+ttt_fullparam:chunk 544/1238 scored running_loss:7.3721 running_bpb:2.8603
+ttt_fullparam:chunk 544/1238 done
+ttt_fullparam:chunk 545/1238 scored running_loss:7.3719 running_bpb:2.8601
+ttt_fullparam:chunk 545/1238 done
+ttt_fullparam:chunk 546/1238 scored running_loss:7.3718 running_bpb:2.8600
+ttt_fullparam:chunk 546/1238 done
+ttt_fullparam:chunk 547/1238 scored running_loss:7.3716 running_bpb:2.8600
+ttt_fullparam:chunk 547/1238 done
+ttt_fullparam:chunk 548/1238 scored running_loss:7.3713 running_bpb:2.8602
+ttt_fullparam:chunk 548/1238 done
+ttt_fullparam:chunk 549/1238 scored running_loss:7.3712 running_bpb:2.8602
+ttt_fullparam:chunk 549/1238 done
+ttt_fullparam:chunk 550/1238 scored running_loss:7.3709 running_bpb:2.8602
+ttt_fullparam:chunk 550/1238 done
+ttt_fullparam:chunk 551/1238 scored running_loss:7.3704 running_bpb:2.8606
+ttt_fullparam:chunk 551/1238 done
+ttt_fullparam:chunk 552/1238 scored running_loss:7.3697 running_bpb:2.8607
+ttt_fullparam:chunk 552/1238 done
+ttt_fullparam:chunk 553/1238 scored running_loss:7.3696 running_bpb:2.8607
+ttt_fullparam:chunk 553/1238 done
+ttt_fullparam:chunk 554/1238 scored running_loss:7.3694 running_bpb:2.8606
+ttt_fullparam:chunk 554/1238 done
+ttt_fullparam:chunk 555/1238 scored running_loss:7.3694 running_bpb:2.8608
+ttt_fullparam:chunk 555/1238 done
+ttt_fullparam:chunk 556/1238 scored running_loss:7.3690 running_bpb:2.8611
+ttt_fullparam:chunk 556/1238 done
+ttt_fullparam:chunk 557/1238 scored running_loss:7.3686 running_bpb:2.8613
+ttt_fullparam:chunk 557/1238 done
+ttt_fullparam:chunk 558/1238 scored running_loss:7.3686 running_bpb:2.8611
+ttt_fullparam:chunk 558/1238 done
+ttt_fullparam:chunk 559/1238 scored running_loss:7.3682 running_bpb:2.8609
+ttt_fullparam:chunk 559/1238 done
+ttt_fullparam:chunk 560/1238 scored running_loss:7.3680 running_bpb:2.8607
+ttt_fullparam:chunk 560/1238 done
+ttt_fullparam:chunk 561/1238 scored running_loss:7.3679 running_bpb:2.8608
+ttt_fullparam:chunk 561/1238 done
+ttt_fullparam:chunk 562/1238 scored running_loss:7.3676 running_bpb:2.8608
+ttt_fullparam:chunk 562/1238 done
+ttt_fullparam:chunk 563/1238 scored running_loss:7.3673 running_bpb:2.8610
+ttt_fullparam:chunk 563/1238 done
+ttt_fullparam:chunk 564/1238 scored running_loss:7.3671 running_bpb:2.8609
+ttt_fullparam:chunk 564/1238 done
+ttt_fullparam:chunk 565/1238 scored running_loss:7.3666 running_bpb:2.8609
+ttt_fullparam:chunk 565/1238 done
+ttt_fullparam:chunk 566/1238 scored running_loss:7.3664 running_bpb:2.8609
+ttt_fullparam:chunk 566/1238 done
+ttt_fullparam:chunk 567/1238 scored running_loss:7.3660 running_bpb:2.8607
+ttt_fullparam:chunk 567/1238 done
+ttt_fullparam:chunk 568/1238 scored running_loss:7.3656 running_bpb:2.8606
+ttt_fullparam:chunk 568/1238 done
+ttt_fullparam:chunk 569/1238 scored running_loss:7.3652 running_bpb:2.8602
+ttt_fullparam:chunk 569/1238 done
+ttt_fullparam:chunk 570/1238 scored running_loss:7.3649 running_bpb:2.8598
+ttt_fullparam:chunk 570/1238 done
+ttt_fullparam:chunk 571/1238 scored running_loss:7.3649 running_bpb:2.8602
+ttt_fullparam:chunk 571/1238 done
+ttt_fullparam:chunk 572/1238 scored running_loss:7.3644 running_bpb:2.8602
+ttt_fullparam:chunk 572/1238 done
+ttt_fullparam:chunk 573/1238 scored running_loss:7.3644 running_bpb:2.8599
+ttt_fullparam:chunk 573/1238 done
+ttt_fullparam:chunk 574/1238 scored running_loss:7.3642 running_bpb:2.8600
+ttt_fullparam:chunk 574/1238 done
+ttt_fullparam:chunk 575/1238 scored running_loss:7.3640 running_bpb:2.8600
+ttt_fullparam:chunk 575/1238 done
+ttt_fullparam:chunk 576/1238 scored running_loss:7.3637 running_bpb:2.8598
+ttt_fullparam:chunk 576/1238 done
+ttt_fullparam:chunk 577/1238 scored running_loss:7.3635 running_bpb:2.8600
+ttt_fullparam:chunk 577/1238 done
+ttt_fullparam:chunk 578/1238 scored running_loss:7.3634 running_bpb:2.8599
+ttt_fullparam:chunk 578/1238 done
+ttt_fullparam:chunk 579/1238 scored running_loss:7.3630 running_bpb:2.8602
+ttt_fullparam:chunk 579/1238 done
+ttt_fullparam:chunk 580/1238 scored running_loss:7.3629 running_bpb:2.8602
+ttt_fullparam:chunk 580/1238 done
+ttt_fullparam:chunk 581/1238 scored running_loss:7.3621 running_bpb:2.8612
+ttt_fullparam:chunk 581/1238 done
+ttt_fullparam:chunk 582/1238 scored running_loss:7.3618 running_bpb:2.8613
+ttt_fullparam:chunk 582/1238 done
+ttt_fullparam:chunk 583/1238 scored running_loss:7.3616 running_bpb:2.8612
+ttt_fullparam:chunk 583/1238 done
+ttt_fullparam:chunk 584/1238 scored running_loss:7.3613 running_bpb:2.8610
+ttt_fullparam:chunk 584/1238 done
+ttt_fullparam:chunk 585/1238 scored running_loss:7.3612 running_bpb:2.8613
+ttt_fullparam:chunk 585/1238 done
+ttt_fullparam:chunk 586/1238 scored running_loss:7.3610 running_bpb:2.8610
+ttt_fullparam:chunk 586/1238 done
+ttt_fullparam:chunk 587/1238 scored running_loss:7.3607 running_bpb:2.8610
+ttt_fullparam:chunk 587/1238 done
+ttt_fullparam:chunk 588/1238 scored running_loss:7.3605 running_bpb:2.8609
+ttt_fullparam:chunk 588/1238 done
+ttt_fullparam:chunk 589/1238 scored running_loss:7.3600 running_bpb:2.8612
+ttt_fullparam:chunk 589/1238 done
+ttt_fullparam:chunk 590/1238 scored running_loss:7.3597 running_bpb:2.8611
+ttt_fullparam:chunk 590/1238 done
+ttt_fullparam:chunk 591/1238 scored running_loss:7.3594 running_bpb:2.8611
+ttt_fullparam:chunk 591/1238 done
+ttt_fullparam:chunk 592/1238 scored running_loss:7.3590 running_bpb:2.8612
+ttt_fullparam:chunk 592/1238 done
+ttt_fullparam:chunk 593/1238 scored running_loss:7.3587 running_bpb:2.8609
+ttt_fullparam:chunk 593/1238 done
+ttt_fullparam:chunk 594/1238 scored running_loss:7.3584 running_bpb:2.8606
+ttt_fullparam:chunk 594/1238 done
+ttt_fullparam:chunk 595/1238 scored running_loss:7.3580 running_bpb:2.8606
+ttt_fullparam:chunk 595/1238 done
+ttt_fullparam:chunk 596/1238 scored running_loss:7.3579 running_bpb:2.8604
+ttt_fullparam:chunk 596/1238 done
+ttt_fullparam:chunk 597/1238 scored running_loss:7.3578 running_bpb:2.8602
+ttt_fullparam:chunk 597/1238 done
+ttt_fullparam:chunk 598/1238 scored running_loss:7.3576 running_bpb:2.8599
+ttt_fullparam:chunk 598/1238 done
+ttt_fullparam:chunk 599/1238 scored running_loss:7.3574 running_bpb:2.8598
+ttt_fullparam:chunk 599/1238 done
+ttt_fullparam:chunk 600/1238 scored running_loss:7.3571 running_bpb:2.8597
+ttt_fullparam:chunk 600/1238 done
+ttt_fullparam:chunk 601/1238 scored running_loss:7.3568 running_bpb:2.8599
+ttt_fullparam:chunk 601/1238 done
+ttt_fullparam:chunk 602/1238 scored running_loss:7.3566 running_bpb:2.8599
+ttt_fullparam:chunk 602/1238 done
+ttt_fullparam:chunk 603/1238 scored running_loss:7.3563 running_bpb:2.8597
+ttt_fullparam:chunk 603/1238 done
+ttt_fullparam:chunk 604/1238 scored running_loss:7.3562 running_bpb:2.8597
+ttt_fullparam:chunk 604/1238 done
+ttt_fullparam:chunk 605/1238 scored running_loss:7.3560 running_bpb:2.8598
+ttt_fullparam:chunk 605/1238 done
+ttt_fullparam:chunk 606/1238 scored running_loss:7.3560 running_bpb:2.8594
+ttt_fullparam:chunk 606/1238 done
+ttt_fullparam:chunk 607/1238 scored running_loss:7.3558 running_bpb:2.8593
+ttt_fullparam:chunk 607/1238 done
+ttt_fullparam:chunk 608/1238 scored running_loss:7.3543 running_bpb:2.8600
+ttt_fullparam:chunk 608/1238 done
+ttt_fullparam:chunk 609/1238 scored running_loss:7.3540 running_bpb:2.8599
+ttt_fullparam:chunk 609/1238 done
+ttt_fullparam:chunk 610/1238 scored running_loss:7.3537 running_bpb:2.8599
+ttt_fullparam:chunk 610/1238 done
+ttt_fullparam:chunk 611/1238 scored running_loss:7.3536 running_bpb:2.8599
+ttt_fullparam:chunk 611/1238 done
+ttt_fullparam:chunk 612/1238 scored running_loss:7.3536 running_bpb:2.8600
+ttt_fullparam:chunk 612/1238 done
+ttt_fullparam:chunk 613/1238 scored running_loss:7.3533 running_bpb:2.8602
+ttt_fullparam:chunk 613/1238 done
+ttt_fullparam:chunk 614/1238 scored running_loss:7.3528 running_bpb:2.8601
+ttt_fullparam:chunk 614/1238 done
+ttt_fullparam:chunk 615/1238 scored running_loss:7.3524 running_bpb:2.8597
+ttt_fullparam:chunk 615/1238 done
+ttt_fullparam:chunk 616/1238 scored running_loss:7.3521 running_bpb:2.8596
+ttt_fullparam:chunk 616/1238 done
+ttt_fullparam:chunk 617/1238 scored running_loss:7.3520 running_bpb:2.8596
+ttt_fullparam:chunk 617/1238 done
+ttt_fullparam:chunk 618/1238 scored running_loss:7.3518 running_bpb:2.8593
+ttt_fullparam:chunk 618/1238 done
+ttt_fullparam:chunk 619/1238 scored running_loss:7.3515 running_bpb:2.8592
+ttt_fullparam:chunk 619/1238 done
+ttt_fullparam:chunk 620/1238 scored running_loss:7.3513 running_bpb:2.8595
+ttt_fullparam:chunk 620/1238 done
+ttt_fullparam:chunk 621/1238 scored running_loss:7.3512 running_bpb:2.8595
+ttt_fullparam:chunk 621/1238 done
+ttt_fullparam:chunk 622/1238 scored running_loss:7.3514 running_bpb:2.8596
+ttt_fullparam:chunk 622/1238 done
+ttt_fullparam:chunk 623/1238 scored running_loss:7.3514 running_bpb:2.8589
+ttt_fullparam:chunk 623/1238 done
+ttt_fullparam:chunk 624/1238 scored running_loss:7.3514 running_bpb:2.8588
+ttt_fullparam:chunk 624/1238 done
+ttt_fullparam:chunk 625/1238 scored running_loss:7.3514 running_bpb:2.8586
+ttt_fullparam:chunk 625/1238 done
+ttt_fullparam:chunk 626/1238 scored running_loss:7.3512 running_bpb:2.8585
+ttt_fullparam:chunk 626/1238 done
+ttt_fullparam:chunk 627/1238 scored running_loss:7.3508 running_bpb:2.8583
+ttt_fullparam:chunk 627/1238 done
+ttt_fullparam:chunk 628/1238 scored running_loss:7.3508 running_bpb:2.8581
+ttt_fullparam:chunk 628/1238 done
+ttt_fullparam:chunk 629/1238 scored running_loss:7.3505 running_bpb:2.8578
+ttt_fullparam:chunk 629/1238 done
+ttt_fullparam:chunk 630/1238 scored running_loss:7.3501 running_bpb:2.8577
+ttt_fullparam:chunk 630/1238 done
+ttt_fullparam:chunk 631/1238 scored running_loss:7.3500 running_bpb:2.8577
+ttt_fullparam:chunk 631/1238 done
+ttt_fullparam:chunk 632/1238 scored running_loss:7.3501 running_bpb:2.8579
+ttt_fullparam:chunk 632/1238 done
+ttt_fullparam:chunk 633/1238 scored running_loss:7.3499 running_bpb:2.8580
+ttt_fullparam:chunk 633/1238 done
+ttt_fullparam:chunk 634/1238 scored running_loss:7.3501 running_bpb:2.8585
+ttt_fullparam:chunk 634/1238 done
+ttt_fullparam:chunk 635/1238 scored running_loss:7.3498 running_bpb:2.8586
+ttt_fullparam:chunk 635/1238 done
+ttt_fullparam:chunk 636/1238 scored running_loss:7.3496 running_bpb:2.8586
+ttt_fullparam:chunk 636/1238 done
+ttt_fullparam:chunk 637/1238 scored running_loss:7.3494 running_bpb:2.8587
+ttt_fullparam:chunk 637/1238 done
+ttt_fullparam:chunk 638/1238 scored running_loss:7.3490 running_bpb:2.8585
+ttt_fullparam:chunk 638/1238 done
+ttt_fullparam:chunk 639/1238 scored running_loss:7.3487 running_bpb:2.8583
+ttt_fullparam:chunk 639/1238 done
+ttt_fullparam:chunk 640/1238 scored running_loss:7.3486 running_bpb:2.8582
+ttt_fullparam:chunk 640/1238 done
+ttt_fullparam:chunk 641/1238 scored running_loss:7.3482 running_bpb:2.8579
+ttt_fullparam:chunk 641/1238 done
+ttt_fullparam:chunk 642/1238 scored running_loss:7.3479 running_bpb:2.8576
+ttt_fullparam:chunk 642/1238 done
+ttt_fullparam:chunk 643/1238 scored running_loss:7.3478 running_bpb:2.8577
+ttt_fullparam:chunk 643/1238 done
+ttt_fullparam:chunk 644/1238 scored running_loss:7.3479 running_bpb:2.8579
+ttt_fullparam:chunk 644/1238 done
+ttt_fullparam:chunk 645/1238 scored running_loss:7.3474 running_bpb:2.8576
+ttt_fullparam:chunk 645/1238 done
+ttt_fullparam:chunk 646/1238 scored running_loss:7.3469 running_bpb:2.8573
+ttt_fullparam:chunk 646/1238 done
+ttt_fullparam:chunk 647/1238 scored running_loss:7.3466 running_bpb:2.8573
+ttt_fullparam:chunk 647/1238 done
+ttt_fullparam:chunk 648/1238 scored running_loss:7.3466 running_bpb:2.8571
+ttt_fullparam:chunk 648/1238 done
+ttt_fullparam:chunk 649/1238 scored running_loss:7.3464 running_bpb:2.8571
+ttt_fullparam:chunk 649/1238 done
+ttt_fullparam:chunk 650/1238 scored running_loss:7.3461 running_bpb:2.8570
+ttt_fullparam:chunk 650/1238 done
+ttt_fullparam:chunk 651/1238 scored running_loss:7.3459 running_bpb:2.8570
+ttt_fullparam:chunk 651/1238 done
+ttt_fullparam:chunk 652/1238 scored running_loss:7.3459 running_bpb:2.8568
+ttt_fullparam:chunk 652/1238 done
+ttt_fullparam:chunk 653/1238 scored running_loss:7.3456 running_bpb:2.8567
+ttt_fullparam:chunk 653/1238 done
+ttt_fullparam:chunk 654/1238 scored running_loss:7.3451 running_bpb:2.8564
+ttt_fullparam:chunk 654/1238 done
+ttt_fullparam:chunk 655/1238 scored running_loss:7.3448 running_bpb:2.8566
+ttt_fullparam:chunk 655/1238 done
+ttt_fullparam:chunk 656/1238 scored running_loss:7.3447 running_bpb:2.8565
+ttt_fullparam:chunk 656/1238 done
+ttt_fullparam:chunk 657/1238 scored running_loss:7.3446 running_bpb:2.8566
+ttt_fullparam:chunk 657/1238 done
+ttt_fullparam:chunk 658/1238 scored running_loss:7.3446 running_bpb:2.8569
+ttt_fullparam:chunk 658/1238 done
+ttt_fullparam:chunk 659/1238 scored running_loss:7.3443 running_bpb:2.8570
+ttt_fullparam:chunk 659/1238 done
+ttt_fullparam:chunk 660/1238 scored running_loss:7.3441 running_bpb:2.8568
+ttt_fullparam:chunk 660/1238 done
+ttt_fullparam:chunk 661/1238 scored running_loss:7.3438 running_bpb:2.8568
+ttt_fullparam:chunk 661/1238 done
+ttt_fullparam:chunk 662/1238 scored running_loss:7.3435 running_bpb:2.8565
+ttt_fullparam:chunk 662/1238 done
+ttt_fullparam:chunk 663/1238 scored running_loss:7.3433 running_bpb:2.8563
+ttt_fullparam:chunk 663/1238 done
+ttt_fullparam:chunk 664/1238 scored running_loss:7.3431 running_bpb:2.8563
+ttt_fullparam:chunk 664/1238 done
+ttt_fullparam:chunk 665/1238 scored running_loss:7.3430 running_bpb:2.8561
+ttt_fullparam:chunk 665/1238 done
+ttt_fullparam:chunk 666/1238 scored running_loss:7.3423 running_bpb:2.8565
+ttt_fullparam:chunk 666/1238 done
+ttt_fullparam:chunk 667/1238 scored running_loss:7.3422 running_bpb:2.8561
+ttt_fullparam:chunk 667/1238 done
+ttt_fullparam:chunk 668/1238 scored running_loss:7.3419 running_bpb:2.8563
+ttt_fullparam:chunk 668/1238 done
+ttt_fullparam:chunk 669/1238 scored running_loss:7.3416 running_bpb:2.8560
+ttt_fullparam:chunk 669/1238 done
+ttt_fullparam:chunk 670/1238 scored running_loss:7.3414 running_bpb:2.8560
+ttt_fullparam:chunk 670/1238 done
+ttt_fullparam:chunk 671/1238 scored running_loss:7.3413 running_bpb:2.8558
+ttt_fullparam:chunk 671/1238 done
+ttt_fullparam:chunk 672/1238 scored running_loss:7.3411 running_bpb:2.8557
+ttt_fullparam:chunk 672/1238 done
+ttt_fullparam:chunk 673/1238 scored running_loss:7.3408 running_bpb:2.8556
+ttt_fullparam:chunk 673/1238 done
+ttt_fullparam:chunk 674/1238 scored running_loss:7.3407 running_bpb:2.8555
+ttt_fullparam:chunk 674/1238 done
+ttt_fullparam:chunk 675/1238 scored running_loss:7.3409 running_bpb:2.8556
+ttt_fullparam:chunk 675/1238 done
+ttt_fullparam:chunk 676/1238 scored running_loss:7.3403 running_bpb:2.8551
+ttt_fullparam:chunk 676/1238 done
+ttt_fullparam:chunk 677/1238 scored running_loss:7.3406 running_bpb:2.8555
+ttt_fullparam:chunk 677/1238 done
+ttt_fullparam:chunk 678/1238 scored running_loss:7.3403 running_bpb:2.8553
+ttt_fullparam:chunk 678/1238 done
+ttt_fullparam:chunk 679/1238 scored running_loss:7.3405 running_bpb:2.8557
+ttt_fullparam:chunk 679/1238 done
+ttt_fullparam:chunk 680/1238 scored running_loss:7.3400 running_bpb:2.8552
+ttt_fullparam:chunk 680/1238 done
+ttt_fullparam:chunk 681/1238 scored running_loss:7.3399 running_bpb:2.8550
+ttt_fullparam:chunk 681/1238 done
+ttt_fullparam:chunk 682/1238 scored running_loss:7.3399 running_bpb:2.8547
+ttt_fullparam:chunk 682/1238 done
+ttt_fullparam:chunk 683/1238 scored running_loss:7.3396 running_bpb:2.8549
+ttt_fullparam:chunk 683/1238 done
+ttt_fullparam:chunk 684/1238 scored running_loss:7.3393 running_bpb:2.8543
+ttt_fullparam:chunk 684/1238 done
+ttt_fullparam:chunk 685/1238 scored running_loss:7.3391 running_bpb:2.8541
+ttt_fullparam:chunk 685/1238 done
+ttt_fullparam:chunk 686/1238 scored running_loss:7.3392 running_bpb:2.8542
+ttt_fullparam:chunk 686/1238 done
+ttt_fullparam:chunk 687/1238 scored running_loss:7.3391 running_bpb:2.8539
+ttt_fullparam:chunk 687/1238 done
+ttt_fullparam:chunk 688/1238 scored running_loss:7.3390 running_bpb:2.8539
+ttt_fullparam:chunk 688/1238 done
+ttt_fullparam:chunk 689/1238 scored running_loss:7.3391 running_bpb:2.8542
+ttt_fullparam:chunk 689/1238 done
+ttt_fullparam:chunk 690/1238 scored running_loss:7.3387 running_bpb:2.8543
+ttt_fullparam:chunk 690/1238 done
+ttt_fullparam:chunk 691/1238 scored running_loss:7.3386 running_bpb:2.8539
+ttt_fullparam:chunk 691/1238 done
+ttt_fullparam:chunk 692/1238 scored running_loss:7.3385 running_bpb:2.8536
+ttt_fullparam:chunk 692/1238 done
+ttt_fullparam:chunk 693/1238 scored running_loss:7.3383 running_bpb:2.8532
+ttt_fullparam:chunk 693/1238 done
+ttt_fullparam:chunk 694/1238 scored running_loss:7.3381 running_bpb:2.8530
+ttt_fullparam:chunk 694/1238 done
+ttt_fullparam:chunk 695/1238 scored running_loss:7.3380 running_bpb:2.8531
+ttt_fullparam:chunk 695/1238 done
+ttt_fullparam:chunk 696/1238 scored running_loss:7.3379 running_bpb:2.8527
+ttt_fullparam:chunk 696/1238 done
+ttt_fullparam:chunk 697/1238 scored running_loss:7.3378 running_bpb:2.8525
+ttt_fullparam:chunk 697/1238 done
+ttt_fullparam:chunk 698/1238 scored running_loss:7.3376 running_bpb:2.8524
+ttt_fullparam:chunk 698/1238 done
+ttt_fullparam:chunk 699/1238 scored running_loss:7.3374 running_bpb:2.8524
+ttt_fullparam:chunk 699/1238 done
+ttt_fullparam:chunk 700/1238 scored running_loss:7.3372 running_bpb:2.8525
+ttt_fullparam:chunk 700/1238 done
+ttt_fullparam:chunk 701/1238 scored running_loss:7.3370 running_bpb:2.8522
+ttt_fullparam:chunk 701/1238 done
+ttt_fullparam:chunk 702/1238 scored running_loss:7.3370 running_bpb:2.8522
+ttt_fullparam:chunk 702/1238 done
+ttt_fullparam:chunk 703/1238 scored running_loss:7.3369 running_bpb:2.8519
+ttt_fullparam:chunk 703/1238 done
+ttt_fullparam:chunk 704/1238 scored running_loss:7.3368 running_bpb:2.8517
+ttt_fullparam:chunk 704/1238 done
+ttt_fullparam:chunk 705/1238 scored running_loss:7.3362 running_bpb:2.8519
+ttt_fullparam:chunk 705/1238 done
+ttt_fullparam:chunk 706/1238 scored running_loss:7.3360 running_bpb:2.8517
+ttt_fullparam:chunk 706/1238 done
+ttt_fullparam:chunk 707/1238 scored running_loss:7.3358 running_bpb:2.8515
+ttt_fullparam:chunk 707/1238 done
+ttt_fullparam:chunk 708/1238 scored running_loss:7.3357 running_bpb:2.8511
+ttt_fullparam:chunk 708/1238 done
+ttt_fullparam:chunk 709/1238 scored running_loss:7.3356 running_bpb:2.8508
+ttt_fullparam:chunk 709/1238 done
+ttt_fullparam:chunk 710/1238 scored running_loss:7.3353 running_bpb:2.8511
+ttt_fullparam:chunk 710/1238 done
+ttt_fullparam:chunk 711/1238 scored running_loss:7.3353 running_bpb:2.8509
+ttt_fullparam:chunk 711/1238 done
+ttt_fullparam:chunk 712/1238 scored running_loss:7.3350 running_bpb:2.8512
+ttt_fullparam:chunk 712/1238 done
+ttt_fullparam:chunk 713/1238 scored running_loss:7.3350 running_bpb:2.8509
+ttt_fullparam:chunk 713/1238 done
+ttt_fullparam:chunk 714/1238 scored running_loss:7.3349 running_bpb:2.8511
+ttt_fullparam:chunk 714/1238 done
+ttt_fullparam:chunk 715/1238 scored running_loss:7.3347 running_bpb:2.8511
+ttt_fullparam:chunk 715/1238 done
+ttt_fullparam:chunk 716/1238 scored running_loss:7.3345 running_bpb:2.8509
+ttt_fullparam:chunk 716/1238 done
+ttt_fullparam:chunk 717/1238 scored running_loss:7.3346 running_bpb:2.8510
+ttt_fullparam:chunk 717/1238 done
+ttt_fullparam:chunk 718/1238 scored running_loss:7.3345 running_bpb:2.8514
+ttt_fullparam:chunk 718/1238 done
+ttt_fullparam:chunk 719/1238 scored running_loss:7.3343 running_bpb:2.8515
+ttt_fullparam:chunk 719/1238 done
+ttt_fullparam:chunk 720/1238 scored running_loss:7.3342 running_bpb:2.8512
+ttt_fullparam:chunk 720/1238 done
+ttt_fullparam:chunk 721/1238 scored running_loss:7.3340 running_bpb:2.8512
+ttt_fullparam:chunk 721/1238 done
+ttt_fullparam:chunk 722/1238 scored running_loss:7.3340 running_bpb:2.8511
+ttt_fullparam:chunk 722/1238 done
+ttt_fullparam:chunk 723/1238 scored running_loss:7.3339 running_bpb:2.8509
+ttt_fullparam:chunk 723/1238 done
+ttt_fullparam:chunk 724/1238 scored running_loss:7.3339 running_bpb:2.8509
+ttt_fullparam:chunk 724/1238 done
+ttt_fullparam:chunk 725/1238 scored running_loss:7.3337 running_bpb:2.8505
+ttt_fullparam:chunk 725/1238 done
+ttt_fullparam:chunk 726/1238 scored running_loss:7.3337 running_bpb:2.8502
+ttt_fullparam:chunk 726/1238 done
+ttt_fullparam:chunk 727/1238 scored running_loss:7.3338 running_bpb:2.8501
+ttt_fullparam:chunk 727/1238 done
+ttt_fullparam:chunk 728/1238 scored running_loss:7.3337 running_bpb:2.8498
+ttt_fullparam:chunk 728/1238 done
+ttt_fullparam:chunk 729/1238 scored running_loss:7.3335 running_bpb:2.8496
+ttt_fullparam:chunk 729/1238 done
+ttt_fullparam:chunk 730/1238 scored running_loss:7.3335 running_bpb:2.8494
+ttt_fullparam:chunk 730/1238 done
+ttt_fullparam:chunk 731/1238 scored running_loss:7.3333 running_bpb:2.8495
+ttt_fullparam:chunk 731/1238 done
+ttt_fullparam:chunk 732/1238 scored running_loss:7.3332 running_bpb:2.8493
+ttt_fullparam:chunk 732/1238 done
+ttt_fullparam:chunk 733/1238 scored running_loss:7.3330 running_bpb:2.8493
+ttt_fullparam:chunk 733/1238 done
+ttt_fullparam:chunk 734/1238 scored running_loss:7.3329 running_bpb:2.8492
+ttt_fullparam:chunk 734/1238 done
+ttt_fullparam:chunk 735/1238 scored running_loss:7.3329 running_bpb:2.8490
+ttt_fullparam:chunk 735/1238 done
+ttt_fullparam:chunk 736/1238 scored running_loss:7.3334 running_bpb:2.8489
+ttt_fullparam:chunk 736/1238 done
+ttt_fullparam:chunk 737/1238 scored running_loss:7.3333 running_bpb:2.8488
+ttt_fullparam:chunk 737/1238 done
+ttt_fullparam:chunk 738/1238 scored running_loss:7.3332 running_bpb:2.8488
+ttt_fullparam:chunk 738/1238 done
+ttt_fullparam:chunk 739/1238 scored running_loss:7.3331 running_bpb:2.8491
+ttt_fullparam:chunk 739/1238 done
+ttt_fullparam:chunk 740/1238 scored running_loss:7.3329 running_bpb:2.8492
+ttt_fullparam:chunk 740/1238 done
+ttt_fullparam:chunk 741/1238 scored running_loss:7.3326 running_bpb:2.8489
+ttt_fullparam:chunk 741/1238 done
+ttt_fullparam:chunk 742/1238 scored running_loss:7.3325 running_bpb:2.8489
+ttt_fullparam:chunk 742/1238 done
+ttt_fullparam:chunk 743/1238 scored running_loss:7.3325 running_bpb:2.8485
+ttt_fullparam:chunk 743/1238 done
+ttt_fullparam:chunk 744/1238 scored running_loss:7.3325 running_bpb:2.8483
+ttt_fullparam:chunk 744/1238 done
+ttt_fullparam:chunk 745/1238 scored running_loss:7.3321 running_bpb:2.8481
+ttt_fullparam:chunk 745/1238 done
+ttt_fullparam:chunk 746/1238 scored running_loss:7.3318 running_bpb:2.8479
+ttt_fullparam:chunk 746/1238 done
+ttt_fullparam:chunk 747/1238 scored running_loss:7.3317 running_bpb:2.8479
+ttt_fullparam:chunk 747/1238 done
+ttt_fullparam:chunk 748/1238 scored running_loss:7.3315 running_bpb:2.8476
+ttt_fullparam:chunk 748/1238 done
+ttt_fullparam:chunk 749/1238 scored running_loss:7.3317 running_bpb:2.8477
+ttt_fullparam:chunk 749/1238 done
+ttt_fullparam:chunk 750/1238 scored running_loss:7.3316 running_bpb:2.8476
+ttt_fullparam:chunk 750/1238 done
+ttt_fullparam:chunk 751/1238 scored running_loss:7.3314 running_bpb:2.8474
+ttt_fullparam:chunk 751/1238 done
+ttt_fullparam:chunk 752/1238 scored running_loss:7.3313 running_bpb:2.8474
+ttt_fullparam:chunk 752/1238 done
+ttt_fullparam:chunk 753/1238 scored running_loss:7.3313 running_bpb:2.8471
+ttt_fullparam:chunk 753/1238 done
+ttt_fullparam:chunk 754/1238 scored running_loss:7.3312 running_bpb:2.8468
+ttt_fullparam:chunk 754/1238 done
+ttt_fullparam:chunk 755/1238 scored running_loss:7.3310 running_bpb:2.8464
+ttt_fullparam:chunk 755/1238 done
+ttt_fullparam:chunk 756/1238 scored running_loss:7.3309 running_bpb:2.8463
+ttt_fullparam:chunk 756/1238 done
+ttt_fullparam:chunk 757/1238 scored running_loss:7.3308 running_bpb:2.8460
+ttt_fullparam:chunk 757/1238 done
+ttt_fullparam:chunk 758/1238 scored running_loss:7.3307 running_bpb:2.8457
+ttt_fullparam:chunk 758/1238 done
+ttt_fullparam:chunk 759/1238 scored running_loss:7.3305 running_bpb:2.8456
+ttt_fullparam:chunk 759/1238 done
+ttt_fullparam:chunk 760/1238 scored running_loss:7.3305 running_bpb:2.8456
+ttt_fullparam:chunk 760/1238 done
+ttt_fullparam:chunk 761/1238 scored running_loss:7.3302 running_bpb:2.8454
+ttt_fullparam:chunk 761/1238 done
+ttt_fullparam:chunk 762/1238 scored running_loss:7.3303 running_bpb:2.8453
+ttt_fullparam:chunk 762/1238 done
+ttt_fullparam:chunk 763/1238 scored running_loss:7.3301 running_bpb:2.8453
+ttt_fullparam:chunk 763/1238 done
+ttt_fullparam:chunk 764/1238 scored running_loss:7.3300 running_bpb:2.8448
+ttt_fullparam:chunk 764/1238 done
+ttt_fullparam:chunk 765/1238 scored running_loss:7.3300 running_bpb:2.8442
+ttt_fullparam:chunk 765/1238 done
+ttt_fullparam:chunk 766/1238 scored running_loss:7.3300 running_bpb:2.8442
+ttt_fullparam:chunk 766/1238 done
+ttt_fullparam:chunk 767/1238 scored running_loss:7.3299 running_bpb:2.8440
+ttt_fullparam:chunk 767/1238 done
+ttt_fullparam:chunk 768/1238 scored running_loss:7.3298 running_bpb:2.8436
+ttt_fullparam:chunk 768/1238 done
+ttt_fullparam:chunk 769/1238 scored running_loss:7.3295 running_bpb:2.8433
+ttt_fullparam:chunk 769/1238 done
+ttt_fullparam:chunk 770/1238 scored running_loss:7.3295 running_bpb:2.8431
+ttt_fullparam:chunk 770/1238 done
+ttt_fullparam:chunk 771/1238 scored running_loss:7.3293 running_bpb:2.8429
+ttt_fullparam:chunk 771/1238 done
+ttt_fullparam:chunk 772/1238 scored running_loss:7.3292 running_bpb:2.8424
+ttt_fullparam:chunk 772/1238 done
+ttt_fullparam:chunk 773/1238 scored running_loss:7.3291 running_bpb:2.8423
+ttt_fullparam:chunk 773/1238 done
+ttt_fullparam:chunk 774/1238 scored running_loss:7.3288 running_bpb:2.8420
+ttt_fullparam:chunk 774/1238 done
+ttt_fullparam:chunk 775/1238 scored running_loss:7.3287 running_bpb:2.8417
+ttt_fullparam:chunk 775/1238 done
+ttt_fullparam:chunk 776/1238 scored running_loss:7.3286 running_bpb:2.8416
+ttt_fullparam:chunk 776/1238 done
+ttt_fullparam:chunk 777/1238 scored running_loss:7.3285 running_bpb:2.8416
+ttt_fullparam:chunk 777/1238 done
+ttt_fullparam:chunk 778/1238 scored running_loss:7.3284 running_bpb:2.8416
+ttt_fullparam:chunk 778/1238 done
+ttt_fullparam:chunk 779/1238 scored running_loss:7.3282 running_bpb:2.8414
+ttt_fullparam:chunk 779/1238 done
+ttt_fullparam:chunk 780/1238 scored running_loss:7.3280 running_bpb:2.8411
+ttt_fullparam:chunk 780/1238 done
+ttt_fullparam:chunk 781/1238 scored running_loss:7.3279 running_bpb:2.8408
+ttt_fullparam:chunk 781/1238 done
+ttt_fullparam:chunk 782/1238 scored running_loss:7.3277 running_bpb:2.8410
+ttt_fullparam:chunk 782/1238 done
+ttt_fullparam:chunk 783/1238 scored running_loss:7.3276 running_bpb:2.8412
+ttt_fullparam:chunk 783/1238 done
+ttt_fullparam:chunk 784/1238 scored running_loss:7.3276 running_bpb:2.8410
+ttt_fullparam:chunk 784/1238 done
+ttt_fullparam:chunk 785/1238 scored running_loss:7.3274 running_bpb:2.8409
+ttt_fullparam:chunk 785/1238 done
+ttt_fullparam:chunk 786/1238 scored running_loss:7.3271 running_bpb:2.8410
+ttt_fullparam:chunk 786/1238 done
+ttt_fullparam:chunk 787/1238 scored running_loss:7.3270 running_bpb:2.8408
+ttt_fullparam:chunk 787/1238 done
+ttt_fullparam:chunk 788/1238 scored running_loss:7.3270 running_bpb:2.8408
+ttt_fullparam:chunk 788/1238 done
+ttt_fullparam:chunk 789/1238 scored running_loss:7.3269 running_bpb:2.8410
+ttt_fullparam:chunk 789/1238 done
+ttt_fullparam:chunk 790/1238 scored running_loss:7.3267 running_bpb:2.8411
+ttt_fullparam:chunk 790/1238 done
+ttt_fullparam:chunk 791/1238 scored running_loss:7.3268 running_bpb:2.8409
+ttt_fullparam:chunk 791/1238 done
+ttt_fullparam:chunk 792/1238 scored running_loss:7.3266 running_bpb:2.8409
+ttt_fullparam:chunk 792/1238 done
+ttt_fullparam:chunk 793/1238 scored running_loss:7.3267 running_bpb:2.8409
+ttt_fullparam:chunk 793/1238 done
+ttt_fullparam:chunk 794/1238 scored running_loss:7.3270 running_bpb:2.8417
+ttt_fullparam:chunk 794/1238 done
+ttt_fullparam:chunk 795/1238 scored running_loss:7.3269 running_bpb:2.8415
+ttt_fullparam:chunk 795/1238 done
+ttt_fullparam:chunk 796/1238 scored running_loss:7.3269 running_bpb:2.8420
+ttt_fullparam:chunk 796/1238 done
+ttt_fullparam:chunk 797/1238 scored running_loss:7.3268 running_bpb:2.8417
+ttt_fullparam:chunk 797/1238 done
+ttt_fullparam:chunk 798/1238 scored running_loss:7.3267 running_bpb:2.8414
+ttt_fullparam:chunk 798/1238 done
+ttt_fullparam:chunk 799/1238 scored running_loss:7.3265 running_bpb:2.8412
+ttt_fullparam:chunk 799/1238 done
+ttt_fullparam:chunk 800/1238 scored running_loss:7.3265 running_bpb:2.8412
+ttt_fullparam:chunk 800/1238 done
+ttt_fullparam:chunk 801/1238 scored running_loss:7.3264 running_bpb:2.8408
+ttt_fullparam:chunk 801/1238 done
+ttt_fullparam:chunk 802/1238 scored running_loss:7.3265 running_bpb:2.8410
+ttt_fullparam:chunk 802/1238 done
+ttt_fullparam:chunk 803/1238 scored running_loss:7.3264 running_bpb:2.8408
+ttt_fullparam:chunk 803/1238 done
+ttt_fullparam:chunk 804/1238 scored running_loss:7.3264 running_bpb:2.8405
+ttt_fullparam:chunk 804/1238 done
+ttt_fullparam:chunk 805/1238 scored running_loss:7.3263 running_bpb:2.8404
+ttt_fullparam:chunk 805/1238 done
+ttt_fullparam:chunk 806/1238 scored running_loss:7.3263 running_bpb:2.8403
+ttt_fullparam:chunk 806/1238 done
+ttt_fullparam:chunk 807/1238 scored running_loss:7.3262 running_bpb:2.8401
+ttt_fullparam:chunk 807/1238 done
+ttt_fullparam:chunk 808/1238 scored running_loss:7.3262 running_bpb:2.8400
+ttt_fullparam:chunk 808/1238 done
+ttt_fullparam:chunk 809/1238 scored running_loss:7.3262 running_bpb:2.8399
+ttt_fullparam:chunk 809/1238 done
+ttt_fullparam:chunk 810/1238 scored running_loss:7.3259 running_bpb:2.8395
+ttt_fullparam:chunk 810/1238 done
+ttt_fullparam:chunk 811/1238 scored running_loss:7.3258 running_bpb:2.8394
+ttt_fullparam:chunk 811/1238 done
+ttt_fullparam:chunk 812/1238 scored running_loss:7.3256 running_bpb:2.8393
+ttt_fullparam:chunk 812/1238 done
+ttt_fullparam:chunk 813/1238 scored running_loss:7.3256 running_bpb:2.8394
+ttt_fullparam:chunk 813/1238 done
+ttt_fullparam:chunk 814/1238 scored running_loss:7.3256 running_bpb:2.8394
+ttt_fullparam:chunk 814/1238 done
+ttt_fullparam:chunk 815/1238 scored running_loss:7.3256 running_bpb:2.8391
+ttt_fullparam:chunk 815/1238 done
+ttt_fullparam:chunk 816/1238 scored running_loss:7.3255 running_bpb:2.8391
+ttt_fullparam:chunk 816/1238 done
+ttt_fullparam:chunk 817/1238 scored running_loss:7.3254 running_bpb:2.8388
+ttt_fullparam:chunk 817/1238 done
+ttt_fullparam:chunk 818/1238 scored running_loss:7.3256 running_bpb:2.8389
+ttt_fullparam:chunk 818/1238 done
+ttt_fullparam:chunk 819/1238 scored running_loss:7.3255 running_bpb:2.8386
+ttt_fullparam:chunk 819/1238 done
+ttt_fullparam:chunk 820/1238 scored running_loss:7.3250 running_bpb:2.8392
+ttt_fullparam:chunk 820/1238 done
+ttt_fullparam:chunk 821/1238 scored running_loss:7.3250 running_bpb:2.8393
+ttt_fullparam:chunk 821/1238 done
+ttt_fullparam:chunk 822/1238 scored running_loss:7.3250 running_bpb:2.8387
+ttt_fullparam:chunk 822/1238 done
+ttt_fullparam:chunk 823/1238 scored running_loss:7.3249 running_bpb:2.8386
+ttt_fullparam:chunk 823/1238 done
+ttt_fullparam:chunk 824/1238 scored running_loss:7.3249 running_bpb:2.8385
+ttt_fullparam:chunk 824/1238 done
+ttt_fullparam:chunk 825/1238 scored running_loss:7.3249 running_bpb:2.8386
+ttt_fullparam:chunk 825/1238 done
+ttt_fullparam:chunk 826/1238 scored running_loss:7.3248 running_bpb:2.8385
+ttt_fullparam:chunk 826/1238 done
+ttt_fullparam:chunk 827/1238 scored running_loss:7.3248 running_bpb:2.8385
+ttt_fullparam:chunk 827/1238 done
+ttt_fullparam:chunk 828/1238 scored running_loss:7.3246 running_bpb:2.8384
+ttt_fullparam:chunk 828/1238 done
+ttt_fullparam:chunk 829/1238 scored running_loss:7.3246 running_bpb:2.8379
+ttt_fullparam:chunk 829/1238 done
+ttt_fullparam:chunk 830/1238 scored running_loss:7.3245 running_bpb:2.8378
+ttt_fullparam:chunk 830/1238 done
+ttt_fullparam:chunk 831/1238 scored running_loss:7.3243 running_bpb:2.8378
+ttt_fullparam:chunk 831/1238 done
+ttt_fullparam:chunk 832/1238 scored running_loss:7.3238 running_bpb:2.8376
+ttt_fullparam:chunk 832/1238 done
+ttt_fullparam:chunk 833/1238 scored running_loss:7.3239 running_bpb:2.8376
+ttt_fullparam:chunk 833/1238 done
+ttt_fullparam:chunk 834/1238 scored running_loss:7.3238 running_bpb:2.8372
+ttt_fullparam:chunk 834/1238 done
+ttt_fullparam:chunk 835/1238 scored running_loss:7.3238 running_bpb:2.8370
+ttt_fullparam:chunk 835/1238 done
+ttt_fullparam:chunk 836/1238 scored running_loss:7.3238 running_bpb:2.8369
+ttt_fullparam:chunk 836/1238 done
+ttt_fullparam:chunk 837/1238 scored running_loss:7.3237 running_bpb:2.8367
+ttt_fullparam:chunk 837/1238 done
+ttt_fullparam:chunk 838/1238 scored running_loss:7.3236 running_bpb:2.8366
+ttt_fullparam:chunk 838/1238 done
+ttt_fullparam:chunk 839/1238 scored running_loss:7.3236 running_bpb:2.8368
+ttt_fullparam:chunk 839/1238 done
+ttt_fullparam:chunk 840/1238 scored running_loss:7.3236 running_bpb:2.8368
+ttt_fullparam:chunk 840/1238 done
+ttt_fullparam:chunk 841/1238 scored running_loss:7.3234 running_bpb:2.8369
+ttt_fullparam:chunk 841/1238 done
+ttt_fullparam:chunk 842/1238 scored running_loss:7.3232 running_bpb:2.8365
+ttt_fullparam:chunk 842/1238 done
+ttt_fullparam:chunk 843/1238 scored running_loss:7.3231 running_bpb:2.8367
+ttt_fullparam:chunk 843/1238 done
+ttt_fullparam:chunk 844/1238 scored running_loss:7.3232 running_bpb:2.8370
+ttt_fullparam:chunk 844/1238 done
+ttt_fullparam:chunk 845/1238 scored running_loss:7.3231 running_bpb:2.8370
+ttt_fullparam:chunk 845/1238 done
+ttt_fullparam:chunk 846/1238 scored running_loss:7.3230 running_bpb:2.8369
+ttt_fullparam:chunk 846/1238 done
+ttt_fullparam:chunk 847/1238 scored running_loss:7.3230 running_bpb:2.8369
+ttt_fullparam:chunk 847/1238 done
+ttt_fullparam:chunk 848/1238 scored running_loss:7.3230 running_bpb:2.8368
+ttt_fullparam:chunk 848/1238 done
+ttt_fullparam:chunk 849/1238 scored running_loss:7.3229 running_bpb:2.8364
+ttt_fullparam:chunk 849/1238 done
+ttt_fullparam:chunk 850/1238 scored running_loss:7.3228 running_bpb:2.8360
+ttt_fullparam:chunk 850/1238 done
+ttt_fullparam:chunk 851/1238 scored running_loss:7.3227 running_bpb:2.8363
+ttt_fullparam:chunk 851/1238 done
+ttt_fullparam:chunk 852/1238 scored running_loss:7.3226 running_bpb:2.8362
+ttt_fullparam:chunk 852/1238 done
+ttt_fullparam:chunk 853/1238 scored running_loss:7.3226 running_bpb:2.8361
+ttt_fullparam:chunk 853/1238 done
+ttt_fullparam:chunk 854/1238 scored running_loss:7.3225 running_bpb:2.8359
+ttt_fullparam:chunk 854/1238 done
+ttt_fullparam:chunk 855/1238 scored running_loss:7.3226 running_bpb:2.8362
+ttt_fullparam:chunk 855/1238 done
+ttt_fullparam:chunk 856/1238 scored running_loss:7.3225 running_bpb:2.8358
+ttt_fullparam:chunk 856/1238 done
+ttt_fullparam:chunk 857/1238 scored running_loss:7.3217 running_bpb:2.8357
+ttt_fullparam:chunk 857/1238 done
+ttt_fullparam:chunk 858/1238 scored running_loss:7.3215 running_bpb:2.8354
+ttt_fullparam:chunk 858/1238 done
+ttt_fullparam:chunk 859/1238 scored running_loss:7.3214 running_bpb:2.8353
+ttt_fullparam:chunk 859/1238 done
+ttt_fullparam:chunk 860/1238 scored running_loss:7.3214 running_bpb:2.8351
+ttt_fullparam:chunk 860/1238 done
+ttt_fullparam:chunk 861/1238 scored running_loss:7.3212 running_bpb:2.8348
+ttt_fullparam:chunk 861/1238 done
+ttt_fullparam:chunk 862/1238 scored running_loss:7.3209 running_bpb:2.8343
+ttt_fullparam:chunk 862/1238 done
+ttt_fullparam:chunk 863/1238 scored running_loss:7.3210 running_bpb:2.8343
+ttt_fullparam:chunk 863/1238 done
+ttt_fullparam:chunk 864/1238 scored running_loss:7.3209 running_bpb:2.8344
+ttt_fullparam:chunk 864/1238 done
+ttt_fullparam:chunk 865/1238 scored running_loss:7.3208 running_bpb:2.8339
+ttt_fullparam:chunk 865/1238 done
+ttt_fullparam:chunk 866/1238 scored running_loss:7.3207 running_bpb:2.8338
+ttt_fullparam:chunk 866/1238 done
+ttt_fullparam:chunk 867/1238 scored running_loss:7.3204 running_bpb:2.8335
+ttt_fullparam:chunk 867/1238 done
+ttt_fullparam:chunk 868/1238 scored running_loss:7.3203 running_bpb:2.8334
+ttt_fullparam:chunk 868/1238 done
+ttt_fullparam:chunk 869/1238 scored running_loss:7.3199 running_bpb:2.8334
+ttt_fullparam:chunk 869/1238 done
+ttt_fullparam:chunk 870/1238 scored running_loss:7.3199 running_bpb:2.8332
+ttt_fullparam:chunk 870/1238 done
+ttt_fullparam:chunk 871/1238 scored running_loss:7.3197 running_bpb:2.8331
+ttt_fullparam:chunk 871/1238 done
+ttt_fullparam:chunk 872/1238 scored running_loss:7.3196 running_bpb:2.8329
+ttt_fullparam:chunk 872/1238 done
+ttt_fullparam:chunk 873/1238 scored running_loss:7.3195 running_bpb:2.8327
+ttt_fullparam:chunk 873/1238 done
+ttt_fullparam:chunk 874/1238 scored running_loss:7.3196 running_bpb:2.8328
+ttt_fullparam:chunk 874/1238 done
+ttt_fullparam:chunk 875/1238 scored running_loss:7.3193 running_bpb:2.8325
+ttt_fullparam:chunk 875/1238 done
+ttt_fullparam:chunk 876/1238 scored running_loss:7.3191 running_bpb:2.8327
+ttt_fullparam:chunk 876/1238 done
+ttt_fullparam:chunk 877/1238 scored running_loss:7.3191 running_bpb:2.8329
+ttt_fullparam:chunk 877/1238 done
+ttt_fullparam:chunk 878/1238 scored running_loss:7.3190 running_bpb:2.8327
+ttt_fullparam:chunk 878/1238 done
+ttt_fullparam:chunk 879/1238 scored running_loss:7.3189 running_bpb:2.8328
+ttt_fullparam:chunk 879/1238 done
+ttt_fullparam:chunk 880/1238 scored running_loss:7.3188 running_bpb:2.8327
+ttt_fullparam:chunk 880/1238 done
+ttt_fullparam:chunk 881/1238 scored running_loss:7.3188 running_bpb:2.8326
+ttt_fullparam:chunk 881/1238 done
+ttt_fullparam:chunk 882/1238 scored running_loss:7.3187 running_bpb:2.8326
+ttt_fullparam:chunk 882/1238 done
+ttt_fullparam:chunk 883/1238 scored running_loss:7.3186 running_bpb:2.8326
+ttt_fullparam:chunk 883/1238 done
+ttt_fullparam:chunk 884/1238 scored running_loss:7.3185 running_bpb:2.8326
+ttt_fullparam:chunk 884/1238 done
+ttt_fullparam:chunk 885/1238 scored running_loss:7.3183 running_bpb:2.8328
+ttt_fullparam:chunk 885/1238 done
+ttt_fullparam:chunk 886/1238 scored running_loss:7.3183 running_bpb:2.8329
+ttt_fullparam:chunk 886/1238 done
+ttt_fullparam:chunk 887/1238 scored running_loss:7.3183 running_bpb:2.8329
+ttt_fullparam:chunk 887/1238 done
+ttt_fullparam:chunk 888/1238 scored running_loss:7.3182 running_bpb:2.8328
+ttt_fullparam:chunk 888/1238 done
+ttt_fullparam:chunk 889/1238 scored running_loss:7.3181 running_bpb:2.8328
+ttt_fullparam:chunk 889/1238 done
+ttt_fullparam:chunk 890/1238 scored running_loss:7.3180 running_bpb:2.8328
+ttt_fullparam:chunk 890/1238 done
+ttt_fullparam:chunk 891/1238 scored running_loss:7.3179 running_bpb:2.8327
+ttt_fullparam:chunk 891/1238 done
+ttt_fullparam:chunk 892/1238 scored running_loss:7.3188 running_bpb:2.8344
+ttt_fullparam:chunk 892/1238 done
+ttt_fullparam:chunk 893/1238 scored running_loss:7.3187 running_bpb:2.8343
+ttt_fullparam:chunk 893/1238 done
+ttt_fullparam:chunk 894/1238 scored running_loss:7.3185 running_bpb:2.8343
+ttt_fullparam:chunk 894/1238 done
+ttt_fullparam:chunk 895/1238 scored running_loss:7.3184 running_bpb:2.8342
+ttt_fullparam:chunk 895/1238 done
+ttt_fullparam:chunk 896/1238 scored running_loss:7.3185 running_bpb:2.8343
+ttt_fullparam:chunk 896/1238 done
+ttt_fullparam:chunk 897/1238 scored running_loss:7.3186 running_bpb:2.8343
+ttt_fullparam:chunk 897/1238 done
+ttt_fullparam:chunk 898/1238 scored running_loss:7.3181 running_bpb:2.8349
+ttt_fullparam:chunk 898/1238 done
+ttt_fullparam:chunk 899/1238 scored running_loss:7.3181 running_bpb:2.8347
+ttt_fullparam:chunk 899/1238 done
+ttt_fullparam:chunk 900/1238 scored running_loss:7.3179 running_bpb:2.8346
+ttt_fullparam:chunk 900/1238 done
+ttt_fullparam:chunk 901/1238 scored running_loss:7.3177 running_bpb:2.8345
+ttt_fullparam:chunk 901/1238 done
+ttt_fullparam:chunk 902/1238 scored running_loss:7.3176 running_bpb:2.8345
+ttt_fullparam:chunk 902/1238 done
+ttt_fullparam:chunk 903/1238 scored running_loss:7.3172 running_bpb:2.8345
+ttt_fullparam:chunk 903/1238 done
+ttt_fullparam:chunk 904/1238 scored running_loss:7.3170 running_bpb:2.8344
+ttt_fullparam:chunk 904/1238 done
+ttt_fullparam:chunk 905/1238 scored running_loss:7.3169 running_bpb:2.8343
+ttt_fullparam:chunk 905/1238 done
+ttt_fullparam:chunk 906/1238 scored running_loss:7.3167 running_bpb:2.8342
+ttt_fullparam:chunk 906/1238 done
+ttt_fullparam:chunk 907/1238 scored running_loss:7.3168 running_bpb:2.8345
+ttt_fullparam:chunk 907/1238 done
+ttt_fullparam:chunk 908/1238 scored running_loss:7.3164 running_bpb:2.8342
+ttt_fullparam:chunk 908/1238 done
+ttt_fullparam:chunk 909/1238 scored running_loss:7.3163 running_bpb:2.8341
+ttt_fullparam:chunk 909/1238 done
+ttt_fullparam:chunk 910/1238 scored running_loss:7.3163 running_bpb:2.8343
+ttt_fullparam:chunk 910/1238 done
+ttt_fullparam:chunk 911/1238 scored running_loss:7.3161 running_bpb:2.8342
+ttt_fullparam:chunk 911/1238 done
+ttt_fullparam:chunk 912/1238 scored running_loss:7.3160 running_bpb:2.8342
+ttt_fullparam:chunk 912/1238 done
+ttt_fullparam:chunk 913/1238 scored running_loss:7.3160 running_bpb:2.8338
+ttt_fullparam:chunk 913/1238 done
+ttt_fullparam:chunk 914/1238 scored running_loss:7.3159 running_bpb:2.8338
+ttt_fullparam:chunk 914/1238 done
+ttt_fullparam:chunk 915/1238 scored running_loss:7.3157 running_bpb:2.8338
+ttt_fullparam:chunk 915/1238 done
+ttt_fullparam:chunk 916/1238 scored running_loss:7.3155 running_bpb:2.8341
+ttt_fullparam:chunk 916/1238 done
+ttt_fullparam:chunk 917/1238 scored running_loss:7.3154 running_bpb:2.8340
+ttt_fullparam:chunk 917/1238 done
+ttt_fullparam:chunk 918/1238 scored running_loss:7.3153 running_bpb:2.8339
+ttt_fullparam:chunk 918/1238 done
+ttt_fullparam:chunk 919/1238 scored running_loss:7.3153 running_bpb:2.8342
+ttt_fullparam:chunk 919/1238 done
+ttt_fullparam:chunk 920/1238 scored running_loss:7.3152 running_bpb:2.8344
+ttt_fullparam:chunk 920/1238 done
+ttt_fullparam:chunk 921/1238 scored running_loss:7.3150 running_bpb:2.8347
+ttt_fullparam:chunk 921/1238 done
+ttt_fullparam:chunk 922/1238 scored running_loss:7.3150 running_bpb:2.8347
+ttt_fullparam:chunk 922/1238 done
+ttt_fullparam:chunk 923/1238 scored running_loss:7.3149 running_bpb:2.8348
+ttt_fullparam:chunk 923/1238 done
+ttt_fullparam:chunk 924/1238 scored running_loss:7.3149 running_bpb:2.8348
+ttt_fullparam:chunk 924/1238 done
+ttt_fullparam:chunk 925/1238 scored running_loss:7.3148 running_bpb:2.8348
+ttt_fullparam:chunk 925/1238 done
+ttt_fullparam:chunk 926/1238 scored running_loss:7.3146 running_bpb:2.8348
+ttt_fullparam:chunk 926/1238 done
+ttt_fullparam:chunk 927/1238 scored running_loss:7.3144 running_bpb:2.8347
+ttt_fullparam:chunk 927/1238 done
+ttt_fullparam:chunk 928/1238 scored running_loss:7.3142 running_bpb:2.8347
+ttt_fullparam:chunk 928/1238 done
+ttt_fullparam:chunk 929/1238 scored running_loss:7.3140 running_bpb:2.8349
+ttt_fullparam:chunk 929/1238 done
+ttt_fullparam:chunk 930/1238 scored running_loss:7.3136 running_bpb:2.8352
+ttt_fullparam:chunk 930/1238 done
+ttt_fullparam:chunk 931/1238 scored running_loss:7.3134 running_bpb:2.8354
+ttt_fullparam:chunk 931/1238 done
+ttt_fullparam:chunk 932/1238 scored running_loss:7.3135 running_bpb:2.8354
+ttt_fullparam:chunk 932/1238 done
+ttt_fullparam:chunk 933/1238 scored running_loss:7.3134 running_bpb:2.8353
+ttt_fullparam:chunk 933/1238 done
+ttt_fullparam:chunk 934/1238 scored running_loss:7.3134 running_bpb:2.8352
+ttt_fullparam:chunk 934/1238 done
+ttt_fullparam:chunk 935/1238 scored running_loss:7.3131 running_bpb:2.8353
+ttt_fullparam:chunk 935/1238 done
+ttt_fullparam:chunk 936/1238 scored running_loss:7.3130 running_bpb:2.8353
+ttt_fullparam:chunk 936/1238 done
+ttt_fullparam:chunk 937/1238 scored running_loss:7.3129 running_bpb:2.8354
+ttt_fullparam:chunk 937/1238 done
+ttt_fullparam:chunk 938/1238 scored running_loss:7.3128 running_bpb:2.8353
+ttt_fullparam:chunk 938/1238 done
+ttt_fullparam:chunk 939/1238 scored running_loss:7.3127 running_bpb:2.8352
+ttt_fullparam:chunk 939/1238 done
+ttt_fullparam:chunk 940/1238 scored running_loss:7.3126 running_bpb:2.8352
+ttt_fullparam:chunk 940/1238 done
+ttt_fullparam:chunk 941/1238 scored running_loss:7.3125 running_bpb:2.8351
+ttt_fullparam:chunk 941/1238 done
+ttt_fullparam:chunk 942/1238 scored running_loss:7.3122 running_bpb:2.8351
+ttt_fullparam:chunk 942/1238 done
+ttt_fullparam:chunk 943/1238 scored running_loss:7.3122 running_bpb:2.8352
+ttt_fullparam:chunk 943/1238 done
+ttt_fullparam:chunk 944/1238 scored running_loss:7.3120 running_bpb:2.8351
+ttt_fullparam:chunk 944/1238 done
+ttt_fullparam:chunk 945/1238 scored running_loss:7.3118 running_bpb:2.8353
+ttt_fullparam:chunk 945/1238 done
+ttt_fullparam:chunk 946/1238 scored running_loss:7.3116 running_bpb:2.8352
+ttt_fullparam:chunk 946/1238 done
+ttt_fullparam:chunk 947/1238 scored running_loss:7.3115 running_bpb:2.8350
+ttt_fullparam:chunk 947/1238 done
+ttt_fullparam:chunk 948/1238 scored running_loss:7.3115 running_bpb:2.8350
+ttt_fullparam:chunk 948/1238 done
+ttt_fullparam:chunk 949/1238 scored running_loss:7.3115 running_bpb:2.8349
+ttt_fullparam:chunk 949/1238 done
+ttt_fullparam:chunk 950/1238 scored running_loss:7.3114 running_bpb:2.8350
+ttt_fullparam:chunk 950/1238 done
+ttt_fullparam:chunk 951/1238 scored running_loss:7.3111 running_bpb:2.8349
+ttt_fullparam:chunk 951/1238 done
+ttt_fullparam:chunk 952/1238 scored running_loss:7.3110 running_bpb:2.8348
+ttt_fullparam:chunk 952/1238 done
+ttt_fullparam:chunk 953/1238 scored running_loss:7.3109 running_bpb:2.8350
+ttt_fullparam:chunk 953/1238 done
+ttt_fullparam:chunk 954/1238 scored running_loss:7.3108 running_bpb:2.8350
+ttt_fullparam:chunk 954/1238 done
+ttt_fullparam:chunk 955/1238 scored running_loss:7.3108 running_bpb:2.8348
+ttt_fullparam:chunk 955/1238 done
+ttt_fullparam:chunk 956/1238 scored running_loss:7.3107 running_bpb:2.8349
+ttt_fullparam:chunk 956/1238 done
+ttt_fullparam:chunk 957/1238 scored running_loss:7.3105 running_bpb:2.8350
+ttt_fullparam:chunk 957/1238 done
+ttt_fullparam:chunk 958/1238 scored running_loss:7.3103 running_bpb:2.8350
+ttt_fullparam:chunk 958/1238 done
+ttt_fullparam:chunk 959/1238 scored running_loss:7.3102 running_bpb:2.8348
+ttt_fullparam:chunk 959/1238 done
+ttt_fullparam:chunk 960/1238 scored running_loss:7.3101 running_bpb:2.8352
+ttt_fullparam:chunk 960/1238 done
+ttt_fullparam:chunk 961/1238 scored running_loss:7.3100 running_bpb:2.8352
+ttt_fullparam:chunk 961/1238 done
+ttt_fullparam:chunk 962/1238 scored running_loss:7.3099 running_bpb:2.8351
+ttt_fullparam:chunk 962/1238 done
+ttt_fullparam:chunk 963/1238 scored running_loss:7.3098 running_bpb:2.8351
+ttt_fullparam:chunk 963/1238 done
+ttt_fullparam:chunk 964/1238 scored running_loss:7.3097 running_bpb:2.8349
+ttt_fullparam:chunk 964/1238 done
+ttt_fullparam:chunk 965/1238 scored running_loss:7.3098 running_bpb:2.8355
+ttt_fullparam:chunk 965/1238 done
+ttt_fullparam:chunk 966/1238 scored running_loss:7.3095 running_bpb:2.8353
+ttt_fullparam:chunk 966/1238 done
+ttt_fullparam:chunk 967/1238 scored running_loss:7.3094 running_bpb:2.8353
+ttt_fullparam:chunk 967/1238 done
+ttt_fullparam:chunk 968/1238 scored running_loss:7.3093 running_bpb:2.8353
+ttt_fullparam:chunk 968/1238 done
+ttt_fullparam:chunk 969/1238 scored running_loss:7.3093 running_bpb:2.8352
+ttt_fullparam:chunk 969/1238 done
+ttt_fullparam:chunk 970/1238 scored running_loss:7.3092 running_bpb:2.8351
+ttt_fullparam:chunk 970/1238 done
+ttt_fullparam:chunk 971/1238 scored running_loss:7.3098 running_bpb:2.8362
+ttt_fullparam:chunk 971/1238 done
+ttt_fullparam:chunk 972/1238 scored running_loss:7.3097 running_bpb:2.8361
+ttt_fullparam:chunk 972/1238 done
+ttt_fullparam:chunk 973/1238 scored running_loss:7.3095 running_bpb:2.8361
+ttt_fullparam:chunk 973/1238 done
+ttt_fullparam:chunk 974/1238 scored running_loss:7.3092 running_bpb:2.8360
+ttt_fullparam:chunk 974/1238 done
+ttt_fullparam:chunk 975/1238 scored running_loss:7.3092 running_bpb:2.8363
+ttt_fullparam:chunk 975/1238 done
+ttt_fullparam:chunk 976/1238 scored running_loss:7.3088 running_bpb:2.8371
+ttt_fullparam:chunk 976/1238 done
+ttt_fullparam:chunk 977/1238 scored running_loss:7.3087 running_bpb:2.8371
+ttt_fullparam:chunk 977/1238 done
+ttt_fullparam:chunk 978/1238 scored running_loss:7.3088 running_bpb:2.8371
+ttt_fullparam:chunk 978/1238 done
+ttt_fullparam:chunk 979/1238 scored running_loss:7.3087 running_bpb:2.8369
+ttt_fullparam:chunk 979/1238 done
+ttt_fullparam:chunk 980/1238 scored running_loss:7.3086 running_bpb:2.8370
+ttt_fullparam:chunk 980/1238 done
+ttt_fullparam:chunk 981/1238 scored running_loss:7.3085 running_bpb:2.8369
+ttt_fullparam:chunk 981/1238 done
+ttt_fullparam:chunk 982/1238 scored running_loss:7.3083 running_bpb:2.8369
+ttt_fullparam:chunk 982/1238 done
+ttt_fullparam:chunk 983/1238 scored running_loss:7.3081 running_bpb:2.8367
+ttt_fullparam:chunk 983/1238 done
+ttt_fullparam:chunk 984/1238 scored running_loss:7.3081 running_bpb:2.8367
+ttt_fullparam:chunk 984/1238 done
+ttt_fullparam:chunk 985/1238 scored running_loss:7.3080 running_bpb:2.8367
+ttt_fullparam:chunk 985/1238 done
+ttt_fullparam:chunk 986/1238 scored running_loss:7.3079 running_bpb:2.8367
+ttt_fullparam:chunk 986/1238 done
+ttt_fullparam:chunk 987/1238 scored running_loss:7.3079 running_bpb:2.8367
+ttt_fullparam:chunk 987/1238 done
+ttt_fullparam:chunk 988/1238 scored running_loss:7.3078 running_bpb:2.8367
+ttt_fullparam:chunk 988/1238 done
+ttt_fullparam:chunk 989/1238 scored running_loss:7.3077 running_bpb:2.8365
+ttt_fullparam:chunk 989/1238 done
+ttt_fullparam:chunk 990/1238 scored running_loss:7.3076 running_bpb:2.8365
+ttt_fullparam:chunk 990/1238 done
+ttt_fullparam:chunk 991/1238 scored running_loss:7.3076 running_bpb:2.8365
+ttt_fullparam:chunk 991/1238 done
+ttt_fullparam:chunk 992/1238 scored running_loss:7.3075 running_bpb:2.8364
+ttt_fullparam:chunk 992/1238 done
+ttt_fullparam:chunk 993/1238 scored running_loss:7.3071 running_bpb:2.8370
+ttt_fullparam:chunk 993/1238 done
+ttt_fullparam:chunk 994/1238 scored running_loss:7.3071 running_bpb:2.8370
+ttt_fullparam:chunk 994/1238 done
+ttt_fullparam:chunk 995/1238 scored running_loss:7.3071 running_bpb:2.8369
+ttt_fullparam:chunk 995/1238 done
+ttt_fullparam:chunk 996/1238 scored running_loss:7.3070 running_bpb:2.8371
+ttt_fullparam:chunk 996/1238 done
+ttt_fullparam:chunk 997/1238 scored running_loss:7.3070 running_bpb:2.8369
+ttt_fullparam:chunk 997/1238 done
+ttt_fullparam:chunk 998/1238 scored running_loss:7.3070 running_bpb:2.8369
+ttt_fullparam:chunk 998/1238 done
+ttt_fullparam:chunk 999/1238 scored running_loss:7.3065 running_bpb:2.8371
+ttt_fullparam:chunk 999/1238 done
+ttt_fullparam:chunk 1000/1238 scored running_loss:7.3063 running_bpb:2.8371
+ttt_fullparam:chunk 1000/1238 done
+ttt_fullparam:chunk 1001/1238 scored running_loss:7.3060 running_bpb:2.8373
+ttt_fullparam:chunk 1001/1238 done
+ttt_fullparam:chunk 1002/1238 scored running_loss:7.3057 running_bpb:2.8374
+ttt_fullparam:chunk 1002/1238 done
+ttt_fullparam:chunk 1003/1238 scored running_loss:7.3055 running_bpb:2.8374
+ttt_fullparam:chunk 1003/1238 done
+ttt_fullparam:chunk 1004/1238 scored running_loss:7.3054 running_bpb:2.8370
+ttt_fullparam:chunk 1004/1238 done
+ttt_fullparam:chunk 1005/1238 scored running_loss:7.3051 running_bpb:2.8370
+ttt_fullparam:chunk 1005/1238 done
+ttt_fullparam:chunk 1006/1238 scored running_loss:7.3047 running_bpb:2.8371
+ttt_fullparam:chunk 1006/1238 done
+ttt_fullparam:chunk 1007/1238 scored running_loss:7.3046 running_bpb:2.8370
+ttt_fullparam:chunk 1007/1238 done
+ttt_fullparam:chunk 1008/1238 scored running_loss:7.3046 running_bpb:2.8371
+ttt_fullparam:chunk 1008/1238 done
+ttt_fullparam:chunk 1009/1238 scored running_loss:7.3046 running_bpb:2.8371
+ttt_fullparam:chunk 1009/1238 done
+ttt_fullparam:chunk 1010/1238 scored running_loss:7.3044 running_bpb:2.8371
+ttt_fullparam:chunk 1010/1238 done
+ttt_fullparam:chunk 1011/1238 scored running_loss:7.3043 running_bpb:2.8372
+ttt_fullparam:chunk 1011/1238 done
+ttt_fullparam:chunk 1012/1238 scored running_loss:7.3042 running_bpb:2.8372
+ttt_fullparam:chunk 1012/1238 done
+ttt_fullparam:chunk 1013/1238 scored running_loss:7.3041 running_bpb:2.8372
+ttt_fullparam:chunk 1013/1238 done
+ttt_fullparam:chunk 1014/1238 scored running_loss:7.3040 running_bpb:2.8372
+ttt_fullparam:chunk 1014/1238 done
+ttt_fullparam:chunk 1015/1238 scored running_loss:7.3039 running_bpb:2.8373
+ttt_fullparam:chunk 1015/1238 done
+ttt_fullparam:chunk 1016/1238 scored running_loss:7.3037 running_bpb:2.8374
+ttt_fullparam:chunk 1016/1238 done
+ttt_fullparam:chunk 1017/1238 scored running_loss:7.3036 running_bpb:2.8374
+ttt_fullparam:chunk 1017/1238 done
+ttt_fullparam:chunk 1018/1238 scored running_loss:7.3036 running_bpb:2.8372
+ttt_fullparam:chunk 1018/1238 done
+ttt_fullparam:chunk 1019/1238 scored running_loss:7.3036 running_bpb:2.8373
+ttt_fullparam:chunk 1019/1238 done
+ttt_fullparam:chunk 1020/1238 scored running_loss:7.3035 running_bpb:2.8374
+ttt_fullparam:chunk 1020/1238 done
+ttt_fullparam:chunk 1021/1238 scored running_loss:7.3034 running_bpb:2.8373
+ttt_fullparam:chunk 1021/1238 done
+ttt_fullparam:chunk 1022/1238 scored running_loss:7.3034 running_bpb:2.8371
+ttt_fullparam:chunk 1022/1238 done
+ttt_fullparam:chunk 1023/1238 scored running_loss:7.3033 running_bpb:2.8372
+ttt_fullparam:chunk 1023/1238 done
+ttt_fullparam:chunk 1024/1238 scored running_loss:7.3031 running_bpb:2.8372
+ttt_fullparam:chunk 1024/1238 done
+ttt_fullparam:chunk 1025/1238 scored running_loss:7.3030 running_bpb:2.8373
+ttt_fullparam:chunk 1025/1238 done
+ttt_fullparam:chunk 1026/1238 scored running_loss:7.3029 running_bpb:2.8374
+ttt_fullparam:chunk 1026/1238 done
+ttt_fullparam:chunk 1027/1238 scored running_loss:7.3028 running_bpb:2.8372
+ttt_fullparam:chunk 1027/1238 done
+ttt_fullparam:chunk 1028/1238 scored running_loss:7.3028 running_bpb:2.8373
+ttt_fullparam:chunk 1028/1238 done
+ttt_fullparam:chunk 1029/1238 scored running_loss:7.3027 running_bpb:2.8373
+ttt_fullparam:chunk 1029/1238 done
+ttt_fullparam:chunk 1030/1238 scored running_loss:7.3027 running_bpb:2.8373
+ttt_fullparam:chunk 1030/1238 done
+ttt_fullparam:chunk 1031/1238 scored running_loss:7.3026 running_bpb:2.8373
+ttt_fullparam:chunk 1031/1238 done
+ttt_fullparam:chunk 1032/1238 scored running_loss:7.3025 running_bpb:2.8373
+ttt_fullparam:chunk 1032/1238 done
+ttt_fullparam:chunk 1033/1238 scored running_loss:7.3024 running_bpb:2.8372
+ttt_fullparam:chunk 1033/1238 done
+ttt_fullparam:chunk 1034/1238 scored running_loss:7.3023 running_bpb:2.8371
+ttt_fullparam:chunk 1034/1238 done
+ttt_fullparam:chunk 1035/1238 scored running_loss:7.3021 running_bpb:2.8369
+ttt_fullparam:chunk 1035/1238 done
+ttt_fullparam:chunk 1036/1238 scored running_loss:7.3021 running_bpb:2.8370
+ttt_fullparam:chunk 1036/1238 done
+ttt_fullparam:chunk 1037/1238 scored running_loss:7.3023 running_bpb:2.8372
+ttt_fullparam:chunk 1037/1238 done
+ttt_fullparam:chunk 1038/1238 scored running_loss:7.3023 running_bpb:2.8371
+ttt_fullparam:chunk 1038/1238 done
+ttt_fullparam:chunk 1039/1238 scored running_loss:7.3022 running_bpb:2.8371
+ttt_fullparam:chunk 1039/1238 done
+ttt_fullparam:chunk 1040/1238 scored running_loss:7.3018 running_bpb:2.8369
+ttt_fullparam:chunk 1040/1238 done
+ttt_fullparam:chunk 1041/1238 scored running_loss:7.3018 running_bpb:2.8369
+ttt_fullparam:chunk 1041/1238 done
+ttt_fullparam:chunk 1042/1238 scored running_loss:7.3017 running_bpb:2.8370
+ttt_fullparam:chunk 1042/1238 done
+ttt_fullparam:chunk 1043/1238 scored running_loss:7.3018 running_bpb:2.8369
+ttt_fullparam:chunk 1043/1238 done
+ttt_fullparam:chunk 1044/1238 scored running_loss:7.3018 running_bpb:2.8368
+ttt_fullparam:chunk 1044/1238 done
+ttt_fullparam:chunk 1045/1238 scored running_loss:7.3017 running_bpb:2.8369
+ttt_fullparam:chunk 1045/1238 done
+ttt_fullparam:chunk 1046/1238 scored running_loss:7.3016 running_bpb:2.8368
+ttt_fullparam:chunk 1046/1238 done
+ttt_fullparam:chunk 1047/1238 scored running_loss:7.3015 running_bpb:2.8370
+ttt_fullparam:chunk 1047/1238 done
+ttt_fullparam:chunk 1048/1238 scored running_loss:7.3014 running_bpb:2.8369
+ttt_fullparam:chunk 1048/1238 done
+ttt_fullparam:chunk 1049/1238 scored running_loss:7.3009 running_bpb:2.8366
+ttt_fullparam:chunk 1049/1238 done
+ttt_fullparam:chunk 1050/1238 scored running_loss:7.3009 running_bpb:2.8365
+ttt_fullparam:chunk 1050/1238 done
+ttt_fullparam:chunk 1051/1238 scored running_loss:7.3009 running_bpb:2.8364
+ttt_fullparam:chunk 1051/1238 done
+ttt_fullparam:chunk 1052/1238 scored running_loss:7.3008 running_bpb:2.8363
+ttt_fullparam:chunk 1052/1238 done
+ttt_fullparam:chunk 1053/1238 scored running_loss:7.3007 running_bpb:2.8361
+ttt_fullparam:chunk 1053/1238 done
+ttt_fullparam:chunk 1054/1238 scored running_loss:7.3007 running_bpb:2.8360
+ttt_fullparam:chunk 1054/1238 done
+ttt_fullparam:chunk 1055/1238 scored running_loss:7.3008 running_bpb:2.8359
+ttt_fullparam:chunk 1055/1238 done
+ttt_fullparam:chunk 1056/1238 scored running_loss:7.3006 running_bpb:2.8359
+ttt_fullparam:chunk 1056/1238 done
+ttt_fullparam:chunk 1057/1238 scored running_loss:7.3004 running_bpb:2.8357
+ttt_fullparam:chunk 1057/1238 done
+ttt_fullparam:chunk 1058/1238 scored running_loss:7.3004 running_bpb:2.8359
+ttt_fullparam:chunk 1058/1238 done
+ttt_fullparam:chunk 1059/1238 scored running_loss:7.3003 running_bpb:2.8362
+ttt_fullparam:chunk 1059/1238 done
+ttt_fullparam:chunk 1060/1238 scored running_loss:7.3001 running_bpb:2.8361
+ttt_fullparam:chunk 1060/1238 done
+ttt_fullparam:chunk 1061/1238 scored running_loss:7.3000 running_bpb:2.8359
+ttt_fullparam:chunk 1061/1238 done
+ttt_fullparam:chunk 1062/1238 scored running_loss:7.2998 running_bpb:2.8356
+ttt_fullparam:chunk 1062/1238 done
+ttt_fullparam:chunk 1063/1238 scored running_loss:7.2997 running_bpb:2.8357
+ttt_fullparam:chunk 1063/1238 done
+ttt_fullparam:chunk 1064/1238 scored running_loss:7.2995 running_bpb:2.8358
+ttt_fullparam:chunk 1064/1238 done
+ttt_fullparam:chunk 1065/1238 scored running_loss:7.2995 running_bpb:2.8357
+ttt_fullparam:chunk 1065/1238 done
+ttt_fullparam:chunk 1066/1238 scored running_loss:7.2994 running_bpb:2.8355
+ttt_fullparam:chunk 1066/1238 done
+ttt_fullparam:chunk 1067/1238 scored running_loss:7.2994 running_bpb:2.8355
+ttt_fullparam:chunk 1067/1238 done
+ttt_fullparam:chunk 1068/1238 scored running_loss:7.2993 running_bpb:2.8351
+ttt_fullparam:chunk 1068/1238 done
+ttt_fullparam:chunk 1069/1238 scored running_loss:7.2992 running_bpb:2.8350
+ttt_fullparam:chunk 1069/1238 done
+ttt_fullparam:chunk 1070/1238 scored running_loss:7.2991 running_bpb:2.8348
+ttt_fullparam:chunk 1070/1238 done
+ttt_fullparam:chunk 1071/1238 scored running_loss:7.2989 running_bpb:2.8347
+ttt_fullparam:chunk 1071/1238 done
+ttt_fullparam:chunk 1072/1238 scored running_loss:7.2989 running_bpb:2.8346
+ttt_fullparam:chunk 1072/1238 done
+ttt_fullparam:chunk 1073/1238 scored running_loss:7.2988 running_bpb:2.8345
+ttt_fullparam:chunk 1073/1238 done
+ttt_fullparam:chunk 1074/1238 scored running_loss:7.2987 running_bpb:2.8345
+ttt_fullparam:chunk 1074/1238 done
+ttt_fullparam:chunk 1075/1238 scored running_loss:7.2986 running_bpb:2.8344
+ttt_fullparam:chunk 1075/1238 done
+ttt_fullparam:chunk 1076/1238 scored running_loss:7.2986 running_bpb:2.8345
+ttt_fullparam:chunk 1076/1238 done
+ttt_fullparam:chunk 1077/1238 scored running_loss:7.2985 running_bpb:2.8343
+ttt_fullparam:chunk 1077/1238 done
+ttt_fullparam:chunk 1078/1238 scored running_loss:7.2985 running_bpb:2.8343
+ttt_fullparam:chunk 1078/1238 done
+ttt_fullparam:chunk 1079/1238 scored running_loss:7.2985 running_bpb:2.8341
+ttt_fullparam:chunk 1079/1238 done
+ttt_fullparam:chunk 1080/1238 scored running_loss:7.2984 running_bpb:2.8338
+ttt_fullparam:chunk 1080/1238 done
+ttt_fullparam:chunk 1081/1238 scored running_loss:7.2986 running_bpb:2.8342
+ttt_fullparam:chunk 1081/1238 done
+ttt_fullparam:chunk 1082/1238 scored running_loss:7.2987 running_bpb:2.8341
+ttt_fullparam:chunk 1082/1238 done
+ttt_fullparam:chunk 1083/1238 scored running_loss:7.2986 running_bpb:2.8339
+ttt_fullparam:chunk 1083/1238 done
+ttt_fullparam:chunk 1084/1238 scored running_loss:7.2986 running_bpb:2.8340
+ttt_fullparam:chunk 1084/1238 done
+ttt_fullparam:chunk 1085/1238 scored running_loss:7.2986 running_bpb:2.8342
+ttt_fullparam:chunk 1085/1238 done
+ttt_fullparam:chunk 1086/1238 scored running_loss:7.2986 running_bpb:2.8342
+ttt_fullparam:chunk 1086/1238 done
+ttt_fullparam:chunk 1087/1238 scored running_loss:7.2986 running_bpb:2.8340
+ttt_fullparam:chunk 1087/1238 done
+ttt_fullparam:chunk 1088/1238 scored running_loss:7.2985 running_bpb:2.8339
+ttt_fullparam:chunk 1088/1238 done
+ttt_fullparam:chunk 1089/1238 scored running_loss:7.2985 running_bpb:2.8336
+ttt_fullparam:chunk 1089/1238 done
+ttt_fullparam:chunk 1090/1238 scored running_loss:7.2984 running_bpb:2.8334
+ttt_fullparam:chunk 1090/1238 done
+ttt_fullparam:chunk 1091/1238 scored running_loss:7.2983 running_bpb:2.8334
+ttt_fullparam:chunk 1091/1238 done
+ttt_fullparam:chunk 1092/1238 scored running_loss:7.2983 running_bpb:2.8334
+ttt_fullparam:chunk 1092/1238 done
+ttt_fullparam:chunk 1093/1238 scored running_loss:7.2981 running_bpb:2.8332
+ttt_fullparam:chunk 1093/1238 done
+ttt_fullparam:chunk 1094/1238 scored running_loss:7.2981 running_bpb:2.8331
+ttt_fullparam:chunk 1094/1238 done
+ttt_fullparam:chunk 1095/1238 scored running_loss:7.2981 running_bpb:2.8331
+ttt_fullparam:chunk 1095/1238 done
+ttt_fullparam:chunk 1096/1238 scored running_loss:7.2980 running_bpb:2.8329
+ttt_fullparam:chunk 1096/1238 done
+ttt_fullparam:chunk 1097/1238 scored running_loss:7.2979 running_bpb:2.8325
+ttt_fullparam:chunk 1097/1238 done
+ttt_fullparam:chunk 1098/1238 scored running_loss:7.2978 running_bpb:2.8324
+ttt_fullparam:chunk 1098/1238 done
+ttt_fullparam:chunk 1099/1238 scored running_loss:7.2978 running_bpb:2.8326
+ttt_fullparam:chunk 1099/1238 done
+ttt_fullparam:chunk 1100/1238 scored running_loss:7.2977 running_bpb:2.8327
+ttt_fullparam:chunk 1100/1238 done
+ttt_fullparam:chunk 1101/1238 scored running_loss:7.2977 running_bpb:2.8329
+ttt_fullparam:chunk 1101/1238 done
+ttt_fullparam:chunk 1102/1238 scored running_loss:7.2977 running_bpb:2.8328
+ttt_fullparam:chunk 1102/1238 done
+ttt_fullparam:chunk 1103/1238 scored running_loss:7.2977 running_bpb:2.8327
+ttt_fullparam:chunk 1103/1238 done
+ttt_fullparam:chunk 1104/1238 scored running_loss:7.2976 running_bpb:2.8326
+ttt_fullparam:chunk 1104/1238 done
+ttt_fullparam:chunk 1105/1238 scored running_loss:7.2975 running_bpb:2.8330
+ttt_fullparam:chunk 1105/1238 done
+ttt_fullparam:chunk 1106/1238 scored running_loss:7.2975 running_bpb:2.8327
+ttt_fullparam:chunk 1106/1238 done
+ttt_fullparam:chunk 1107/1238 scored running_loss:7.2975 running_bpb:2.8329
+ttt_fullparam:chunk 1107/1238 done
+ttt_fullparam:chunk 1108/1238 scored running_loss:7.2974 running_bpb:2.8328
+ttt_fullparam:chunk 1108/1238 done
+ttt_fullparam:chunk 1109/1238 scored running_loss:7.2973 running_bpb:2.8328
+ttt_fullparam:chunk 1109/1238 done
+ttt_fullparam:chunk 1110/1238 scored running_loss:7.2973 running_bpb:2.8326
+ttt_fullparam:chunk 1110/1238 done
+ttt_fullparam:chunk 1111/1238 scored running_loss:7.2972 running_bpb:2.8324
+ttt_fullparam:chunk 1111/1238 done
+ttt_fullparam:chunk 1112/1238 scored running_loss:7.2971 running_bpb:2.8325
+ttt_fullparam:chunk 1112/1238 done
+ttt_fullparam:chunk 1113/1238 scored running_loss:7.2971 running_bpb:2.8324
+ttt_fullparam:chunk 1113/1238 done
+ttt_fullparam:chunk 1114/1238 scored running_loss:7.2971 running_bpb:2.8323
+ttt_fullparam:chunk 1114/1238 done
+ttt_fullparam:chunk 1115/1238 scored running_loss:7.2970 running_bpb:2.8324
+ttt_fullparam:chunk 1115/1238 done
+ttt_fullparam:chunk 1116/1238 scored running_loss:7.2970 running_bpb:2.8322
+ttt_fullparam:chunk 1116/1238 done
+ttt_fullparam:chunk 1117/1238 scored running_loss:7.2970 running_bpb:2.8321
+ttt_fullparam:chunk 1117/1238 done
+ttt_fullparam:chunk 1118/1238 scored running_loss:7.2970 running_bpb:2.8322
+ttt_fullparam:chunk 1118/1238 done
+ttt_fullparam:chunk 1119/1238 scored running_loss:7.2969 running_bpb:2.8323
+ttt_fullparam:chunk 1119/1238 done
+ttt_fullparam:chunk 1120/1238 scored running_loss:7.2968 running_bpb:2.8322
+ttt_fullparam:chunk 1120/1238 done
+ttt_fullparam:chunk 1121/1238 scored running_loss:7.2969 running_bpb:2.8319
+ttt_fullparam:chunk 1121/1238 done
+ttt_fullparam:chunk 1122/1238 scored running_loss:7.2967 running_bpb:2.8318
+ttt_fullparam:chunk 1122/1238 done
+ttt_fullparam:chunk 1123/1238 scored running_loss:7.2968 running_bpb:2.8316
+ttt_fullparam:chunk 1123/1238 done
+ttt_fullparam:chunk 1124/1238 scored running_loss:7.2968 running_bpb:2.8314
+ttt_fullparam:chunk 1124/1238 done
+ttt_fullparam:chunk 1125/1238 scored running_loss:7.2970 running_bpb:2.8315
+ttt_fullparam:chunk 1125/1238 done
+ttt_fullparam:chunk 1126/1238 scored running_loss:7.2970 running_bpb:2.8314
+ttt_fullparam:chunk 1126/1238 done
+ttt_fullparam:chunk 1127/1238 scored running_loss:7.2969 running_bpb:2.8313
+ttt_fullparam:chunk 1127/1238 done
+ttt_fullparam:chunk 1128/1238 scored running_loss:7.2969 running_bpb:2.8314
+ttt_fullparam:chunk 1128/1238 done
+ttt_fullparam:chunk 1129/1238 scored running_loss:7.2968 running_bpb:2.8314
+ttt_fullparam:chunk 1129/1238 done
+ttt_fullparam:chunk 1130/1238 scored running_loss:7.2969 running_bpb:2.8313
+ttt_fullparam:chunk 1130/1238 done
+ttt_fullparam:chunk 1131/1238 scored running_loss:7.2969 running_bpb:2.8312
+ttt_fullparam:chunk 1131/1238 done
+ttt_fullparam:chunk 1132/1238 scored running_loss:7.2968 running_bpb:2.8313
+ttt_fullparam:chunk 1132/1238 done
+ttt_fullparam:chunk 1133/1238 scored running_loss:7.2969 running_bpb:2.8312
+ttt_fullparam:chunk 1133/1238 done
+ttt_fullparam:chunk 1134/1238 scored running_loss:7.2969 running_bpb:2.8310
+ttt_fullparam:chunk 1134/1238 done
+ttt_fullparam:chunk 1135/1238 scored running_loss:7.2967 running_bpb:2.8310
+ttt_fullparam:chunk 1135/1238 done
+ttt_fullparam:chunk 1136/1238 scored running_loss:7.2968 running_bpb:2.8309
+ttt_fullparam:chunk 1136/1238 done
+ttt_fullparam:chunk 1137/1238 scored running_loss:7.2968 running_bpb:2.8307
+ttt_fullparam:chunk 1137/1238 done
+ttt_fullparam:chunk 1138/1238 scored running_loss:7.2968 running_bpb:2.8305
+ttt_fullparam:chunk 1138/1238 done
+ttt_fullparam:chunk 1139/1238 scored running_loss:7.2967 running_bpb:2.8304
+ttt_fullparam:chunk 1139/1238 done
+ttt_fullparam:chunk 1140/1238 scored running_loss:7.2968 running_bpb:2.8303
+ttt_fullparam:chunk 1140/1238 done
+ttt_fullparam:chunk 1141/1238 scored running_loss:7.2968 running_bpb:2.8303
+ttt_fullparam:chunk 1141/1238 done
+ttt_fullparam:chunk 1142/1238 scored running_loss:7.2967 running_bpb:2.8302
+ttt_fullparam:chunk 1142/1238 done
+ttt_fullparam:chunk 1143/1238 scored running_loss:7.2965 running_bpb:2.8300
+ttt_fullparam:chunk 1143/1238 done
+ttt_fullparam:chunk 1144/1238 scored running_loss:7.2965 running_bpb:2.8299
+ttt_fullparam:chunk 1144/1238 done
+ttt_fullparam:chunk 1145/1238 scored running_loss:7.2965 running_bpb:2.8297
+ttt_fullparam:chunk 1145/1238 done
+ttt_fullparam:chunk 1146/1238 scored running_loss:7.2965 running_bpb:2.8297
+ttt_fullparam:chunk 1146/1238 done
+ttt_fullparam:chunk 1147/1238 scored running_loss:7.2965 running_bpb:2.8298
+ttt_fullparam:chunk 1147/1238 done
+ttt_fullparam:chunk 1148/1238 scored running_loss:7.2965 running_bpb:2.8297
+ttt_fullparam:chunk 1148/1238 done
+ttt_fullparam:chunk 1149/1238 scored running_loss:7.2965 running_bpb:2.8298
+ttt_fullparam:chunk 1149/1238 done
+ttt_fullparam:chunk 1150/1238 scored running_loss:7.2966 running_bpb:2.8296
+ttt_fullparam:chunk 1150/1238 done
+ttt_fullparam:chunk 1151/1238 scored running_loss:7.2964 running_bpb:2.8297
+ttt_fullparam:chunk 1151/1238 done
+ttt_fullparam:chunk 1152/1238 scored running_loss:7.2964 running_bpb:2.8297
+ttt_fullparam:chunk 1152/1238 done
+ttt_fullparam:chunk 1153/1238 scored running_loss:7.2963 running_bpb:2.8297
+ttt_fullparam:chunk 1153/1238 done
+ttt_fullparam:chunk 1154/1238 scored running_loss:7.2963 running_bpb:2.8296
+ttt_fullparam:chunk 1154/1238 done
+ttt_fullparam:chunk 1155/1238 scored running_loss:7.2962 running_bpb:2.8297
+ttt_fullparam:chunk 1155/1238 done
+ttt_fullparam:chunk 1156/1238 scored running_loss:7.2962 running_bpb:2.8296
+ttt_fullparam:chunk 1156/1238 done
+ttt_fullparam:chunk 1157/1238 scored running_loss:7.2961 running_bpb:2.8296
+ttt_fullparam:chunk 1157/1238 done
+ttt_fullparam:chunk 1158/1238 scored running_loss:7.2960 running_bpb:2.8296
+ttt_fullparam:chunk 1158/1238 done
+ttt_fullparam:chunk 1159/1238 scored running_loss:7.2958 running_bpb:2.8295
+ttt_fullparam:chunk 1159/1238 done
+ttt_fullparam:chunk 1160/1238 scored running_loss:7.2959 running_bpb:2.8294
+ttt_fullparam:chunk 1160/1238 done
+ttt_fullparam:chunk 1161/1238 scored running_loss:7.2958 running_bpb:2.8292
+ttt_fullparam:chunk 1161/1238 done
+ttt_fullparam:chunk 1162/1238 scored running_loss:7.2957 running_bpb:2.8292
+ttt_fullparam:chunk 1162/1238 done
+ttt_fullparam:chunk 1163/1238 scored running_loss:7.2957 running_bpb:2.8293
+ttt_fullparam:chunk 1163/1238 done
+ttt_fullparam:chunk 1164/1238 scored running_loss:7.2957 running_bpb:2.8293
+ttt_fullparam:chunk 1164/1238 done
+ttt_fullparam:chunk 1165/1238 scored running_loss:7.2957 running_bpb:2.8291
+ttt_fullparam:chunk 1165/1238 done
+ttt_fullparam:chunk 1166/1238 scored running_loss:7.2956 running_bpb:2.8290
+ttt_fullparam:chunk 1166/1238 done
+ttt_fullparam:chunk 1167/1238 scored running_loss:7.2955 running_bpb:2.8287
+ttt_fullparam:chunk 1167/1238 done
+ttt_fullparam:chunk 1168/1238 scored running_loss:7.2955 running_bpb:2.8286
+ttt_fullparam:chunk 1168/1238 done
+ttt_fullparam:chunk 1169/1238 scored running_loss:7.2955 running_bpb:2.8284
+ttt_fullparam:chunk 1169/1238 done
+ttt_fullparam:chunk 1170/1238 scored running_loss:7.2954 running_bpb:2.8281
+ttt_fullparam:chunk 1170/1238 done
+ttt_fullparam:chunk 1171/1238 scored running_loss:7.2954 running_bpb:2.8280
+ttt_fullparam:chunk 1171/1238 done
+ttt_fullparam:chunk 1172/1238 scored running_loss:7.2953 running_bpb:2.8279
+ttt_fullparam:chunk 1172/1238 done
+ttt_fullparam:chunk 1173/1238 scored running_loss:7.2952 running_bpb:2.8275
+ttt_fullparam:chunk 1173/1238 done
+ttt_fullparam:chunk 1174/1238 scored running_loss:7.2951 running_bpb:2.8274
+ttt_fullparam:chunk 1174/1238 done
+ttt_fullparam:chunk 1175/1238 scored running_loss:7.2951 running_bpb:2.8273
+ttt_fullparam:chunk 1175/1238 done
+ttt_fullparam:chunk 1176/1238 scored running_loss:7.2951 running_bpb:2.8272
+ttt_fullparam:chunk 1176/1238 done
+ttt_fullparam:chunk 1177/1238 scored running_loss:7.2951 running_bpb:2.8271
+ttt_fullparam:chunk 1177/1238 done
+ttt_fullparam:chunk 1178/1238 scored running_loss:7.2951 running_bpb:2.8270
+ttt_fullparam:chunk 1178/1238 done
+ttt_fullparam:chunk 1179/1238 scored running_loss:7.2951 running_bpb:2.8270
+ttt_fullparam:chunk 1179/1238 done
+ttt_fullparam:chunk 1180/1238 scored running_loss:7.2952 running_bpb:2.8271
+ttt_fullparam:chunk 1180/1238 done
+ttt_fullparam:chunk 1181/1238 scored running_loss:7.2951 running_bpb:2.8269
+ttt_fullparam:chunk 1181/1238 done
+ttt_fullparam:chunk 1182/1238 scored running_loss:7.2951 running_bpb:2.8269
+ttt_fullparam:chunk 1182/1238 done
+ttt_fullparam:chunk 1183/1238 scored running_loss:7.2950 running_bpb:2.8267
+ttt_fullparam:chunk 1183/1238 done
+ttt_fullparam:chunk 1184/1238 scored running_loss:7.2950 running_bpb:2.8265
+ttt_fullparam:chunk 1184/1238 done
+ttt_fullparam:chunk 1185/1238 scored running_loss:7.2950 running_bpb:2.8263
+ttt_fullparam:chunk 1185/1238 done
+ttt_fullparam:chunk 1186/1238 scored running_loss:7.2949 running_bpb:2.8263
+ttt_fullparam:chunk 1186/1238 done
+ttt_fullparam:chunk 1187/1238 scored running_loss:7.2949 running_bpb:2.8263
+ttt_fullparam:chunk 1187/1238 done
+ttt_fullparam:chunk 1188/1238 scored running_loss:7.2948 running_bpb:2.8263
+ttt_fullparam:chunk 1188/1238 done
+ttt_fullparam:chunk 1189/1238 scored running_loss:7.2948 running_bpb:2.8262
+ttt_fullparam:chunk 1189/1238 done
+ttt_fullparam:chunk 1190/1238 scored running_loss:7.2948 running_bpb:2.8262
+ttt_fullparam:chunk 1190/1238 done
+ttt_fullparam:chunk 1191/1238 scored running_loss:7.2946 running_bpb:2.8258
+ttt_fullparam:chunk 1191/1238 done
+ttt_fullparam:chunk 1192/1238 scored running_loss:7.2948 running_bpb:2.8257
+ttt_fullparam:chunk 1192/1238 done
+ttt_fullparam:chunk 1193/1238 scored running_loss:7.2947 running_bpb:2.8258
+ttt_fullparam:chunk 1193/1238 done
+ttt_fullparam:chunk 1194/1238 scored running_loss:7.2946 running_bpb:2.8257
+ttt_fullparam:chunk 1194/1238 done
+ttt_fullparam:chunk 1195/1238 scored running_loss:7.2947 running_bpb:2.8259
+ttt_fullparam:chunk 1195/1238 done
+ttt_fullparam:chunk 1196/1238 scored running_loss:7.2946 running_bpb:2.8257
+ttt_fullparam:chunk 1196/1238 done
+ttt_fullparam:chunk 1197/1238 scored running_loss:7.2946 running_bpb:2.8257
+ttt_fullparam:chunk 1197/1238 done
+ttt_fullparam:chunk 1198/1238 scored running_loss:7.2945 running_bpb:2.8255
+ttt_fullparam:chunk 1198/1238 done
+ttt_fullparam:chunk 1199/1238 scored running_loss:7.2939 running_bpb:2.8262
+ttt_fullparam:chunk 1199/1238 done
+ttt_fullparam:chunk 1200/1238 scored running_loss:7.2940 running_bpb:2.8261
+ttt_fullparam:chunk 1200/1238 done
+ttt_fullparam:chunk 1201/1238 scored running_loss:7.2940 running_bpb:2.8260
+ttt_fullparam:chunk 1201/1238 done
+ttt_fullparam:chunk 1202/1238 scored running_loss:7.2940 running_bpb:2.8260
+ttt_fullparam:chunk 1202/1238 done
+ttt_fullparam:chunk 1203/1238 scored running_loss:7.2940 running_bpb:2.8258
+ttt_fullparam:chunk 1203/1238 done
+ttt_fullparam:chunk 1204/1238 scored running_loss:7.2940 running_bpb:2.8259
+ttt_fullparam:chunk 1204/1238 done
+ttt_fullparam:chunk 1205/1238 scored running_loss:7.2940 running_bpb:2.8258
+ttt_fullparam:chunk 1205/1238 done
+ttt_fullparam:chunk 1206/1238 scored running_loss:7.2939 running_bpb:2.8257
+ttt_fullparam:chunk 1206/1238 done
+ttt_fullparam:chunk 1207/1238 scored running_loss:7.2938 running_bpb:2.8256
+ttt_fullparam:chunk 1207/1238 done
+ttt_fullparam:chunk 1208/1238 scored running_loss:7.2936 running_bpb:2.8259
+ttt_fullparam:chunk 1208/1238 done
+ttt_fullparam:chunk 1209/1238 scored running_loss:7.2936 running_bpb:2.8258
+ttt_fullparam:chunk 1209/1238 done
+ttt_fullparam:chunk 1210/1238 scored running_loss:7.2936 running_bpb:2.8258
+ttt_fullparam:chunk 1210/1238 done
+ttt_fullparam:chunk 1211/1238 scored running_loss:7.2935 running_bpb:2.8257
+ttt_fullparam:chunk 1211/1238 done
+ttt_fullparam:chunk 1212/1238 scored running_loss:7.2935 running_bpb:2.8256
+ttt_fullparam:chunk 1212/1238 done
+ttt_fullparam:chunk 1213/1238 scored running_loss:7.2936 running_bpb:2.8255
+ttt_fullparam:chunk 1213/1238 done
+ttt_fullparam:chunk 1214/1238 scored running_loss:7.2935 running_bpb:2.8253
+ttt_fullparam:chunk 1214/1238 done
+ttt_fullparam:chunk 1215/1238 scored running_loss:7.2934 running_bpb:2.8250
+ttt_fullparam:chunk 1215/1238 done
+ttt_fullparam:chunk 1216/1238 scored running_loss:7.2934 running_bpb:2.8249
+ttt_fullparam:chunk 1216/1238 done
+ttt_fullparam:chunk 1217/1238 scored running_loss:7.2935 running_bpb:2.8248
+ttt_fullparam:chunk 1217/1238 done
+ttt_fullparam:chunk 1218/1238 scored running_loss:7.2934 running_bpb:2.8247
+ttt_fullparam:chunk 1218/1238 done
+ttt_fullparam:chunk 1219/1238 scored running_loss:7.2934 running_bpb:2.8247
+ttt_fullparam:chunk 1219/1238 done
+ttt_fullparam:chunk 1220/1238 scored running_loss:7.2934 running_bpb:2.8245
+ttt_fullparam:chunk 1220/1238 done
+ttt_fullparam:chunk 1221/1238 scored running_loss:7.2934 running_bpb:2.8243
+ttt_fullparam:chunk 1221/1238 done
+ttt_fullparam:chunk 1222/1238 scored running_loss:7.2933 running_bpb:2.8242
+ttt_fullparam:chunk 1222/1238 done
+ttt_fullparam:chunk 1223/1238 scored running_loss:7.2933 running_bpb:2.8242
+ttt_fullparam:chunk 1223/1238 done
+ttt_fullparam:chunk 1224/1238 scored running_loss:7.2933 running_bpb:2.8241
+ttt_fullparam:chunk 1224/1238 done
+ttt_fullparam:chunk 1225/1238 scored running_loss:7.2933 running_bpb:2.8241
+ttt_fullparam:chunk 1225/1238 done
+ttt_fullparam:chunk 1226/1238 scored running_loss:7.2932 running_bpb:2.8240
+ttt_fullparam:chunk 1226/1238 done
+ttt_fullparam:chunk 1227/1238 scored running_loss:7.2931 running_bpb:2.8239
+ttt_fullparam:chunk 1227/1238 done
+ttt_fullparam:chunk 1228/1238 scored running_loss:7.2930 running_bpb:2.8239
+ttt_fullparam:chunk 1228/1238 done
+ttt_fullparam:chunk 1229/1238 scored running_loss:7.2930 running_bpb:2.8237
+ttt_fullparam:chunk 1229/1238 done
+ttt_fullparam:chunk 1230/1238 scored running_loss:7.2928 running_bpb:2.8237
+ttt_fullparam:chunk 1230/1238 done
+ttt_fullparam:chunk 1231/1238 scored running_loss:7.2928 running_bpb:2.8238
+ttt_fullparam:chunk 1231/1238 done
+ttt_fullparam:chunk 1232/1238 scored running_loss:7.2928 running_bpb:2.8235
+ttt_fullparam:chunk 1232/1238 done
+ttt_fullparam:chunk 1233/1238 scored running_loss:7.2928 running_bpb:2.8235
+ttt_fullparam:chunk 1233/1238 done
+ttt_fullparam:chunk 1234/1238 scored running_loss:7.2928 running_bpb:2.8237
+ttt_fullparam:chunk 1234/1238 done
+ttt_fullparam:chunk 1235/1238 scored running_loss:7.2927 running_bpb:2.8236
+ttt_fullparam:chunk 1235/1238 done
+ttt_fullparam:chunk 1236/1238 scored running_loss:7.2926 running_bpb:2.8237
+ttt_fullparam:chunk 1236/1238 done
+ttt_fullparam:chunk 1237/1238 scored running_loss:7.2926 running_bpb:2.8236
+ttt_fullparam:chunk 1237/1238 done
+ttt_fullparam:chunk 1238/1238 scored running_loss:7.2926 running_bpb:2.8236
+ttt_fullparam:chunk 1238/1238 done
+quantized_ttt_fullparam val_loss:7.29529362 val_bpb:2.82423551 eval_time:1507860ms
