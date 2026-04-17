@@ -1,0 +1,87 @@
+
+================================================================
+=== Starting tv02_force_dense at Fri Apr 17 03:33:29 UTC 2026 ===
+================================================================
+=== Finished tv02_force_dense rc=0 at Fri Apr 17 03:40:14 UTC 2026 ===
+[PROBE] eval_model.use_varlen = True
+[PROBE] per-block attn.use_varlen = [True, True, True, True, True, True, True, True, True, True, True]
+[PROBE] sample BOS positions (first 16): [0, 317, 1162, 1367, 2546, 2670, 2984]  n_bos=7
+[PROBE] _build_cu_seqlens -> cu[:16]=[0, 317, 1162, 1367, 2546, 2670, 2984, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096]  max_seqlen=1179
+[PROBE] FORCE_DENSE_EVAL=1 — disabling use_varlen on eval model
+
+================================================================
+=== Starting tv03_ttt_no_compile at Fri Apr 17 03:40:14 UTC 2026 ===
+================================================================
+=== Finished tv03_ttt_no_compile rc=0 at Fri Apr 17 03:42:56 UTC 2026 ===
+[PROBE] eval_model.use_varlen = True
+[PROBE] per-block attn.use_varlen = [True, True, True, True, True, True, True, True, True, True, True]
+[PROBE] sample BOS positions (first 16): [0, 317, 1162, 1367, 2546, 2670, 2984]  n_bos=7
+[PROBE] _build_cu_seqlens -> cu[:16]=[0, 317, 1162, 1367, 2546, 2670, 2984, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096]  max_seqlen=1179
+
+================================================================
+=== Starting tv04_ttt_pad_bos at Fri Apr 17 03:42:56 UTC 2026 ===
+================================================================
+=== Finished tv04_ttt_pad_bos rc=0 at Fri Apr 17 03:49:37 UTC 2026 ===
+[PROBE] eval_model.use_varlen = True
+[PROBE] per-block attn.use_varlen = [True, True, True, True, True, True, True, True, True, True, True]
+[PROBE] sample BOS positions (first 16): [0, 317, 1162, 1367, 2546, 2670, 2984]  n_bos=7
+[PROBE] _build_cu_seqlens -> cu[:16]=[0, 317, 1162, 1367, 2546, 2670, 2984, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096]  max_seqlen=1179
+
+================================================================
+=== Starting tv05_ttt_lora_lr0 at Fri Apr 17 03:49:37 UTC 2026 ===
+================================================================
+=== Finished tv05_ttt_lora_lr0 rc=0 at Fri Apr 17 03:56:18 UTC 2026 ===
+[PROBE] eval_model.use_varlen = True
+[PROBE] per-block attn.use_varlen = [True, True, True, True, True, True, True, True, True, True, True]
+[PROBE] sample BOS positions (first 16): [0, 317, 1162, 1367, 2546, 2670, 2984]  n_bos=7
+[PROBE] _build_cu_seqlens -> cu[:16]=[0, 317, 1162, 1367, 2546, 2670, 2984, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096]  max_seqlen=1179
+
+================================================================
+=== Starting tv06_ttt_lora_lr1e5 at Fri Apr 17 03:56:18 UTC 2026 ===
+================================================================
+=== Finished tv06_ttt_lora_lr1e5 rc=0 at Fri Apr 17 04:07:15 UTC 2026 ===
+[PROBE] eval_model.use_varlen = True
+[PROBE] per-block attn.use_varlen = [True, True, True, True, True, True, True, True, True, True, True]
+[PROBE] sample BOS positions (first 16): [0, 317, 1162, 1367, 2546, 2670, 2984]  n_bos=7
+[PROBE] _build_cu_seqlens -> cu[:16]=[0, 317, 1162, 1367, 2546, 2670, 2984, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096]  max_seqlen=1179
+
+================================================================
+=== Starting tv07_ttt_lora_lr5e6 at Fri Apr 17 04:07:15 UTC 2026 ===
+================================================================
+=== Finished tv07_ttt_lora_lr5e6 rc=0 at Fri Apr 17 04:13:45 UTC 2026 ===
+[PROBE] eval_model.use_varlen = True
+[PROBE] per-block attn.use_varlen = [True, True, True, True, True, True, True, True, True, True, True]
+[PROBE] sample BOS positions (first 16): [0, 317, 1162, 1367, 2546, 2670, 2984]  n_bos=7
+[PROBE] _build_cu_seqlens -> cu[:16]=[0, 317, 1162, 1367, 2546, 2670, 2984, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096]  max_seqlen=1179
+
+================================================================
+=== Starting tv08_ttt_qv_only at Fri Apr 17 04:13:45 UTC 2026 ===
+================================================================
+=== Finished tv08_ttt_qv_only rc=0 at Fri Apr 17 04:24:34 UTC 2026 ===
+[PROBE] eval_model.use_varlen = True
+[PROBE] per-block attn.use_varlen = [True, True, True, True, True, True, True, True, True, True, True]
+[PROBE] sample BOS positions (first 16): [0, 317, 1162, 1367, 2546, 2670, 2984]  n_bos=7
+[PROBE] _build_cu_seqlens -> cu[:16]=[0, 317, 1162, 1367, 2546, 2670, 2984, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096]  max_seqlen=1179
+
+================================================================
+=== Starting tv09_ttt_rank8 at Fri Apr 17 04:24:34 UTC 2026 ===
+================================================================
+=== Finished tv09_ttt_rank8 rc=0 at Fri Apr 17 04:36:51 UTC 2026 ===
+[PROBE] eval_model.use_varlen = True
+[PROBE] per-block attn.use_varlen = [True, True, True, True, True, True, True, True, True, True, True]
+[PROBE] sample BOS positions (first 16): [0, 317, 1162, 1367, 2546, 2670, 2984]  n_bos=7
+[PROBE] _build_cu_seqlens -> cu[:16]=[0, 317, 1162, 1367, 2546, 2670, 2984, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096]  max_seqlen=1179
+
+================================================================
+=== Starting tv10_force_dense_lr0 at Fri Apr 17 04:36:51 UTC 2026 ===
+================================================================
+=== Finished tv10_force_dense_lr0 rc=0 at Fri Apr 17 04:47:49 UTC 2026 ===
+[PROBE] eval_model.use_varlen = True
+[PROBE] per-block attn.use_varlen = [True, True, True, True, True, True, True, True, True, True, True]
+[PROBE] sample BOS positions (first 16): [0, 317, 1162, 1367, 2546, 2670, 2984]  n_bos=7
+[PROBE] _build_cu_seqlens -> cu[:16]=[0, 317, 1162, 1367, 2546, 2670, 2984, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096, 4096]  max_seqlen=1179
+[PROBE] FORCE_DENSE_EVAL=1 — disabling use_varlen on eval model
+
+================================================================
+=== ALL 9 EXPERIMENTS COMPLETE at Fri Apr 17 04:47:49 UTC 2026 ===
+================================================================

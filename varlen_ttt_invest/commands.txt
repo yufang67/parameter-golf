@@ -1,0 +1,36 @@
+# varlen_ttt_invest — 10 diagnostic runs reusing final_model.int6.ptz (SKIP_TRAINING=1)
+# Architecture matches the existing checkpoint: NUM_LAYERS=11 MODEL_DIM=512 MLP_MULT=4.35 VARLEN_ATTENTION=1
+# TTT_MAX_DOCS=50 for speed. RUN_TTT_ONLY=1 skips full + sliding eval to save ~12min/run.
+
+COMMON="DATA_DIR=./data2/ FUSED_ROPE=0 GATED_ATTENTION=1 COMPRESS_ANS=1 COMPRESS_BROTLI=1 \
+  MATRIX_CLIP_SIGMAS=15 MLP_MULT=4.35 VARLEN_ATTENTION=1 \
+  SKIP_TRAINING=1 DEBUG_VARLEN_PROBE=1 TTT_ENABLED=1 TTT_MAX_DOCS=50"
+
+# tv01_baseline: DONE as tv00_smoke — quantized=1.08123, sw=1.07407, ttt_lora=1.20776
+
+# tv02_force_dense: disable varlen kernel at eval (flag flip only, no cu_seqlens built)
+RUN_ID=tv02_force_dense FORCE_DENSE_EVAL=1 RUN_TTT_ONLY=1 $COMMON torchrun --standalone --nproc_per_node=4 train_gpt_improved_04_16.py
+
+# tv03_ttt_no_compile: skip torch.compile entirely on forward_ttt
+RUN_ID=tv03_ttt_no_compile TTT_COMPILE_DISABLE=1 RUN_TTT_ONLY=1 $COMMON torchrun --standalone --nproc_per_node=4 train_gpt_improved_04_16.py
+
+# tv04_ttt_pad_bos: pad eval_val_ttt inputs with BOS_ID=1 instead of token 0
+RUN_ID=tv04_ttt_pad_bos EVAL_PAD_TOKEN=1 RUN_TTT_ONLY=1 $COMMON torchrun --standalone --nproc_per_node=4 train_gpt_improved_04_16.py
+
+# tv05_ttt_lora_lr0: zero-LoRA probe (H1). ttt_bpb should equal base dense forward bpb.
+RUN_ID=tv05_ttt_lora_lr0 TTT_LORA_LR=0 RUN_TTT_ONLY=1 $COMMON torchrun --standalone --nproc_per_node=4 train_gpt_improved_04_16.py
+
+# tv06_ttt_lora_lr1e5: smaller LoRA LR (H2)
+RUN_ID=tv06_ttt_lora_lr1e5 TTT_LORA_LR=1e-5 RUN_TTT_ONLY=1 $COMMON torchrun --standalone --nproc_per_node=4 train_gpt_improved_04_16.py
+
+# tv07_ttt_lora_lr5e6: even smaller (H2)
+RUN_ID=tv07_ttt_lora_lr5e6 TTT_LORA_LR=5e-6 RUN_TTT_ONLY=1 $COMMON torchrun --standalone --nproc_per_node=4 train_gpt_improved_04_16.py
+
+# tv08_ttt_qv_only: match exp106 minimal LoRA (Q,V only, rank 32)
+RUN_ID=tv08_ttt_qv_only TTT_K_LORA=0 TTT_MLP_LORA=0 TTT_O_LORA=0 TTT_LORA_RANK=32 TTT_LORA_LR=5e-5 TTT_BETA2=0.999 RUN_TTT_ONLY=1 $COMMON torchrun --standalone --nproc_per_node=4 train_gpt_improved_04_16.py
+
+# tv09_ttt_rank8: tiny LoRA rank to reduce variance
+RUN_ID=tv09_ttt_rank8 TTT_LORA_RANK=8 RUN_TTT_ONLY=1 $COMMON torchrun --standalone --nproc_per_node=4 train_gpt_improved_04_16.py
+
+# tv10_force_dense_lr0: combine FORCE_DENSE_EVAL with zero-LoRA (baseline via TTT plumbing)
+RUN_ID=tv10_force_dense_lr0 FORCE_DENSE_EVAL=1 TTT_LORA_LR=0 RUN_TTT_ONLY=1 $COMMON torchrun --standalone --nproc_per_node=4 train_gpt_improved_04_16.py

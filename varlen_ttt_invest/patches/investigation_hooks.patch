@@ -1,0 +1,117 @@
+--- varlen_ttt_invest/patches/train_gpt_improved_04_16.original.py	2026-04-17 03:03:18.605758094 +0000
++++ train_gpt_improved_04_16.py	2026-04-17 03:33:23.992618246 +0000
+@@ -404,6 +404,17 @@
+     trigram_vocab_size = int(os.environ.get('TRIGRAM_VOCAB_SIZE', 0))  # 0=disabled, e.g. 2048
+     trigram_dim = int(os.environ.get('TRIGRAM_DIM', 128))
+ 
++    # varlen_ttt_invest hooks (added 2026-04-17)
++    skip_training = bool(int(os.environ.get('SKIP_TRAINING', '0')))
++    debug_varlen_probe = bool(int(os.environ.get('DEBUG_VARLEN_PROBE', '0')))
++    eval_pad_token = int(os.environ.get('EVAL_PAD_TOKEN', '0'))
++    ttt_compile_dynamic = bool(int(os.environ.get('TTT_COMPILE_DYNAMIC', '1')))
++    ttt_compile_disable = bool(int(os.environ.get('TTT_COMPILE_DISABLE', '0')))
++    force_dense_eval = bool(int(os.environ.get('FORCE_DENSE_EVAL', '0')))
++    ttt_adaptive_lr_override = os.environ.get('TTT_ADAPTIVE_LR_OVERRIDE', '')
++    run_ttt_only = bool(int(os.environ.get('RUN_TTT_ONLY', '0')))
++    run_sw_only = bool(int(os.environ.get('RUN_SW_ONLY', '0')))
++
+     # Distributed setup
+     distributed = "RANK" in os.environ and "WORLD_SIZE" in os.environ
+     rank = int(os.environ.get("RANK", "0"))
+@@ -2754,6 +2765,10 @@
+     chunk_size, eval_seq_len = h.ttt_chunk_size, h.ttt_eval_seq_len
+     ttt_bsz = h.ttt_batch_size
+     log(f"ttt_lora:docs:{len(doc_entries)} rank:{h.ttt_lora_rank} lr:{h.ttt_lora_lr} chunk:{chunk_size}")
++    if h.debug_varlen_probe and h.is_main_process:
++        log(f"[PROBE:eval_val_ttt] pad_token={h.eval_pad_token} compile_dynamic={h.ttt_compile_dynamic} "
++            f"compile_disable={h.ttt_compile_disable} ttt_lora_lr={h.ttt_lora_lr} "
++            f"base_model.use_varlen={getattr(base_model, 'use_varlen', None)}")
+     # If no compiled forward provided, use eager forward_ttt
+     if forward_ttt_train is None:
+         forward_ttt_train = base_model.forward_ttt
+@@ -2870,8 +2885,8 @@
+                     device, non_blocking=True)
+                 chunk_offsets = chunk_offsets_cpu.to(device, non_blocking=True)
+                 chunk_lens = chunk_lens_cpu.to(device, non_blocking=True)
+-                x = torch.where(valid, gathered_gpu[:, :context_size], 0)
+-                y = torch.where(valid, gathered_gpu[:, 1:context_size + 1], 0)
++                x = torch.where(valid, gathered_gpu[:, :context_size], h.eval_pad_token)
++                y = torch.where(valid, gathered_gpu[:, 1:context_size + 1], h.eval_pad_token)
+                 ctx_pos = torch.arange(context_size, device=device, dtype=torch.int64)
+                 with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
+                     per_tok_loss = forward_ttt_train(x, y, lora=cur_lora)
+@@ -3369,24 +3384,48 @@
+     val_data = ValidationData(h, device)
+     log(f"train_shards: {len(list(Path(h.datasets_dir).resolve().glob('fineweb_train_*.bin')))}")
+     log(f"val_tokens: {val_data.val_tokens.numel() - 1}")
+-    base_model, compiled_model = train_model(h, device, val_data)
+-    torch._dynamo.reset()
+-    timed_eval("pre-quantization post-ema", eval_val, h, device, val_data, compiled_model)
+-    # Use the compressed loader (train_gpt.py) as code artifact when launched
+-    # via the packed submission; fall back to this file for direct runs.
+-    code_path = Path(os.environ.get("_ORIG_SCRIPT", __file__))
+-    serialize(h, base_model, code_path.read_text(encoding="utf-8"))
+-    if h.distributed:
+-        dist.barrier()
++    if not h.skip_training:
++        base_model, compiled_model = train_model(h, device, val_data)
++        torch._dynamo.reset()
++        timed_eval("pre-quantization post-ema", eval_val, h, device, val_data, compiled_model)
++        code_path = Path(os.environ.get("_ORIG_SCRIPT", __file__))
++        serialize(h, base_model, code_path.read_text(encoding="utf-8"))
++        if h.distributed:
++            dist.barrier()
++    else:
++        log("SKIP_TRAINING=1 — reusing existing final_model.int6.ptz")
+     eval_model = deserialize(h, device)
+     if h.num_loops > 0:
+         eval_model.looping_active = True
+-    compiled_model = torch.compile(eval_model, dynamic=False, fullgraph=True)
+-    timed_eval("quantized", eval_val, h, device, val_data, compiled_model)
+-    if h.sliding_window_enabled:
++    # H0 probe: log use_varlen propagation and a sample cu_seqlens build
++    if h.debug_varlen_probe and h.is_main_process:
++        log(f"[PROBE] eval_model.use_varlen = {getattr(eval_model, 'use_varlen', None)}")
++        attn_varlens = [getattr(b.attn, 'use_varlen', None) for b in eval_model.blocks]
++        log(f"[PROBE] per-block attn.use_varlen = {attn_varlens}")
++        try:
++            sample = val_data.val_tokens[:4096].to(device=device, dtype=torch.int64)
++            bos_pos = (sample == 1).nonzero(as_tuple=True)[0].tolist()
++            log(f"[PROBE] sample BOS positions (first 16): {bos_pos[:16]}  n_bos={len(bos_pos)}")
++            cu, ms = _build_cu_seqlens(bos_pos, sample.numel(), sample.device, h.eval_seq_len, 64)
++            log(f"[PROBE] _build_cu_seqlens -> cu[:16]={cu[:16].tolist()}  max_seqlen={ms}")
++        except Exception as e:
++            log(f"[PROBE] cu_seqlens build failed: {e}")
++    if h.force_dense_eval:
++        log("[PROBE] FORCE_DENSE_EVAL=1 — disabling use_varlen on eval model")
++        eval_model.use_varlen = False
++        for b in eval_model.blocks:
++            b.attn.use_varlen = False
++    if not h.run_ttt_only and not h.run_sw_only:
++        compiled_model = torch.compile(eval_model, dynamic=False, fullgraph=True)
++        timed_eval("quantized", eval_val, h, device, val_data, compiled_model)
++    if h.sliding_window_enabled and not h.run_ttt_only:
+         timed_eval("quantized_sliding_window", eval_val_sliding, h, device, val_data, eval_model)
+-    if h.ttt_enabled and h.sliding_window_enabled:
+-        del eval_model, compiled_model
++    if h.ttt_enabled and h.sliding_window_enabled and not h.run_sw_only:
++        del eval_model
++        try:
++            del compiled_model
++        except NameError:
++            pass
+         torch._dynamo.reset()
+         torch.cuda.empty_cache()
+         ttt_model = deserialize(h, device)
+@@ -3409,8 +3448,10 @@
+             _fwd_ttt_compiled_inner = None
+             def _fwd_ttt(input_ids, target_ids, lora):
+                 nonlocal _fwd_ttt_compiled_inner
++                if h.ttt_compile_disable:
++                    return ttt_model.forward_ttt(input_ids, target_ids, lora=lora)
+                 if _fwd_ttt_compiled_inner is None:
+-                    _fwd_ttt_compiled_inner = torch.compile(_fwd_ttt_inner, dynamic=True)
++                    _fwd_ttt_compiled_inner = torch.compile(_fwd_ttt_inner, dynamic=h.ttt_compile_dynamic)
+                 return _fwd_ttt_compiled_inner(input_ids, target_ids, lora=lora)
+             fwd_ttt_compiled = _fwd_ttt
+             log("ttt_lora:warming up compile")
