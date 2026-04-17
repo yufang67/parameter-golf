@@ -13,6 +13,29 @@
      Keep entries concise — 3-5 sentences, not paragraphs.
      ============================================================ -->
 
+## TTT forward-path fix (train_gpt_improved_04_16.py) — follow-up to varlen_ttt_invest
+
+**Investigation output (`varlen_ttt_invest/results.md`):** 10 diagnostic runs on a single checkpoint found that zero-LoRA `forward_ttt` gives ttt_bpb=1.33587 vs sliding bpb=1.07407 — a ~+0.26 gap the report attributed to "a manual re-implementation of `Block.forward` in `_block_with_lora` that has drifted."
+
+**Findings after code audit + standalone bitwise test:**
+- Built a random-init 11L model (varlen, looping, xsa, parallel residuals, gated, ln_scale all ON) and compared per-layer states: **zero-LoRA `forward_ttt` == `forward_logits` bitwise (max_abs=0.0)** across every layer and on final per-token loss.
+- So `_block_with_lora` is NOT mathematically drifted; the 0.26 BPB gap is a **protocol mismatch** (TTT scores only the first 50 docs via `TTT_MAX_DOCS=50`, where early-doc positions have far less context than the full-dataset sliding average).
+- However, there IS a real training-distribution mismatch worth fixing: `_block_with_lora` always used the dense `flash_attn_3_func` kernel, even when the model was trained with `flash_attn_3_varlen_func`. Subtle kernel-level numerical differences (different FP reduction order, no per-doc boundary marking) can accumulate and are the kind of thing that erodes TTT's marginal gains.
+- Bonus bug in `_collect_zero_lora_debug_states`: the `use_ttt=True` branch passed a fresh `{}` counter per layer to `_add_loop_emb` instead of the shared `lpc` counter — would cause false divergence reports in looping mode.
+
+**Fixes applied to `train_gpt_improved_04_16.py`:**
+1. `_block_with_lora` now accepts `(cu_seqlens, max_seqlen)` and dispatches to `flash_attn_3_varlen_func` when the model uses varlen. Non-varlen path unchanged.
+2. `forward_ttt` now accepts `(cu_seqlens, max_seqlen)`. When `use_varlen=True` and caller omits them, auto-synthesizes `cu_seqlens = arange(0, B*T+1, T)` treating each batch row as one document (matches how `eval_val_ttt` builds its inputs: each row is a contiguous doc slice). This makes the TTT attention kernel identical to training.
+3. `_collect_zero_lora_debug_states` bug fix (shared `lpc` in both `use_ttt` branches).
+
+**Verification:** Standalone parity test passes bitwise (delta=0) for both:
+- `forward_logits(x)` vs `forward_ttt(x,y,zero_lora)` (dense path)
+- `forward_logits(x, cu, max_sl)` vs `forward_ttt(x,y,zero_lora, cu, max_sl)` (varlen path)
+
+**Status:** forward path is now provably correct. The residual TTT-worse-than-sliding gap (confirmed in batch5 experiments) is structural (LoRA updates systematically degrade a well-trained varlen model, and TTT scores a biased subset of docs), not a forward-path bug. Keep TTT dropped from the submission path; the cu_seqlens threading is a correctness improvement available if anyone revisits TTT on a future checkpoint.
+
+---
+
 ## Experiments 86, 97-106 — Batch 5: TTT on VarLen+Improved (Fix divergence, 10 configs)
 
 **Motivation:** User-directed — run 10 experiments on TTT, warning it "may diverge or give worse results." Starting SOTA is exp80_varlen (sliding=1.07632) but artifact=16.06MB (over cap). Goal: establish whether TTT can help the VarLen-trained improved model and add divergence safeguards.

@@ -1165,7 +1165,9 @@ class GPT(nn.Module):
             logits_proj = self.lm_head(x)
         return self.logit_softcap * torch.tanh(logits_proj / self.logit_softcap)
     def _block_with_lora(self, block: 'Block', x: Tensor, x0: Tensor,
-                         lora: 'BatchedTTTLoRA', slot: int) -> Tensor:
+                         lora: 'BatchedTTTLoRA', slot: int,
+                         cu_seqlens: Tensor | None = None,
+                         max_seqlen: int | None = None) -> Tensor:
         """Run a Block with LoRA injected into Q/K/V/O/MLP projections."""
         mix = block.resid_mix.to(dtype=x.dtype)
         x_in = mix[0][None, None, :] * x + mix[1][None, None, :] * x0
@@ -1192,8 +1194,19 @@ class GPT(nn.Module):
             q = apply_rotary_emb(q, cos, sin, attn.rope_dims)
             k = apply_rotary_emb(k, cos, sin, attn.rope_dims)
             q = q * attn.q_gain.to(dtype=q.dtype)[None, None, :, None]
-        window = (attn.window_size, attn.window_size) if attn.window_size > 0 and attn.training else (-1, -1)
-        y = flash_attn_3_func(q, k, v, causal=True, window_size=window)
+        if attn.use_varlen and cu_seqlens is not None and _HAS_VARLEN:
+            q_flat = q.reshape(-1, attn.num_heads, attn.head_dim)
+            k_flat = k.reshape(-1, attn.num_kv_heads, attn.head_dim)
+            v_flat = v.reshape(-1, attn.num_kv_heads, attn.head_dim)
+            y = flash_attn_3_varlen_func(
+                q_flat, k_flat, v_flat,
+                cu_seqlens, cu_seqlens,
+                max_seqlen, max_seqlen,
+                causal=True,
+            ).reshape(bsz, seqlen, attn.num_heads, attn.head_dim)
+        else:
+            window = (attn.window_size, attn.window_size) if attn.window_size > 0 and attn.training else (-1, -1)
+            y = flash_attn_3_func(q, k, v, causal=True, window_size=window)
         if attn.use_xsa:
             y = attn._xsa_efficient(y, v)
         if attn.gated:
@@ -1223,8 +1236,23 @@ class GPT(nn.Module):
             x_out = x_out + block.mlp_scale.to(dtype=x_out.dtype)[None, None, :] * mlp_out
         return x_out
     def forward_ttt(self, input_ids: Tensor, target_ids: Tensor,
-                    lora: 'BatchedTTTLoRA') -> Tensor:
-        """Forward pass with per-sample LoRA for TTT. Returns per-token loss (B, T)."""
+                    lora: 'BatchedTTTLoRA',
+                    cu_seqlens: Tensor | None = None,
+                    max_seqlen: int | None = None) -> Tensor:
+        """Forward pass with per-sample LoRA for TTT. Returns per-token loss (B, T).
+
+        If the model was trained with varlen attention, `cu_seqlens` / `max_seqlen`
+        should be supplied so the attention kernel matches the training distribution.
+        If None and the model uses varlen, auto-synthesize cu_seqlens treating each
+        row of the 2D input as a single document (one BOS-to-EOS segment per row).
+        """
+        bsz_in, sl_in = input_ids.shape
+        if self.use_varlen and _HAS_VARLEN and cu_seqlens is None:
+            cu_seqlens = torch.arange(
+                0, bsz_in * sl_in + 1, sl_in,
+                device=input_ids.device, dtype=torch.int32,
+            )
+            max_seqlen = sl_in
         x = self.tok_emb(input_ids)
         x = F.rms_norm(x, (x.size(-1),))
         if self.embed_proj is not None:
@@ -1241,7 +1269,8 @@ class GPT(nn.Module):
         slot = 0
         for i in enc_iter:
             x = self._add_loop_emb(x, i, lpc)
-            x = self._block_with_lora(self.blocks[i], x, x0, lora, slot)
+            x = self._block_with_lora(self.blocks[i], x, x0, lora, slot,
+                                      cu_seqlens, max_seqlen)
             slot += 1
             skips.append(x)
         for skip_idx, i in enumerate(dec_iter):
@@ -1253,7 +1282,8 @@ class GPT(nn.Module):
                 else:
                     x = x + scaled_skip
             x = self._add_loop_emb(x, i, lpc)
-            x = self._block_with_lora(self.blocks[i], x, x0, lora, slot)
+            x = self._block_with_lora(self.blocks[i], x, x0, lora, slot,
+                                      cu_seqlens, max_seqlen)
             slot += 1
         x = self.final_norm(x)
         if self.head_proj is not None:
@@ -2656,7 +2686,7 @@ def _collect_zero_lora_debug_states(
     slot = 0
     for i in enc_iter:
         if use_ttt:
-            x = base_model._add_loop_emb(x, i, {})
+            x = base_model._add_loop_emb(x, i, lpc)
             x = base_model._block_with_lora(base_model.blocks[i], x, x0, lora, slot)
             slot += 1
         else:
@@ -2673,7 +2703,7 @@ def _collect_zero_lora_debug_states(
             else:
                 x = x + scaled_skip
         if use_ttt:
-            x = base_model._add_loop_emb(x, i, {})
+            x = base_model._add_loop_emb(x, i, lpc)
             x = base_model._block_with_lora(base_model.blocks[i], x, x0, lora, slot)
             slot += 1
         else:
