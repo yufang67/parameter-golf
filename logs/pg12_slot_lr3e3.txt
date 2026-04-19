@@ -1,0 +1,459 @@
+====================================================================================================
+Hyperparameters:
+  adam_eps: 1e-08
+  adam_wd: 0.02
+  beta1: 0.9
+  beta2: 0.95
+  clip_mult_early: 1.0
+  clip_mult_late: 1.0
+  clip_mult_loop: 1.0
+  clip_mult_mid: 1.0
+  compress_ans: True
+  compress_brotli: False
+  compress_lzma: False
+  data_dir: ./data/
+  datasets_dir: ./data/datasets/fineweb10B_sp8192
+  distributed: True
+  effective_train_seq_len: <property object at 0x149304a745e0>
+  ema_decay: 0.9965
+  embed_bits: 8
+  embed_clip_sigmas: 20.0
+  embed_lr: 0.6
+  embed_wd: 0.085
+  embedding_dim: 512
+  enable_looping_at: 0.35
+  eval_seq_len: 2048
+  eval_stride: 64
+  force_dense_eval: False
+  fused_mlp: True
+  fused_rope: True
+  gated_attention: True
+  gptq_calibration_batches: 128
+  gptq_reserve_seconds: 12.0
+  grad_accum_steps: 2
+  grad_clip_norm: 0.3
+  head_lr: 0.008
+  hessian_clip_lambda: 0.3
+  is_main_process: True
+  iterations: 20000
+  ln_scale: True
+  local_rank: 0
+  logfile: logs/pg12_slot_lr3e3.txt
+  logit_softcap: 20.0
+  loop_embeddings: False
+  loop_end: 5
+  loop_layer_bits: 0
+  loop_layer_clip_sigmas: 0.0
+  loop_start: 3
+  matrix_bits: 6
+  matrix_clip_sigmas: 14.0
+  matrix_lr: 0.022
+  max_wallclock_seconds: 3600.0
+  min_lr: 0.0
+  mixed_seq_gpu_frac: 0.375
+  mixed_seq_len: 0
+  mlp_mult: 4.35
+  model_dim: 512
+  model_path: final_model.pt
+  moe_enabled: False
+  moe_layers: 3,5,7,9
+  moe_num_experts: 3
+  moe_top_k: 2
+  muon_backend_steps: 5
+  muon_beta2: 0.95
+  muon_momentum: 0.97
+  muon_momentum_warmup_start: 0.92
+  muon_momentum_warmup_steps: 1500
+  muon_row_normalize: True
+  muon_wd: 0.095
+  num_heads: 8
+  num_kv_heads: 4
+  num_layers: 11
+  num_loops: 2
+  parallel_residual_start: 7
+  qk_gain_init: 5.25
+  quantized_model_path: final_model.int6.ptz
+  rank: 0
+  rope_base: 10000.0
+  rope_dims: 32
+  rope_force_base_seqlen: 0
+  rope_train_seq_len: 2048
+  run_id: pg12_slot_lr3e3
+  run_sw_only: True
+  run_ttt_only: False
+  scalar_lr: 0.022
+  seed: 1337
+  skip_gates_enabled: True
+  skip_training: True
+  sliding_window_enabled: True
+  slot_enabled: True
+  slot_lr: 0.003
+  slot_max_windows: 0
+  slot_steps: 4
+  slot_train_mode: context
+  slot_wd: 0.01
+  tie_embeddings: True
+  tied_embed_init_std: 0.005
+  tied_embed_lr: 0.03
+  tokenizer_path: ./data/tokenizers/fineweb_8192_bpe.model
+  train_batch_tokens: 786432
+  train_files: ./data/datasets/fineweb10B_sp8192/fineweb_train_*.bin
+  train_log_every: 500
+  train_seq_len: 2048
+  ttt_adapt_ema: 0.95
+  ttt_adapt_max_scale: 2.0
+  ttt_adapt_min_scale: 0.5
+  ttt_adapt_power: 1.0
+  ttt_adaptive_lr: False
+  ttt_batch_size: 64
+  ttt_beta1: 0.9
+  ttt_beta2: 0.99
+  ttt_chunk_size: 64
+  ttt_enabled: False
+  ttt_eval_seq_len: 2048
+  ttt_fp_chunk_tokens: 32768
+  ttt_fp_epochs: 3
+  ttt_fp_lr: 0.001
+  ttt_grad_clip: 1.0
+  ttt_grad_steps: 1
+  ttt_k_lora: True
+  ttt_lora_lr: 0.0001
+  ttt_lora_rank: 48
+  ttt_max_docs: 0
+  ttt_min_doc_len: 0
+  ttt_mlp_lora: True
+  ttt_nan_guard: True
+  ttt_o_lora: True
+  ttt_phase_sgd_batch: 8
+  ttt_phase_sgd_epochs: 1
+  ttt_phase_sgd_lr: 0.0005
+  ttt_phase_sgd_momentum: 0.9
+  ttt_phase_sgd_optimizer: sgd
+  ttt_phase_sgd_seq_len: 1024
+  ttt_phase_sgd_wd: 0.0
+  ttt_phases: 1
+  ttt_rope_base_seqlen: 0
+  ttt_weight_decay: 0.2
+  val_batch_tokens: 524288
+  val_files: ./data/datasets/fineweb10B_sp8192/fineweb_val_*.bin
+  val_loss_every: 4000
+  varlen_attention: True
+  vocab_size: 8192
+  warmdown_frac: 0.85
+  warmdown_wd_mult: 1.0
+  warmup_steps: 20
+  window_attn_layers: 
+  window_attn_size: 0
+  world_size: 4
+  xsa_last_n: 11
+====================================================================================================
+Running Python 3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]
+Running PyTorch 2.11.0+cu130
+Sat Apr 18 19:58:11 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.2     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100 80GB PCIe          On  |   00000001:00:00.0 Off |                    0 |
+| N/A   65C    P0             99W /  300W |     733MiB /  81920MiB |      7%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100 80GB PCIe          On  |   00000002:00:00.0 Off |                    0 |
+| N/A   64C    P0            103W /  300W |     733MiB /  81920MiB |      8%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100 80GB PCIe          On  |   00000003:00:00.0 Off |                    0 |
+| N/A   64C    P0             98W /  300W |     733MiB /  81920MiB |      8%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100 80GB PCIe          On  |   00000004:00:00.0 Off |                    0 |
+| N/A   68C    P0            110W /  300W |     733MiB /  81920MiB |      9%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A          219819      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    1   N/A  N/A          219820      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    2   N/A  N/A          219821      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    3   N/A  N/A          219822      C   ...ameter-golf/.venv/bin/python3        724MiB |
++-----------------------------------------------------------------------------------------+
+
+====================================================================================================
+train_shards: 80
+val_tokens: 40540160
+SKIP_TRAINING=1 — reusing existing final_model.int6.ptz
+sliding_perdoc: RoPE NTK seqlen override = 98304
+sliding_perdoc: bin 1/1010 segs:32 tokens:0 running_loss:0.0000 running_bpb:0.0000 elapsed:0.0s
+sliding_perdoc: bin 51/1010 segs:32 tokens:161920 running_loss:2.6085 running_bpb:1.0671 elapsed:7.0s
+sliding_perdoc: bin 101/1010 segs:32 tokens:353600 running_loss:2.6111 running_bpb:1.0606 elapsed:13.4s
+sliding_perdoc: bin 151/1010 segs:32 tokens:541312 running_loss:2.6396 running_bpb:1.0681 elapsed:19.9s
+sliding_perdoc: bin 201/1010 segs:32 tokens:740928 running_loss:2.6658 running_bpb:1.0739 elapsed:26.3s
+sliding_perdoc: bin 251/1010 segs:32 tokens:938560 running_loss:2.6940 running_bpb:1.0761 elapsed:32.8s
+sliding_perdoc: bin 301/1010 segs:32 tokens:1136192 running_loss:2.6983 running_bpb:1.0769 elapsed:39.3s
+sliding_perdoc: bin 351/1010 segs:32 tokens:1335808 running_loss:2.7039 running_bpb:1.0780 elapsed:45.8s
+sliding_perdoc: bin 401/1010 segs:32 tokens:1523520 running_loss:2.7111 running_bpb:1.0778 elapsed:52.3s
+sliding_perdoc: bin 451/1010 segs:32 tokens:1693376 running_loss:2.6957 running_bpb:1.0746 elapsed:58.8s
+sliding_perdoc: bin 501/1010 segs:32 tokens:1894976 running_loss:2.7054 running_bpb:1.0784 elapsed:65.3s
+sliding_perdoc: bin 551/1010 segs:32 tokens:2092608 running_loss:2.7120 running_bpb:1.0785 elapsed:71.8s
+sliding_perdoc: bin 601/1010 segs:32 tokens:2290240 running_loss:2.7164 running_bpb:1.0781 elapsed:78.2s
+sliding_perdoc: bin 651/1010 segs:32 tokens:2497792 running_loss:2.7159 running_bpb:1.0757 elapsed:84.7s
+sliding_perdoc: bin 701/1010 segs:32 tokens:2669632 running_loss:2.7199 running_bpb:1.0776 elapsed:91.2s
+sliding_perdoc: bin 751/1010 segs:32 tokens:2863296 running_loss:2.7207 running_bpb:1.0795 elapsed:97.7s
+sliding_perdoc: bin 801/1010 segs:32 tokens:3027200 running_loss:2.7204 running_bpb:1.0785 elapsed:104.2s
+sliding_perdoc: bin 851/1010 segs:32 tokens:3210944 running_loss:2.7227 running_bpb:1.0772 elapsed:110.7s
+sliding_perdoc: bin 901/1010 segs:33 tokens:3434364 running_loss:2.7227 running_bpb:1.0764 elapsed:117.2s
+sliding_perdoc: bin 951/1010 segs:68 tokens:6123868 running_loss:2.7497 running_bpb:1.0690 elapsed:123.6s
+sliding_perdoc: bin 1001/1010 segs:249 tokens:9400550 running_loss:2.7650 running_bpb:1.0685 elapsed:130.1s
+sliding_perdoc: bin 1010/1010 segs:472 tokens:9990290 running_loss:2.7756 running_bpb:1.0739 elapsed:131.6s
+quantized_sliding_window val_loss:2.77381471 val_bpb:1.07383012 eval_time:133786ms
+====================================================================================================
+Hyperparameters:
+  adam_eps: 1e-08
+  adam_wd: 0.02
+  beta1: 0.9
+  beta2: 0.95
+  clip_mult_early: 1.0
+  clip_mult_late: 1.0
+  clip_mult_loop: 1.0
+  clip_mult_mid: 1.0
+  compress_ans: True
+  compress_brotli: False
+  compress_lzma: False
+  data_dir: ./data/
+  datasets_dir: ./data/datasets/fineweb10B_sp8192
+  distributed: True
+  effective_train_seq_len: <property object at 0x1552e8074400>
+  ema_decay: 0.9965
+  embed_bits: 8
+  embed_clip_sigmas: 20.0
+  embed_lr: 0.6
+  embed_wd: 0.085
+  embedding_dim: 512
+  enable_looping_at: 0.35
+  eval_seq_len: 2048
+  eval_stride: 64
+  force_dense_eval: False
+  fused_mlp: True
+  fused_rope: True
+  gated_attention: True
+  gptq_calibration_batches: 128
+  gptq_reserve_seconds: 12.0
+  grad_accum_steps: 2
+  grad_clip_norm: 0.3
+  head_lr: 0.008
+  hessian_clip_lambda: 0.3
+  is_main_process: True
+  iterations: 20000
+  ln_scale: True
+  local_rank: 0
+  logfile: logs/pg12_slot_lr3e3.txt
+  logit_softcap: 20.0
+  loop_embeddings: False
+  loop_end: 5
+  loop_layer_bits: 0
+  loop_layer_clip_sigmas: 0.0
+  loop_start: 3
+  matrix_bits: 6
+  matrix_clip_sigmas: 14.0
+  matrix_lr: 0.022
+  max_wallclock_seconds: 3600.0
+  min_lr: 0.0
+  mixed_seq_gpu_frac: 0.375
+  mixed_seq_len: 0
+  mlp_mult: 4.35
+  model_dim: 512
+  model_path: final_model.pt
+  moe_enabled: False
+  moe_layers: 3,5,7,9
+  moe_num_experts: 3
+  moe_top_k: 2
+  muon_backend_steps: 5
+  muon_beta2: 0.95
+  muon_momentum: 0.97
+  muon_momentum_warmup_start: 0.92
+  muon_momentum_warmup_steps: 1500
+  muon_row_normalize: True
+  muon_wd: 0.095
+  num_heads: 8
+  num_kv_heads: 4
+  num_layers: 11
+  num_loops: 2
+  parallel_residual_start: 7
+  qk_gain_init: 5.25
+  quantized_model_path: final_model.int6.ptz
+  rank: 0
+  rope_base: 10000.0
+  rope_dims: 32
+  rope_force_base_seqlen: 0
+  rope_train_seq_len: 2048
+  run_id: pg12_slot_lr3e3
+  run_sw_only: True
+  run_ttt_only: False
+  scalar_lr: 0.022
+  seed: 1337
+  skip_gates_enabled: True
+  skip_training: True
+  sliding_window_enabled: True
+  slot_enabled: True
+  slot_lr: 0.003
+  slot_max_windows: 0
+  slot_steps: 4
+  slot_train_mode: context
+  slot_wd: 0.01
+  tie_embeddings: True
+  tied_embed_init_std: 0.005
+  tied_embed_lr: 0.03
+  tokenizer_path: ./data/tokenizers/fineweb_8192_bpe.model
+  train_batch_tokens: 786432
+  train_files: ./data/datasets/fineweb10B_sp8192/fineweb_train_*.bin
+  train_log_every: 500
+  train_seq_len: 2048
+  ttt_adapt_ema: 0.95
+  ttt_adapt_max_scale: 2.0
+  ttt_adapt_min_scale: 0.5
+  ttt_adapt_power: 1.0
+  ttt_adaptive_lr: False
+  ttt_batch_size: 64
+  ttt_beta1: 0.9
+  ttt_beta2: 0.99
+  ttt_chunk_size: 64
+  ttt_enabled: False
+  ttt_eval_seq_len: 2048
+  ttt_fp_chunk_tokens: 32768
+  ttt_fp_epochs: 3
+  ttt_fp_lr: 0.001
+  ttt_grad_clip: 1.0
+  ttt_grad_steps: 1
+  ttt_k_lora: True
+  ttt_lora_lr: 0.0001
+  ttt_lora_rank: 48
+  ttt_max_docs: 0
+  ttt_min_doc_len: 0
+  ttt_mlp_lora: True
+  ttt_nan_guard: True
+  ttt_o_lora: True
+  ttt_phase_sgd_batch: 8
+  ttt_phase_sgd_epochs: 1
+  ttt_phase_sgd_lr: 0.0005
+  ttt_phase_sgd_momentum: 0.9
+  ttt_phase_sgd_optimizer: sgd
+  ttt_phase_sgd_seq_len: 1024
+  ttt_phase_sgd_wd: 0.0
+  ttt_phases: 1
+  ttt_rope_base_seqlen: 0
+  ttt_weight_decay: 0.2
+  val_batch_tokens: 524288
+  val_files: ./data/datasets/fineweb10B_sp8192/fineweb_val_*.bin
+  val_loss_every: 4000
+  varlen_attention: True
+  vocab_size: 8192
+  warmdown_frac: 0.85
+  warmdown_wd_mult: 1.0
+  warmup_steps: 20
+  window_attn_layers: 
+  window_attn_size: 0
+  world_size: 4
+  xsa_last_n: 11
+====================================================================================================
+Running Python 3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]
+Running PyTorch 2.11.0+cu130
+Sat Apr 18 22:20:30 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.2     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100 80GB PCIe          On  |   00000001:00:00.0 Off |                    0 |
+| N/A   60C    P0             93W /  300W |     733MiB /  81920MiB |      9%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100 80GB PCIe          On  |   00000002:00:00.0 Off |                    0 |
+| N/A   59C    P0             97W /  300W |     733MiB /  81920MiB |      7%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100 80GB PCIe          On  |   00000003:00:00.0 Off |                    0 |
+| N/A   58C    P0             90W /  300W |     733MiB /  81920MiB |      8%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100 80GB PCIe          On  |   00000004:00:00.0 Off |                    0 |
+| N/A   65C    P0            105W /  300W |     733MiB /  81920MiB |      8%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A          234497      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    1   N/A  N/A          234498      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    2   N/A  N/A          234499      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    3   N/A  N/A          234500      C   ...ameter-golf/.venv/bin/python3        724MiB |
++-----------------------------------------------------------------------------------------+
+
+====================================================================================================
+train_shards: 80
+val_tokens: 40540160
+SKIP_TRAINING=1 — reusing existing final_model.int6.ptz
+slot:enabled steps=4 lr=0.003 wd=0.01 train_mode=context windows/rank=158352
+slot_progress: batch 1/4949 tokens:0 running_loss:0.0000 running_bpb:0.0000 elapsed:0.0s
+slot_progress: batch 101/4949 tokens:206784 running_loss:2.7473 running_bpb:1.0658 elapsed:20.2s
+slot_progress: batch 201/4949 tokens:411584 running_loss:2.7410 running_bpb:1.0769 elapsed:39.9s
+slot_progress: batch 301/4949 tokens:616384 running_loss:2.7445 running_bpb:1.0746 elapsed:59.6s
+slot_progress: batch 401/4949 tokens:821184 running_loss:2.7616 running_bpb:1.0803 elapsed:79.5s
+slot_progress: batch 501/4949 tokens:1025984 running_loss:2.7438 running_bpb:1.0777 elapsed:99.3s
+slot_progress: batch 601/4949 tokens:1230784 running_loss:2.7644 running_bpb:1.0867 elapsed:119.1s
+slot_progress: batch 701/4949 tokens:1435584 running_loss:2.7540 running_bpb:1.0827 elapsed:139.0s
+slot_progress: batch 801/4949 tokens:1640384 running_loss:2.7447 running_bpb:1.0816 elapsed:158.8s
+slot_progress: batch 901/4949 tokens:1845184 running_loss:2.7298 running_bpb:1.0782 elapsed:178.7s
+slot_progress: batch 1001/4949 tokens:2049984 running_loss:2.7297 running_bpb:1.0769 elapsed:198.4s
+slot_progress: batch 1101/4949 tokens:2254784 running_loss:2.7337 running_bpb:1.0789 elapsed:218.2s
+slot_progress: batch 1201/4949 tokens:2459584 running_loss:2.7230 running_bpb:1.0747 elapsed:237.9s
+slot_progress: batch 1301/4949 tokens:2664384 running_loss:2.7260 running_bpb:1.0755 elapsed:257.6s
+slot_progress: batch 1401/4949 tokens:2869184 running_loss:2.7269 running_bpb:1.0742 elapsed:277.3s
+slot_progress: batch 1501/4949 tokens:3073984 running_loss:2.7248 running_bpb:1.0733 elapsed:297.0s
+slot_progress: batch 1601/4949 tokens:3278784 running_loss:2.7261 running_bpb:1.0736 elapsed:316.8s
+slot_progress: batch 1701/4949 tokens:3483584 running_loss:2.7252 running_bpb:1.0743 elapsed:336.5s
+slot_progress: batch 1801/4949 tokens:3688384 running_loss:2.7317 running_bpb:1.0765 elapsed:356.4s
+slot_progress: batch 1901/4949 tokens:3893184 running_loss:2.7314 running_bpb:1.0764 elapsed:376.0s
+slot_progress: batch 2001/4949 tokens:4097984 running_loss:2.7350 running_bpb:1.0793 elapsed:395.8s
+slot_progress: batch 2101/4949 tokens:4302784 running_loss:2.7339 running_bpb:1.0788 elapsed:415.5s
+slot_progress: batch 2201/4949 tokens:4507584 running_loss:2.7316 running_bpb:1.0772 elapsed:435.2s
+slot_progress: batch 2301/4949 tokens:4712384 running_loss:2.7337 running_bpb:1.0778 elapsed:454.9s
+slot_progress: batch 2401/4949 tokens:4917184 running_loss:2.7318 running_bpb:1.0777 elapsed:474.7s
+slot_progress: batch 2501/4949 tokens:5121984 running_loss:2.7318 running_bpb:1.0783 elapsed:494.4s
+slot_progress: batch 2601/4949 tokens:5326784 running_loss:2.7299 running_bpb:1.0778 elapsed:514.2s
+slot_progress: batch 2701/4949 tokens:5531584 running_loss:2.7313 running_bpb:1.0783 elapsed:533.8s
+slot_progress: batch 2801/4949 tokens:5736384 running_loss:2.7276 running_bpb:1.0761 elapsed:553.7s
+slot_progress: batch 2901/4949 tokens:5941184 running_loss:2.7297 running_bpb:1.0773 elapsed:573.4s
+slot_progress: batch 3001/4949 tokens:6145984 running_loss:2.7332 running_bpb:1.0780 elapsed:593.1s
+slot_progress: batch 3101/4949 tokens:6350784 running_loss:2.7345 running_bpb:1.0774 elapsed:612.7s
+slot_progress: batch 3201/4949 tokens:6555584 running_loss:2.7376 running_bpb:1.0780 elapsed:632.5s
+slot_progress: batch 3301/4949 tokens:6760384 running_loss:2.7404 running_bpb:1.0788 elapsed:652.2s
+slot_progress: batch 3401/4949 tokens:6965184 running_loss:2.7418 running_bpb:1.0791 elapsed:671.9s
+slot_progress: batch 3501/4949 tokens:7169984 running_loss:2.7418 running_bpb:1.0785 elapsed:691.6s
+slot_progress: batch 3601/4949 tokens:7374784 running_loss:2.7441 running_bpb:1.0785 elapsed:711.3s
+slot_progress: batch 3701/4949 tokens:7579584 running_loss:2.7473 running_bpb:1.0792 elapsed:731.0s
+slot_progress: batch 3801/4949 tokens:7784384 running_loss:2.7447 running_bpb:1.0796 elapsed:750.8s
+slot_progress: batch 3901/4949 tokens:7989184 running_loss:2.7470 running_bpb:1.0797 elapsed:770.5s
+slot_progress: batch 4001/4949 tokens:8193984 running_loss:2.7483 running_bpb:1.0796 elapsed:790.3s
+slot_progress: batch 4101/4949 tokens:8398784 running_loss:2.7519 running_bpb:1.0801 elapsed:810.0s
+slot_progress: batch 4201/4949 tokens:8603584 running_loss:2.7531 running_bpb:1.0800 elapsed:829.7s
+slot_progress: batch 4301/4949 tokens:8808384 running_loss:2.7526 running_bpb:1.0790 elapsed:849.3s
+slot_progress: batch 4401/4949 tokens:9013184 running_loss:2.7538 running_bpb:1.0790 elapsed:869.0s
+slot_progress: batch 4501/4949 tokens:9217984 running_loss:2.7563 running_bpb:1.0796 elapsed:888.7s
+slot_progress: batch 4601/4949 tokens:9422784 running_loss:2.7572 running_bpb:1.0793 elapsed:908.5s
+slot_progress: batch 4701/4949 tokens:9627584 running_loss:2.7594 running_bpb:1.0793 elapsed:928.1s
+slot_progress: batch 4801/4949 tokens:9832384 running_loss:2.7607 running_bpb:1.0788 elapsed:947.7s
+slot_progress: batch 4901/4949 tokens:10037184 running_loss:2.7638 running_bpb:1.0792 elapsed:967.5s
+slot_progress: batch 4949/4949 tokens:10135488 running_loss:2.7634 running_bpb:1.0787 elapsed:977.0s
+quantized_slot val_loss:2.77346887 val_bpb:1.07369623 eval_time:986690ms

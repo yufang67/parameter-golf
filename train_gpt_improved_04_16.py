@@ -296,10 +296,21 @@ class Hyperparameters():
     # varlen → LoRA TTT, non-varlen → fullparam TTT
     ttt_enabled = bool(int(os.environ.get('TTT_ENABLED', '0')))
     # LoRA TTT params
-    ttt_lora_rank = int(os.environ.get('TTT_LORA_RANK', 96))
+    ttt_lora_rank = int(os.environ.get('TTT_LORA_RANK', 48))
     ttt_lora_lr = float(os.environ.get('TTT_LORA_LR', 1e-4))
     ttt_chunk_size = int(os.environ.get('TTT_CHUNK_SIZE', 64))
     ttt_eval_seq_len = int(os.environ.get('TTT_EVAL_SEQ_LEN', 2048))
+    # RoPE base mismatch fix: training packs ~train_batch_tokens/(world*grad_accum)
+    # tokens per row, triggering NTK-aware RoPE rescaling. Eval (dense / sliding /
+    # TTT) processes shorter rows and would otherwise compute a different NTK base
+    # → encoding mismatch (~+0.12 BPB on TTT). When >0, force Rotary at every call
+    # site to use this value as the effective base seq_len. When 0, auto-derive in
+    # main() to train_batch_tokens // (world*grad_accum). Set explicitly to
+    # train_seq_len to disable NTK rescaling entirely (scale=1 → base unchanged).
+    rope_force_base_seqlen = int(os.environ.get('ROPE_FORCE_BASE_SEQLEN', 0))
+    # Legacy alias kept for the TTT-only override; only consulted as a fallback
+    # when rope_force_base_seqlen is 0.
+    ttt_rope_base_seqlen = int(os.environ.get('TTT_ROPE_BASE_SEQLEN', 0))
     ttt_batch_size = int(os.environ.get('TTT_BATCH_SIZE', 64))
     ttt_grad_steps = int(os.environ.get('TTT_GRAD_STEPS', 1))
     ttt_grad_clip = float(os.environ.get('TTT_GRAD_CLIP', 1.0))
@@ -331,6 +342,8 @@ class Hyperparameters():
     ttt_phase_sgd_optimizer = os.environ.get('TTT_PHASE_SGD_OPT', 'sgd')
     ttt_phase_sgd_wd = float(os.environ.get('TTT_PHASE_SGD_WD', 0.0))
     ttt_max_docs = int(os.environ.get('TTT_MAX_DOCS', 0))  # 0 = all; dev helper for faster testing
+    # Skip LoRA gradient updates for docs shorter than this (still scored). 0 = no filter.
+    ttt_min_doc_len = int(os.environ.get('TTT_MIN_DOC_LEN', 0))
     # SLOT-4: per-window zero-init logit delta optimized with AdamW.
     # Legal variant trains delta on context positions only (already-scored tokens from
     # previous sliding windows), then uses it to score the new stride positions.
@@ -340,6 +353,14 @@ class Hyperparameters():
     slot_wd = float(os.environ.get('SLOT_WD', 0.01))
     slot_train_mode = os.environ.get('SLOT_TRAIN_MODE', 'context')  # 'context' (legal) or 'all'
     slot_max_windows = int(os.environ.get('SLOT_MAX_WINDOWS', 0))  # 0 = all; dev helper
+    # SLOT-in-TTT composition: during TTT scoring, optimize per-chunk logit delta on
+    # the already-scored context (positions before chunk_offset within the window),
+    # then score the chunk with corrected logits. TTT gradient updates still use the
+    # un-corrected loss to avoid double-dipping.
+    slot_in_ttt = bool(int(os.environ.get('SLOT_IN_TTT', '0')))
+    slot_in_ttt_steps = int(os.environ.get('SLOT_IN_TTT_STEPS', 4))
+    slot_in_ttt_lr = float(os.environ.get('SLOT_IN_TTT_LR', 0.01))
+    slot_in_ttt_wd = float(os.environ.get('SLOT_IN_TTT_WD', 0.001))
     
     # Quantization & Compression
     compress_brotli = bool(int(os.environ.get('COMPRESS_BROTLI', '0')))
@@ -392,6 +413,13 @@ class Hyperparameters():
     # Mixed sequence length training: some GPUs train on longer seqs
     mixed_seq_len = int(os.environ.get('MIXED_SEQ_LEN', 0))  # 0=disabled, e.g. 6144
     mixed_seq_gpu_frac = float(os.environ.get('MIXED_SEQ_GPU_FRAC', 0.375))  # fraction of GPUs on long seqs
+
+    # Eval-only hooks: skip training and/or restrict eval passes when iterating
+    # on the eval pipeline against an existing final_model.int6.ptz artifact.
+    skip_training = bool(int(os.environ.get('SKIP_TRAINING', '0')))
+    force_dense_eval = bool(int(os.environ.get('FORCE_DENSE_EVAL', '0')))
+    run_ttt_only = bool(int(os.environ.get('RUN_TTT_ONLY', '0')))
+    run_sw_only = bool(int(os.environ.get('RUN_SW_ONLY', '0')))
 
     # Distributed setup
     distributed = "RANK" in os.environ and "WORLD_SIZE" in os.environ
@@ -701,6 +729,12 @@ class Rotary(nn.Module):
         # ntk_seq_len overrides which seq_len is used to pick the NTK base
         # (positions returned are still 0..seq_len-1). Lets eval reproduce the
         # exact RoPE rotations used during training even when packed buffers differ.
+        # Global env override (ROPE_FORCE_BASE_SEQLEN) wins over the kwarg so it
+        # also reaches call sites that don't thread ntk_seq_len through (e.g.
+        # _block_with_lora used by TTT).
+        force = int(os.environ.get('ROPE_FORCE_BASE_SEQLEN', '0'))
+        if force > 0:
+            ntk_seq_len = force
         n = max(seq_len, ntk_seq_len) if ntk_seq_len > 0 else seq_len
         if n <= self.train_seq_len:
             return self._cos_cached[:, :seq_len].to(dtype=dtype), self._sin_cached[:, :seq_len].to(dtype=dtype)
@@ -1149,6 +1183,19 @@ class GPT(nn.Module):
     def forward_ttt(self, input_ids: Tensor, target_ids: Tensor,
                     lora: 'BatchedTTTLoRA') -> Tensor:
         """Forward pass with per-sample LoRA for TTT. Returns per-token loss (B, T)."""
+        logits = self._forward_ttt_logits(input_ids, lora)
+        bsz, sl, V = logits.shape
+        return F.cross_entropy(
+            logits.float().reshape(-1, V), target_ids.reshape(-1), reduction="none"
+        ).reshape(bsz, sl)
+
+    def forward_ttt_logits(self, input_ids: Tensor,
+                           lora: 'BatchedTTTLoRA') -> Tensor:
+        """Forward pass with per-sample LoRA for TTT. Returns logits (B, T, V)."""
+        return self._forward_ttt_logits(input_ids, lora)
+
+    def _forward_ttt_logits(self, input_ids: Tensor,
+                            lora: 'BatchedTTTLoRA') -> Tensor:
         x = self.tok_emb(input_ids)
         x = F.rms_norm(x, (x.size(-1),))
         if self.embed_proj is not None:
@@ -1184,10 +1231,7 @@ class GPT(nn.Module):
             logits = self.lm_head(x)
         logits = logits + lora.lm_head_lora(x)
         logits = self.logit_softcap * torch.tanh(logits / self.logit_softcap)
-        bsz, sl, V = logits.shape
-        return F.cross_entropy(
-            logits.float().reshape(-1, V), target_ids.reshape(-1), reduction="none"
-        ).reshape(bsz, sl)
+        return logits
     def forward(self, input_ids: Tensor, target_ids: Tensor,
                 cu_seqlens: Tensor | None = None, max_seqlen: int = 0) -> Tensor:
         if cu_seqlens is not None:
@@ -2625,6 +2669,50 @@ def _accumulate_bpb(ptl, x, y, chunk_offsets, chunk_lens, pos_idx,
     token_count += chunk_lens.to(torch.float64).sum()
 
 
+def _slot_in_ttt_correct(
+    base_model, cur_lora, x, y, chunk_offsets, chunk_lens, ctx_pos,
+    h, device,
+):
+    """SLOT-in-TTT: optimize per-sample logit delta on already-scored context
+    (positions [0, chunk_offset)) within the window, then return per-token loss
+    using the corrected logits. Legal: trains only on context tokens that were
+    scored by previous chunks of this same doc."""
+    bsz, T = x.shape
+    with torch.no_grad():
+        with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
+            logits = base_model.forward_ttt_logits(x, lora=cur_lora)
+        logits = logits.float()
+    V = logits.size(-1)
+    pos = ctx_pos.unsqueeze(0)
+    train_mask = (pos < chunk_offsets.unsqueeze(1))
+    has_train = train_mask.any(dim=-1)
+    if not has_train.any():
+        return F.cross_entropy(
+            logits.reshape(-1, V), y.reshape(-1), reduction="none"
+        ).reshape(bsz, T)
+    delta = torch.zeros(bsz, V, dtype=torch.float32, device=device, requires_grad=True)
+    opt = torch.optim.AdamW(
+        [delta], lr=h.slot_in_ttt_lr, weight_decay=h.slot_in_ttt_wd, betas=(0.9, 0.999)
+    )
+    tm = train_mask.float()
+    for _ in range(h.slot_in_ttt_steps):
+        nll = F.cross_entropy(
+            (logits + delta.unsqueeze(1)).reshape(-1, V),
+            y.reshape(-1), reduction="none",
+        ).reshape(bsz, T)
+        denom = tm.sum().clamp_min(1.0)
+        loss = (nll * tm).sum() / denom
+        opt.zero_grad(set_to_none=True)
+        loss.backward()
+        opt.step()
+    with torch.no_grad():
+        per_tok_loss = F.cross_entropy(
+            (logits + delta.unsqueeze(1)).reshape(-1, V),
+            y.reshape(-1), reduction="none",
+        ).reshape(bsz, T)
+    return per_tok_loss
+
+
 def eval_val_ttt(
     h: Hyperparameters,
     device: torch.device,
@@ -2692,6 +2780,9 @@ def eval_val_ttt(
         log(f"ttt_lora:adaptive_lr enabled ema={h.ttt_adapt_ema} "
             f"scale_range=[{h.ttt_adapt_min_scale},{h.ttt_adapt_max_scale}] "
             f"power={h.ttt_adapt_power}")
+    if h.slot_in_ttt:
+        log(f"ttt_lora:slot_in_ttt enabled steps={h.slot_in_ttt_steps} "
+            f"lr={h.slot_in_ttt_lr} wd={h.slot_in_ttt_wd}")
     for phase_idx in range(num_phases):
         phase_start = phase_boundaries[phase_idx]
         phase_end = phase_boundaries[phase_idx + 1]
@@ -2769,15 +2860,28 @@ def eval_val_ttt(
                 ctx_pos = torch.arange(context_size, device=device, dtype=torch.int64)
                 with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
                     per_tok_loss = forward_ttt_train(x, y, lora=cur_lora)
+                if h.slot_in_ttt and chunk_offset > 0:
+                    score_loss = _slot_in_ttt_correct(
+                        base_model, cur_lora, x, y, chunk_offsets, chunk_lens,
+                        ctx_pos, h, device,
+                    )
+                else:
+                    score_loss = per_tok_loss
                 with torch.no_grad():
                     _accumulate_bpb(
-                        per_tok_loss, x, y, chunk_offsets, chunk_lens, ctx_pos,
+                        score_loss, x, y, chunk_offsets, chunk_lens, ctx_pos,
                         val_data.base_bytes_lut, val_data.has_leading_space_lut,
                         val_data.is_boundary_token_lut,
                         loss_sum, byte_sum, token_count,
                     )
                 if needs_train:
                     activate_chunk_mask = (num_chunks_t - 1 > ci).float()
+                    if h.ttt_min_doc_len > 0:
+                        long_mask = torch.tensor(
+                            [1.0 if dl >= h.ttt_min_doc_len else 0.0 for _, dl in batch],
+                            device=device, dtype=activate_chunk_mask.dtype,
+                        )
+                        activate_chunk_mask = activate_chunk_mask * long_mask
                     train_mask = (
                         (ctx_pos.unsqueeze(0) >= chunk_offsets.unsqueeze(1))
                         & (ctx_pos.unsqueeze(0) < (chunk_offsets + chunk_lens).unsqueeze(1))
@@ -3263,24 +3367,42 @@ def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
     val_data = ValidationData(h, device)
     log(f"train_shards: {len(list(Path(h.datasets_dir).resolve().glob('fineweb_train_*.bin')))}")
     log(f"val_tokens: {val_data.val_tokens.numel() - 1}")
-    base_model, compiled_model = train_model(h, device, val_data)
-    torch._dynamo.reset()
-    timed_eval("pre-quantization post-ema", eval_val, h, device, val_data, compiled_model)
-    # Use the compressed loader (train_gpt.py) as code artifact when launched
-    # via the packed submission; fall back to this file for direct runs.
-    code_path = Path(os.environ.get("_ORIG_SCRIPT", __file__))
-    serialize(h, base_model, code_path.read_text(encoding="utf-8"))
-    if h.distributed:
-        dist.barrier()
+    base_model = None
+    compiled_model = None
+    if not h.skip_training:
+        base_model, compiled_model = train_model(h, device, val_data)
+        torch._dynamo.reset()
+        timed_eval("pre-quantization post-ema", eval_val, h, device, val_data, compiled_model)
+        # Use the compressed loader (train_gpt.py) as code artifact when launched
+        # via the packed submission; fall back to this file for direct runs.
+        code_path = Path(os.environ.get("_ORIG_SCRIPT", __file__))
+        serialize(h, base_model, code_path.read_text(encoding="utf-8"))
+        if h.distributed:
+            dist.barrier()
+    else:
+        log("SKIP_TRAINING=1 — reusing existing final_model.int6.ptz")
     eval_model = deserialize(h, device)
     if h.num_loops > 0:
         eval_model.looping_active = True
-    compiled_model = torch.compile(eval_model, dynamic=False, fullgraph=True)
-    timed_eval("quantized", eval_val, h, device, val_data, compiled_model)
-    if h.sliding_window_enabled:
-        timed_eval("quantized_sliding_window", eval_val_sliding, h, device, val_data, eval_model)
-    if h.ttt_enabled and h.sliding_window_enabled:
-        del eval_model, compiled_model
+    if h.force_dense_eval:
+        log("FORCE_DENSE_EVAL=1 — disabling use_varlen on eval model")
+        eval_model.use_varlen = False
+        for b in eval_model.blocks:
+            b.attn.use_varlen = False
+    if not h.run_ttt_only and not h.run_sw_only:
+        compiled_model = torch.compile(eval_model, dynamic=False, fullgraph=True)
+        timed_eval("quantized", eval_val, h, device, val_data, compiled_model)
+    if h.sliding_window_enabled and not h.run_ttt_only:
+        if h.slot_enabled:
+            timed_eval("quantized_slot", eval_val_slot, h, device, val_data, eval_model)
+        else:
+            timed_eval("quantized_sliding_window", eval_val_sliding, h, device, val_data, eval_model)
+    if h.ttt_enabled and h.sliding_window_enabled and not h.run_sw_only:
+        del eval_model
+        try:
+            del compiled_model
+        except (NameError, UnboundLocalError):
+            pass
         torch._dynamo.reset()
         torch.cuda.empty_cache()
         ttt_model = deserialize(h, device)
@@ -3293,6 +3415,15 @@ def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
                         h, device, val_data, ttt_model)
         else:
             # Varlen → LoRA TTT
+            # ROPE_FORCE_BASE_SEQLEN is already published globally in main() so
+            # _block_with_lora picks up the same NTK base as training. Allow a
+            # TTT-specific override via ttt_rope_base_seqlen for ablations.
+            prev_rope_force = os.environ.get('ROPE_FORCE_BASE_SEQLEN', '0')
+            if h.ttt_rope_base_seqlen > 0:
+                os.environ['ROPE_FORCE_BASE_SEQLEN'] = str(h.ttt_rope_base_seqlen)
+                log(f"ttt_lora:rope_base_override ROPE_FORCE_BASE_SEQLEN={h.ttt_rope_base_seqlen}")
+            else:
+                log(f"ttt_lora:rope_base inherited ROPE_FORCE_BASE_SEQLEN={prev_rope_force}")
             for p in ttt_model.parameters():
                 p.requires_grad_(False)
             # Lazy torch.compile with warmup
@@ -3333,6 +3464,7 @@ def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
             log(f"ttt_lora:compile warmup done ({time.perf_counter() - t_warmup:.1f}s)")
             timed_eval("quantized_ttt_lora", eval_val_ttt, h, device, val_data, ttt_model,
                         forward_ttt_train=fwd_ttt_compiled)
+            os.environ['ROPE_FORCE_BASE_SEQLEN'] = prev_rope_force
         del ttt_model
 def main():
     os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
@@ -3360,6 +3492,14 @@ def main():
     enable_math_sdp(False)
     torch._dynamo.config.optimize_ddp = False
     h = Hyperparameters()
+    # Resolve and globally publish the RoPE base-seqlen so training, dense eval,
+    # sliding eval and TTT all see the same NTK base. Auto-derive when unset.
+    if h.rope_force_base_seqlen <= 0:
+        h.rope_force_base_seqlen = max(
+            h.train_seq_len + 1,
+            h.train_batch_tokens // max(1, h.world_size * h.grad_accum_steps),
+        )
+    os.environ['ROPE_FORCE_BASE_SEQLEN'] = str(h.rope_force_base_seqlen)
     set_logging_hparams(h)
     if h.is_main_process:
         os.makedirs("logs", exist_ok=True)

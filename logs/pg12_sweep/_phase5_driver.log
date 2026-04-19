@@ -1,0 +1,98 @@
+[p5] === pg12_ttt_minlen512 ===
+[p5] pg12_ttt_minlen512 exit=0
+quantized_ttt_lora val_loss:2.76904327 val_bpb:1.07198294 eval_time:980577ms
+[p5] === pg12_ttt_minlen1024 ===
+[p5] pg12_ttt_minlen1024 exit=0
+quantized_ttt_lora val_loss:2.76950886 val_bpb:1.07216318 eval_time:1035753ms
+[p5] === pg12_ttt_minlen2048 ===
+[p5] pg12_ttt_minlen2048 exit=0
+quantized_ttt_lora val_loss:2.77001959 val_bpb:1.07236090 eval_time:963314ms
+[p5] === pg12_ttt_minlen4096 ===
+[p5] pg12_ttt_minlen4096 exit=0
+quantized_ttt_lora val_loss:2.77058358 val_bpb:1.07257924 eval_time:955418ms
+[p5] === pg12_slot_default ===
+[p5] pg12_slot_default exit=0
+quantized_sliding_window val_loss:2.77381471 val_bpb:1.07383012 eval_time:133890ms
+[p5] === pg12_slot_lr3e3 ===
+[p5] pg12_slot_lr3e3 exit=0
+quantized_sliding_window val_loss:2.77381471 val_bpb:1.07383012 eval_time:133786ms
+[p5] === pg12_slot_lr3e2 ===
+[p5] pg12_slot_lr3e2 exit=0
+quantized_sliding_window val_loss:2.77381471 val_bpb:1.07383012 eval_time:134184ms
+[p5] === pg12_slot_steps2 ===
+[p5] pg12_slot_steps2 exit=0
+quantized_sliding_window val_loss:2.77381471 val_bpb:1.07383012 eval_time:133855ms
+[p5] === pg12_slot_steps8 ===
+[p5] pg12_slot_steps8 exit=0
+quantized_sliding_window val_loss:2.77381471 val_bpb:1.07383012 eval_time:134163ms
+[p5] === pg12_slot_wd001 ===
+[p5] pg12_slot_wd001 exit=0
+quantized_sliding_window val_loss:2.77381471 val_bpb:1.07383012 eval_time:134079ms
+[p5] === pg12_slot_steps8_lr3e3 ===
+[p5] pg12_slot_steps8_lr3e3 exit=0
+quantized_sliding_window val_loss:2.77381471 val_bpb:1.07383012 eval_time:133930ms
+[p5] === pg12_adapt_pow05 ===
+[p5] pg12_adapt_pow05 exit=0
+quantized_ttt_lora val_loss:2.76877146 val_bpb:1.07187772 eval_time:977456ms
+[p5] === pg12_adapt_pow15 ===
+[p5] pg12_adapt_pow15 exit=0
+quantized_ttt_lora val_loss:2.76879356 val_bpb:1.07188627 eval_time:979928ms
+[p5] === pg12_adapt_ema80 ===
+[p5] pg12_adapt_ema80 exit=0
+quantized_ttt_lora val_loss:2.76876754 val_bpb:1.07187620 eval_time:980101ms
+[p5] === pg12_adapt_ema99 ===
+[p5] pg12_adapt_ema99 exit=0
+quantized_ttt_lora val_loss:2.76881714 val_bpb:1.07189540 eval_time:967901ms
+[p5] === pg12_adapt_tight ===
+[p5] pg12_adapt_tight exit=0
+quantized_ttt_lora val_loss:2.76877744 val_bpb:1.07188003 eval_time:968737ms
+[p5] === pg12_adapt_wide ===
+[p5] pg12_adapt_wide exit=0
+quantized_ttt_lora val_loss:2.76877948 val_bpb:1.07188082 eval_time:974107ms
+[p5] all phase-5 variants complete
+[p5] === FULL LEADERBOARD (ttt_lora) ===
+pg12_ttt_r48_phased2                         1.07183108
+pg12_ttt_rank48                              1.07187186
+pg12_adapt_ema80                             1.07187620
+pg12_adapt_pow05                             1.07187772
+pg12_adapt_tight                             1.07188003
+pg12_adapt_wide                              1.07188082
+pg12_adapt_pow15                             1.07188627
+pg12_adapt_ema99                             1.07189540
+pg12_ttt_lr5e5                               1.07194483
+pg12_ttt_minlen512                           1.07198294
+pg12_ttt_lr7e5                               1.07201942
+pg12_ttt_rank32                              1.07202442
+pg12_ttt_r48_lr7e5                           1.07202787
+pg12_ttt_r48_chunk96                         1.07206473
+pg12_ttt_minlen1024                          1.07216318
+pg12_ttt_r48_chunk128                        1.07220248
+pg12_ttt_r48_lr5e5_phased2                   1.07221468
+pg12_ttt_r48_lr7e5_chunk96                   1.07225551
+pg12_ttt_r48_lr5e5                           1.07225989
+pg12_ttt_chunk128                            1.07229076
+pg12_ttt_phased3                             1.07229554
+pg12_ttt_chunk96                             1.07232541
+pg12_ttt_minlen2048                          1.07236090
+pg12_ttt_phased2                             1.07239714
+pg12_eval_verify                             1.07243389
+pg12_ttt_phased2_adaptive                    1.07244879
+pg12_ttt_r48_lr5e5_chunk96                   1.07248454
+pg12_ttt_adaptive                            1.07248513
+pg12_ttt_r32_lr5e5                           1.07254683
+pg12_ttt_minlen4096                          1.07257924
+pg12_ttt_r48_lr5e5_chunk128                  1.07263889
+pg12_ttt_chunk32                             1.07282040
+pg12_ttt_chunk32_adaptive                    1.07290274
+pg12_ttt_phased3_r192                        1.07576906
+pg12_ttt_rank192                             1.07589266
+pg12_ttt_r192_adaptive                       1.07607326
+pg12_ttt_steps2                              1.07654957
+pg12_ttt_phased2_lr3e4                       1.07846603
+pg12_ttt_lr3e4                               1.07849933
+pg12_ttt_chunk32_steps2                      1.07909511
+pg12_ttt_r192_lr2e4_adaptive                 1.08446554
+pg12_ttt_r192_lr3e4                          1.09353876
+pg12_ttt_r192_chunk32_steps2                 1.09455080
+[p5] === LEADERBOARD (sliding_window / SLOT) ===
+grep: logs/pg12_sweep/pg12_slot_*.log: No such file or directory

@@ -1,0 +1,31 @@
+[p5b] waiting for phase-5 to finish...
+[p5b] phase-5 done. Starting SLOT re-run.
+[p5b] === pg12_slot_default ===
+[p5b] pg12_slot_default exit=0
+quantized_slot val_loss:2.77298784 val_bpb:1.07351001 eval_time:986799ms
+[p5b] === pg12_slot_lr3e3 ===
+[p5b] pg12_slot_lr3e3 exit=0
+quantized_slot val_loss:2.77346887 val_bpb:1.07369623 eval_time:986690ms
+[p5b] === pg12_slot_lr3e2 ===
+[p5b] pg12_slot_lr3e2 exit=0
+quantized_slot val_loss:2.77392846 val_bpb:1.07387415 eval_time:987721ms
+[p5b] === pg12_slot_steps2 ===
+[p5b] pg12_slot_steps2 exit=0
+quantized_slot val_loss:2.77328568 val_bpb:1.07362531 eval_time:817718ms
+[p5b] === pg12_slot_steps8 ===
+[p5b] pg12_slot_steps8 exit=0
+quantized_slot val_loss:2.77303193 val_bpb:1.07352708 eval_time:1324237ms
+[p5b] === pg12_slot_wd001 ===
+[p5b] pg12_slot_wd001 exit=0
+quantized_slot val_loss:2.77298779 val_bpb:1.07350999 eval_time:986034ms
+[p5b] === pg12_slot_steps8_lr3e3 ===
+[p5b] pg12_slot_steps8_lr3e3 exit=0
+quantized_slot val_loss:2.77320682 val_bpb:1.07359478 eval_time:1323933ms
+[p5b] === SLOT LEADERBOARD ===
+pg12_slot_wd001                              1.07350999
+pg12_slot_default                            1.07351001
+pg12_slot_steps8                             1.07352708
+pg12_slot_steps8_lr3e3                       1.07359478
+pg12_slot_steps2                             1.07362531
+pg12_slot_lr3e3                              1.07369623
+pg12_slot_lr3e2                              1.07387415

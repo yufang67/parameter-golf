@@ -1,0 +1,57 @@
+[combo] waiting for phase-1 sweep to finish...
+[combo] phase-1 done. Starting combo sweep.
+-rw-r--r-- 1 root root 16349285 Apr 18 02:22 final_model.int6.ptz
+[combo] === pg12_ttt_r192_lr3e4 ===
+[combo] pg12_ttt_r192_lr3e4 exit=0
+quantized_ttt_lora val_loss:2.82472418 val_bpb:1.09353876 eval_time:1273217ms
+[combo] === pg12_ttt_r192_adaptive ===
+[combo] pg12_ttt_r192_adaptive exit=0
+quantized_ttt_lora val_loss:2.77960899 val_bpb:1.07607326 eval_time:1147272ms
+[combo] === pg12_ttt_chunk32_steps2 ===
+[combo] pg12_ttt_chunk32_steps2 exit=0
+quantized_ttt_lora val_loss:2.78741475 val_bpb:1.07909511 eval_time:3651431ms
+[combo] === pg12_ttt_chunk32_adaptive ===
+[combo] pg12_ttt_chunk32_adaptive exit=0
+quantized_ttt_lora val_loss:2.77141921 val_bpb:1.07290274 eval_time:1881938ms
+[combo] === pg12_ttt_phased2_lr3e4 ===
+[combo] pg12_ttt_phased2_lr3e4 exit=0
+quantized_ttt_lora val_loss:2.78578976 val_bpb:1.07846603 eval_time:1155569ms
+[combo] === pg12_ttt_phased2_adaptive ===
+[combo] pg12_ttt_phased2_adaptive exit=0
+quantized_ttt_lora val_loss:2.77024660 val_bpb:1.07244879 eval_time:1142437ms
+[combo] === pg12_ttt_r192_lr2e4_adaptive ===
+[combo] pg12_ttt_r192_lr2e4_adaptive exit=0
+quantized_ttt_lora val_loss:2.80128712 val_bpb:1.08446554 eval_time:1131190ms
+[combo] === pg12_ttt_r192_chunk32_steps2 ===
+[combo] pg12_ttt_r192_chunk32_steps2 exit=0
+quantized_ttt_lora val_loss:2.82733840 val_bpb:1.09455080 eval_time:4194269ms
+[combo] === pg12_ttt_phased3 ===
+[combo] pg12_ttt_phased3 exit=0
+quantized_ttt_lora val_loss:2.76985075 val_bpb:1.07229554 eval_time:1288821ms
+[combo] === pg12_ttt_phased3_r192 ===
+[combo] pg12_ttt_phased3_r192 exit=0
+quantized_ttt_lora val_loss:2.77882319 val_bpb:1.07576906 eval_time:1423052ms
+[combo] all combos complete
+total 616
+drwxr-xr-x 2 root root  4096 Apr 18 12:06 .
+drwxr-xr-x 3 root root  4096 Apr 18 12:06 ..
+-rw-r--r-- 1 root root  1753 Apr 18 12:32 _combo_driver.log
+-rw-r--r-- 1 root root    50 Apr 18 10:57 _phase3_driver.log
+-rw-r--r-- 1 root root  3769 Apr 18 07:05 _sweep_driver.log
+-rw-r--r-- 1 root root 35389 Apr 18 04:26 pg12_eval_verify.log
+-rw-r--r-- 1 root root 32838 Apr 18 06:43 pg12_ttt_adaptive.log
+-rw-r--r-- 1 root root 32529 Apr 18 05:51 pg12_ttt_chunk32.log
+-rw-r--r-- 1 root root 32756 Apr 18 09:26 pg12_ttt_chunk32_adaptive.log
+-rw-r--r-- 1 root root 32683 Apr 18 08:52 pg12_ttt_chunk32_steps2.log
+-rw-r--r-- 1 root root 26968 Apr 18 05:14 pg12_ttt_lr3e4.log
+-rw-r--r-- 1 root root 27720 Apr 18 07:04 pg12_ttt_phased2.log
+-rw-r--r-- 1 root root 27832 Apr 18 10:08 pg12_ttt_phased2_adaptive.log
+-rw-r--r-- 1 root root 27755 Apr 18 09:47 pg12_ttt_phased2_lr3e4.log
+-rw-r--r-- 1 root root 28264 Apr 18 12:06 pg12_ttt_phased3.log
+-rw-r--r-- 1 root root 29337 Apr 18 12:32 pg12_ttt_phased3_r192.log
+-rw-r--r-- 1 root root 32636 Apr 18 07:50 pg12_ttt_r192_adaptive.log
+-rw-r--r-- 1 root root 29394 Apr 18 11:42 pg12_ttt_r192_chunk32_steps2.log
+-rw-r--r-- 1 root root 32529 Apr 18 10:29 pg12_ttt_r192_lr2e4_adaptive.log
+-rw-r--r-- 1 root root 28165 Apr 18 07:28 pg12_ttt_r192_lr3e4.log
+-rw-r--r-- 1 root root 32413 Apr 18 04:53 pg12_ttt_rank192.log
+-rw-r--r-- 1 root root 32640 Apr 18 06:24 pg12_ttt_steps2.log

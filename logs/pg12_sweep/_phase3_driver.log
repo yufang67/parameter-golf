@@ -1,0 +1,46 @@
+[p3] waiting for phase-2 combo sweep to finish...
+[p3] phase-2 done. Starting phase-3.
+-rw-r--r-- 1 root root 16349285 Apr 18 02:22 final_model.int6.ptz
+[p3] === pg12_ttt_lr5e5 ===
+[p3] pg12_ttt_lr5e5 exit=0
+quantized_ttt_lora val_loss:2.76894482 val_bpb:1.07194483 eval_time:1050385ms
+[p3] === pg12_ttt_lr7e5 ===
+[p3] pg12_ttt_lr7e5 exit=0
+quantized_ttt_lora val_loss:2.76913749 val_bpb:1.07201942 eval_time:1019860ms
+[p3] === pg12_ttt_rank48 ===
+[p3] pg12_ttt_rank48 exit=0
+quantized_ttt_lora val_loss:2.76875633 val_bpb:1.07187186 eval_time:1234116ms
+[p3] === pg12_ttt_rank32 ===
+[p3] pg12_ttt_rank32 exit=0
+quantized_ttt_lora val_loss:2.76915041 val_bpb:1.07202442 eval_time:1209837ms
+[p3] === pg12_ttt_chunk96 ===
+[p3] pg12_ttt_chunk96 exit=0
+quantized_ttt_lora val_loss:2.76992791 val_bpb:1.07232541 eval_time:894761ms
+[p3] === pg12_ttt_chunk128 ===
+[p3] pg12_ttt_chunk128 exit=0
+quantized_ttt_lora val_loss:2.76983839 val_bpb:1.07229076 eval_time:746522ms
+[p3] all phase-3 variants complete
+[p3] === LEADERBOARD ===
+pg12_ttt_rank48                          1.07187186
+pg12_ttt_lr5e5                           1.07194483
+pg12_ttt_lr7e5                           1.07201942
+pg12_ttt_rank32                          1.07202442
+pg12_ttt_chunk128                        1.07229076
+pg12_ttt_phased3                         1.07229554
+pg12_ttt_chunk96                         1.07232541
+pg12_ttt_phased2                         1.07239714
+pg12_eval_verify                         1.07243389
+pg12_ttt_phased2_adaptive                1.07244879
+pg12_ttt_adaptive                        1.07248513
+pg12_ttt_chunk32                         1.07282040
+pg12_ttt_chunk32_adaptive                1.07290274
+pg12_ttt_phased3_r192                    1.07576906
+pg12_ttt_rank192                         1.07589266
+pg12_ttt_r192_adaptive                   1.07607326
+pg12_ttt_steps2                          1.07654957
+pg12_ttt_phased2_lr3e4                   1.07846603
+pg12_ttt_lr3e4                           1.07849933
+pg12_ttt_chunk32_steps2                  1.07909511
+pg12_ttt_r192_lr2e4_adaptive             1.08446554
+pg12_ttt_r192_lr3e4                      1.09353876
+pg12_ttt_r192_chunk32_steps2             1.09455080

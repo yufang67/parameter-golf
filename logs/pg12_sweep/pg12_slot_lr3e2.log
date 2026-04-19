@@ -1,0 +1,207 @@
+W0418 22:37:13.060000 234570 torch/distributed/run.py:851] 
+W0418 22:37:13.060000 234570 torch/distributed/run.py:851] *****************************************
+W0418 22:37:13.060000 234570 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0418 22:37:13.060000 234570 torch/distributed/run.py:851] *****************************************
+Hyperparameters:
+  adam_eps: 1e-08
+  adam_wd: 0.02
+  beta1: 0.9
+  beta2: 0.95
+  clip_mult_early: 1.0
+  clip_mult_late: 1.0
+  clip_mult_loop: 1.0
+  clip_mult_mid: 1.0
+  compress_ans: True
+  compress_brotli: False
+  compress_lzma: False
+  data_dir: ./data/
+  datasets_dir: ./data/datasets/fineweb10B_sp8192
+  distributed: True
+  effective_train_seq_len: <property object at 0x14df737803b0>
+  ema_decay: 0.9965
+  embed_bits: 8
+  embed_clip_sigmas: 20.0
+  embed_lr: 0.6
+  embed_wd: 0.085
+  embedding_dim: 512
+  enable_looping_at: 0.35
+  eval_seq_len: 2048
+  eval_stride: 64
+  force_dense_eval: False
+  fused_mlp: True
+  fused_rope: True
+  gated_attention: True
+  gptq_calibration_batches: 128
+  gptq_reserve_seconds: 12.0
+  grad_accum_steps: 2
+  grad_clip_norm: 0.3
+  head_lr: 0.008
+  hessian_clip_lambda: 0.3
+  is_main_process: True
+  iterations: 20000
+  ln_scale: True
+  local_rank: 0
+  logfile: logs/pg12_slot_lr3e2.txt
+  logit_softcap: 20.0
+  loop_embeddings: False
+  loop_end: 5
+  loop_layer_bits: 0
+  loop_layer_clip_sigmas: 0.0
+  loop_start: 3
+  matrix_bits: 6
+  matrix_clip_sigmas: 14.0
+  matrix_lr: 0.022
+  max_wallclock_seconds: 3600.0
+  min_lr: 0.0
+  mixed_seq_gpu_frac: 0.375
+  mixed_seq_len: 0
+  mlp_mult: 4.35
+  model_dim: 512
+  model_path: final_model.pt
+  moe_enabled: False
+  moe_layers: 3,5,7,9
+  moe_num_experts: 3
+  moe_top_k: 2
+  muon_backend_steps: 5
+  muon_beta2: 0.95
+  muon_momentum: 0.97
+  muon_momentum_warmup_start: 0.92
+  muon_momentum_warmup_steps: 1500
+  muon_row_normalize: True
+  muon_wd: 0.095
+  num_heads: 8
+  num_kv_heads: 4
+  num_layers: 11
+  num_loops: 2
+  parallel_residual_start: 7
+  qk_gain_init: 5.25
+  quantized_model_path: final_model.int6.ptz
+  rank: 0
+  rope_base: 10000.0
+  rope_dims: 32
+  rope_force_base_seqlen: 0
+  rope_train_seq_len: 2048
+  run_id: pg12_slot_lr3e2
+  run_sw_only: True
+  run_ttt_only: False
+  scalar_lr: 0.022
+  seed: 1337
+  skip_gates_enabled: True
+  skip_training: True
+  sliding_window_enabled: True
+  slot_enabled: True
+  slot_lr: 0.03
+  slot_max_windows: 0
+  slot_steps: 4
+  slot_train_mode: context
+  slot_wd: 0.01
+  tie_embeddings: True
+  tied_embed_init_std: 0.005
+  tied_embed_lr: 0.03
+  tokenizer_path: ./data/tokenizers/fineweb_8192_bpe.model
+  train_batch_tokens: 786432
+  train_files: ./data/datasets/fineweb10B_sp8192/fineweb_train_*.bin
+  train_log_every: 500
+  train_seq_len: 2048
+  ttt_adapt_ema: 0.95
+  ttt_adapt_max_scale: 2.0
+  ttt_adapt_min_scale: 0.5
+  ttt_adapt_power: 1.0
+  ttt_adaptive_lr: False
+  ttt_batch_size: 64
+  ttt_beta1: 0.9
+  ttt_beta2: 0.99
+  ttt_chunk_size: 64
+  ttt_enabled: False
+  ttt_eval_seq_len: 2048
+  ttt_fp_chunk_tokens: 32768
+  ttt_fp_epochs: 3
+  ttt_fp_lr: 0.001
+  ttt_grad_clip: 1.0
+  ttt_grad_steps: 1
+  ttt_k_lora: True
+  ttt_lora_lr: 0.0001
+  ttt_lora_rank: 48
+  ttt_max_docs: 0
+  ttt_min_doc_len: 0
+  ttt_mlp_lora: True
+  ttt_nan_guard: True
+  ttt_o_lora: True
+  ttt_phase_sgd_batch: 8
+  ttt_phase_sgd_epochs: 1
+  ttt_phase_sgd_lr: 0.0005
+  ttt_phase_sgd_momentum: 0.9
+  ttt_phase_sgd_optimizer: sgd
+  ttt_phase_sgd_seq_len: 1024
+  ttt_phase_sgd_wd: 0.0
+  ttt_phases: 1
+  ttt_rope_base_seqlen: 0
+  ttt_weight_decay: 0.2
+  val_batch_tokens: 524288
+  val_files: ./data/datasets/fineweb10B_sp8192/fineweb_val_*.bin
+  val_loss_every: 4000
+  varlen_attention: True
+  vocab_size: 8192
+  warmdown_frac: 0.85
+  warmdown_wd_mult: 1.0
+  warmup_steps: 20
+  window_attn_layers: 
+  window_attn_size: 0
+  world_size: 4
+  xsa_last_n: 11
+train_shards: 80
+val_tokens: 40540160
+SKIP_TRAINING=1 — reusing existing final_model.int6.ptz
+slot:enabled steps=4 lr=0.03 wd=0.01 train_mode=context windows/rank=158352
+slot_progress: batch 1/4949 tokens:0 running_loss:0.0000 running_bpb:0.0000 elapsed:0.0s
+slot_progress: batch 101/4949 tokens:206784 running_loss:2.7480 running_bpb:1.0660 elapsed:20.2s
+slot_progress: batch 201/4949 tokens:411584 running_loss:2.7415 running_bpb:1.0770 elapsed:39.8s
+slot_progress: batch 301/4949 tokens:616384 running_loss:2.7451 running_bpb:1.0749 elapsed:59.6s
+slot_progress: batch 401/4949 tokens:821184 running_loss:2.7620 running_bpb:1.0805 elapsed:79.3s
+slot_progress: batch 501/4949 tokens:1025984 running_loss:2.7442 running_bpb:1.0779 elapsed:99.1s
+slot_progress: batch 601/4949 tokens:1230784 running_loss:2.7648 running_bpb:1.0868 elapsed:119.0s
+slot_progress: batch 701/4949 tokens:1435584 running_loss:2.7544 running_bpb:1.0828 elapsed:138.8s
+slot_progress: batch 801/4949 tokens:1640384 running_loss:2.7450 running_bpb:1.0817 elapsed:158.6s
+slot_progress: batch 901/4949 tokens:1845184 running_loss:2.7300 running_bpb:1.0783 elapsed:178.5s
+slot_progress: batch 1001/4949 tokens:2049984 running_loss:2.7299 running_bpb:1.0770 elapsed:198.2s
+slot_progress: batch 1101/4949 tokens:2254784 running_loss:2.7340 running_bpb:1.0790 elapsed:217.9s
+slot_progress: batch 1201/4949 tokens:2459584 running_loss:2.7233 running_bpb:1.0749 elapsed:237.6s
+slot_progress: batch 1301/4949 tokens:2664384 running_loss:2.7264 running_bpb:1.0756 elapsed:257.3s
+slot_progress: batch 1401/4949 tokens:2869184 running_loss:2.7272 running_bpb:1.0744 elapsed:277.0s
+slot_progress: batch 1501/4949 tokens:3073984 running_loss:2.7252 running_bpb:1.0734 elapsed:296.7s
+slot_progress: batch 1601/4949 tokens:3278784 running_loss:2.7265 running_bpb:1.0738 elapsed:316.5s
+slot_progress: batch 1701/4949 tokens:3483584 running_loss:2.7256 running_bpb:1.0745 elapsed:336.2s
+slot_progress: batch 1801/4949 tokens:3688384 running_loss:2.7321 running_bpb:1.0766 elapsed:356.0s
+slot_progress: batch 1901/4949 tokens:3893184 running_loss:2.7318 running_bpb:1.0766 elapsed:375.7s
+slot_progress: batch 2001/4949 tokens:4097984 running_loss:2.7354 running_bpb:1.0795 elapsed:395.5s
+slot_progress: batch 2101/4949 tokens:4302784 running_loss:2.7342 running_bpb:1.0789 elapsed:415.2s
+slot_progress: batch 2201/4949 tokens:4507584 running_loss:2.7320 running_bpb:1.0774 elapsed:434.9s
+slot_progress: batch 2301/4949 tokens:4712384 running_loss:2.7341 running_bpb:1.0780 elapsed:454.6s
+slot_progress: batch 2401/4949 tokens:4917184 running_loss:2.7321 running_bpb:1.0779 elapsed:474.3s
+slot_progress: batch 2501/4949 tokens:5121984 running_loss:2.7321 running_bpb:1.0785 elapsed:494.0s
+slot_progress: batch 2601/4949 tokens:5326784 running_loss:2.7302 running_bpb:1.0780 elapsed:513.8s
+slot_progress: batch 2701/4949 tokens:5531584 running_loss:2.7317 running_bpb:1.0784 elapsed:533.5s
+slot_progress: batch 2801/4949 tokens:5736384 running_loss:2.7280 running_bpb:1.0762 elapsed:553.3s
+slot_progress: batch 2901/4949 tokens:5941184 running_loss:2.7300 running_bpb:1.0774 elapsed:573.0s
+slot_progress: batch 3001/4949 tokens:6145984 running_loss:2.7335 running_bpb:1.0781 elapsed:592.7s
+slot_progress: batch 3101/4949 tokens:6350784 running_loss:2.7348 running_bpb:1.0775 elapsed:612.3s
+slot_progress: batch 3201/4949 tokens:6555584 running_loss:2.7380 running_bpb:1.0782 elapsed:632.1s
+slot_progress: batch 3301/4949 tokens:6760384 running_loss:2.7408 running_bpb:1.0789 elapsed:651.8s
+slot_progress: batch 3401/4949 tokens:6965184 running_loss:2.7422 running_bpb:1.0793 elapsed:671.5s
+slot_progress: batch 3501/4949 tokens:7169984 running_loss:2.7422 running_bpb:1.0786 elapsed:691.2s
+slot_progress: batch 3601/4949 tokens:7374784 running_loss:2.7445 running_bpb:1.0786 elapsed:710.8s
+slot_progress: batch 3701/4949 tokens:7579584 running_loss:2.7477 running_bpb:1.0793 elapsed:730.5s
+slot_progress: batch 3801/4949 tokens:7784384 running_loss:2.7451 running_bpb:1.0797 elapsed:750.4s
+slot_progress: batch 3901/4949 tokens:7989184 running_loss:2.7474 running_bpb:1.0799 elapsed:770.1s
+slot_progress: batch 4001/4949 tokens:8193984 running_loss:2.7487 running_bpb:1.0797 elapsed:789.8s
+slot_progress: batch 4101/4949 tokens:8398784 running_loss:2.7523 running_bpb:1.0803 elapsed:809.5s
+slot_progress: batch 4201/4949 tokens:8603584 running_loss:2.7535 running_bpb:1.0802 elapsed:829.2s
+slot_progress: batch 4301/4949 tokens:8808384 running_loss:2.7530 running_bpb:1.0792 elapsed:848.8s
+slot_progress: batch 4401/4949 tokens:9013184 running_loss:2.7543 running_bpb:1.0792 elapsed:868.6s
+slot_progress: batch 4501/4949 tokens:9217984 running_loss:2.7568 running_bpb:1.0798 elapsed:888.2s
+slot_progress: batch 4601/4949 tokens:9422784 running_loss:2.7577 running_bpb:1.0795 elapsed:908.0s
+slot_progress: batch 4701/4949 tokens:9627584 running_loss:2.7599 running_bpb:1.0794 elapsed:927.6s
+slot_progress: batch 4801/4949 tokens:9832384 running_loss:2.7612 running_bpb:1.0790 elapsed:947.2s
+slot_progress: batch 4901/4949 tokens:10037184 running_loss:2.7643 running_bpb:1.0794 elapsed:967.0s
+slot_progress: batch 4949/4949 tokens:10135488 running_loss:2.7639 running_bpb:1.0789 elapsed:976.5s
+quantized_slot val_loss:2.77392846 val_bpb:1.07387415 eval_time:987721ms

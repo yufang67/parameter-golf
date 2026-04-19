@@ -1,6 +1,6 @@
 # Experiment Program
 
-**Goal:** Lower `val_bpb` on `train_gpt_improved.py`. One variable at a time, record everything.
+**Goal:** Lower `val_bpb` on `train_gpt_improved_04_16.py`. One variable at a time, record everything.
 
 ## Setup
 
@@ -11,21 +11,40 @@
 | Data | `./data` (sp8192) |
 | Wallclock | `MAX_WALLCLOCK_SECONDS=3600` |
 
-## Baseline (best run)
+## Baselines (best runs)
 
-| Metric | Value |
-|--------|-------|
-| Sliding-window BPB | **1.07369** |
-| Pre-quant BPB | 1.07873 |
-| Total artifact | 15,989,467 B (fits 16MB) |
-| Steps | 5,445 |
-| Config | `GATED_ATTENTION=1 FUSED_ROPE=1` |
+### Non-varlen track
+
+| Metric | 16MB-valid baseline | Best with TTT (over budget) |
+|--------|---------------------|------------------------------|
+| Run | `improved_GA_FUSErope` | `improved_GA_FUSErope_MLP435_Mclip13_TTT` |
+| Sliding-window BPB | **1.07369** ✅ | **1.07077** ⚠ (16.83 MB) |
+| Pre-quant BPB | 1.07873 | 1.07608 |
+| Quant BPB | 1.09031 | 1.08737 |
+| Total artifact | 15,989,467 B ✅ | 16,827,813 B ⚠ |
+| Steps | 5,445 | 4,974 |
+| Config | `GATED_ATTENTION=1 FUSED_ROPE=1` | `+ MLP_MULT=4.35 MATRIX_CLIP_SIGMAS=13 TTT_ENABLED=1` |
+
+### Varlen track (post RoPE-base TTT fix)
+
+| Metric | 16MB-valid baseline | Best pre-quant (over budget) | Best with TTT (over budget) |
+|--------|---------------------|------------------------------|------------------------------|
+| Run | `pg11_varlen_gptq192` | `pg12_varlen_clip14` | `pg12_ttt_r48_phased2` (on `pg12_varlen_clip14` ckpt) |
+| Sliding-window BPB | **1.07722** ✅ | 1.07425 ⚠ | — (TTT path only) |
+| TTT BPB (`quantized_ttt_lora`) | — | — | **1.07183** ⚠ |
+| Pre-quant BPB | 1.07000 | **1.06882** | 1.06882 |
+| Quant BPB | 1.08440 | 1.08142 | 1.08142 |
+| Total artifact | 15,977,377 B ✅ | 16,388,003 B ⚠ | 16,388,003 B ⚠ |
+| Steps | 4,883 | 5,077 | 5,077 |
+| Config | `+ VARLEN_ATTENTION=1 GPTQ_CALIBRATION_BATCHES=192` | `+ VARLEN_ATTENTION=1 CLIP_SIGMAS=14` | `+ TTT_ENABLED=1 TTT_LORA_RANK=48 TTT_PHASES=2` |
+
+**Headline:** the best leaderboard-eligible result is still the non-varlen 1.07369. Varlen wins on the model side (best pre-quant 1.06882) and now wins post-TTT (1.07183 ≪ varlen sliding 1.07425), but both varlen winners currently bust the 16 MB budget. Closing the artifact-size gap on `pg12_varlen_clip14` is the highest-leverage open task.
 
 ## Workflow
 
 ```bash
 # 1. Pack
-python3 pack_submission_file.py train_gpt_improved.py train_gpt.py
+python3 pack_submission_file.py train_gpt_improved_04_16.py train_gpt.py
 
 # 2. Run without TTT
 RUN_ID=<name> <ENV_OVERRIDES> MAX_WALLCLOCK_SECONDS=3600 \
@@ -158,26 +177,53 @@ MATRIX_CLIP_SIGMAS=15 MLP_MULT=4.35 GPTQ_CALIBRATION_BATCHES=128 TTT_ENABLED=1 M
 
 ### TTT (Test-Time Training) sweeps
 
-> ⚠ **BLOCKER — DO NOT RUN UNTIL RESOLVED.**
-> Under `VARLEN_ATTENTION=1`, **all three TTT eval paths regress** (LoRA TTT to ~1.20 BPB, fullparam degrades, even sliding-window eval shows worse quant→sw delta than non-varlen). Active investigation in [invest.md](invest.md) and the [varlen_ttt_invest/](varlen_ttt_invest) folder. Working theory: a shared defect upstream of any specific TTT path — likely val-side `cu_seqlens`/BOS mismatch, `use_varlen` not propagating after `deserialize()`, or `eval_seq_len`/`eval_stride` misalignment with doc boundaries.
+> ✅ **RESOLVED (2026-04-18).** The varlen+TTT regression was a **RoPE base-seqlen mismatch**: training packs long rows that trigger NTK-aware RoPE rescaling, while TTT eval processes 2048-token rows and hit the vanilla cached RoPE → +0.12 BPB encoding mismatch. Fix lives in `train_gpt_improved_04_16.py`: a new `ROPE_FORCE_BASE_SEQLEN` env var (auto-set from `TTT_ROPE_BASE_SEQLEN`, defaulting to `train_batch_tokens / (world * grad_accum)`) forces `Rotary.forward` to recompute cos/sin under the training-equivalent NTK base whenever the LoRA-TTT eval path runs. See [invest.md](invest.md) for the full diagnosis.
 >
-> **Until that's fixed, the only TTT runs to do are the ones in [invest.md](invest.md) (`varlen_ttt_invest/` track).** Sweeps below are queued for *after* varlen+TTT lands ≤1.071 BPB.
+> **Current best on `pg12_varlen_clip14`:** `pg12_ttt_r48_phased2` → **quantized_ttt_lora val_bpb = 1.07183** (vs. sliding-only baseline 1.07425; **−0.00242 BPB delta**). Non-varlen+TTT record (1.07077) is not yet beaten — primary residual gap is the varlen quant→sw step, not TTT itself.
 
 The four TTT variants are: **LoRA TTT** (per-chunk online adapter, varlen path), **Full-param TTT** (per-chunk full-backbone fine-tune, non-varlen path), **SLOT** (per-window logit-bias delta), and **Phased global SGD** (periodic full-model SGD on already-scored prefix). All gated by `TTT_ENABLED=1`.
 
-#### LoRA TTT (`TTT_LORA_*`, `TTT_CHUNK_SIZE`, `TTT_ADAPTIVE_LR`)
-- **Current default:** `TTT_LORA_RANK=96 TTT_LORA_LR=1e-4 TTT_CHUNK_SIZE=64 TTT_GRAD_STEPS=1 TTT_K_LORA=1 TTT_MLP_LORA=1 TTT_O_LORA=1 TTT_ADAPTIVE_LR=0`.
+#### TTT sweep results (on `pg12_varlen_clip14`, sliding eval baseline 1.07425)
+
+Top configs from `run_pg12_ttt_sweep.sh` / `_phase3` / `_phase4` (all use defaults except those listed; logs in `logs/pg12_sweep/`):
+
+| Run | Vars (overrides) | quantized_ttt_lora val_bpb |
+|---|---|---|
+| `pg12_ttt_r48_phased2`        | `TTT_LORA_RANK=48 TTT_PHASES=2` | **1.07183** |
+| `pg12_ttt_rank48`             | `TTT_LORA_RANK=48` | 1.07187 |
+| `pg12_ttt_lr5e5`              | `TTT_LORA_LR=5e-5` | 1.07194 |
+| `pg12_ttt_lr7e5`              | `TTT_LORA_LR=7e-5` | 1.07202 |
+| `pg12_ttt_rank32`             | `TTT_LORA_RANK=32` | 1.07202 |
+| `pg12_ttt_chunk128`           | `TTT_CHUNK_SIZE=128` | 1.07229 |
+| `pg12_ttt_chunk96`            | `TTT_CHUNK_SIZE=96`  | 1.07232 |
+| `pg12_ttt_phased2`            | `TTT_PHASES=2` (rank=96) | 1.07240 |
+| `pg12_ttt_adaptive`           | `TTT_ADAPTIVE_LR=1`  | 1.07249 |
+| `pg12_ttt_chunk32`            | `TTT_CHUNK_SIZE=32`  | 1.07282 |
+| `pg12_ttt_lr3e4`              | `TTT_LORA_LR=3e-4` (too high) | 1.07850 |
+| `pg12_ttt_rank192`            | `TTT_LORA_RANK=192` (too large, undertrained) | 1.07589 |
+| `pg12_ttt_r192_lr3e4`         | `TTT_LORA_RANK=192 TTT_LORA_LR=3e-4` | 1.09354 |
+
+**Takeaways:**
+1. **Smaller rank wins.** Rank 48 ≈ rank 32 < rank 96 (default) ≪ rank 192. Default should drop to **`TTT_LORA_RANK=48`**.
+2. **Default LR (1e-4) is near-optimal.** Lowering to 5e-5 / 7e-5 is within 0.0001 BPB; raising to 3e-4 collapses (−0.007 BPB).
+3. **Phased SGD adds a small consistent win** at rank 48 (`r48_phased2` 1.07183 < `rank48` 1.07187), and is essentially free at `TTT_PHASES=2`.
+4. **Larger chunks don't help** once rank is right; default `TTT_CHUNK_SIZE=64` ties with 96/128.
+5. **Adaptive LR is neutral** at this scale (1.07249 vs. 1.07240 baseline phased2). Drop from priority sweeps.
+6. **Recommended new default for varlen+TTT runs:** `TTT_LORA_RANK=48 TTT_PHASES=2 TTT_LORA_LR=1e-4 TTT_CHUNK_SIZE=64` (plus the auto RoPE-base fix, which is on by default once `TTT_ENABLED=1` and `VARLEN_ATTENTION=1`).
+
+#### LoRA TTT (`TTT_LORA_*`, `TTT_CHUNK_SIZE`, `TTT_ADAPTIVE_LR`, `TTT_ROPE_BASE_SEQLEN`)
+- **Current default (post-fix):** `TTT_LORA_RANK=48 TTT_LORA_LR=1e-4 TTT_CHUNK_SIZE=64 TTT_GRAD_STEPS=1 TTT_K_LORA=1 TTT_MLP_LORA=1 TTT_O_LORA=1 TTT_ADAPTIVE_LR=0 TTT_PHASES=2 TTT_ROPE_BASE_SEQLEN=0` (auto). The RoPE base fix is automatic on the varlen path; only override `TTT_ROPE_BASE_SEQLEN` if `train_batch_tokens / (world * grad_accum)` doesn't match what training actually saw.
 - **Hypothesis / rationale:**
-  - Rank trades adapter capacity vs. wallclock and per-batch memory; chunk size trades adaptation granularity vs. compute.
-  - Adaptive LR (`TTT_ADAPTIVE_LR=1`, scales by `chunk_loss/EMA(chunk_loss)`) should help on heterogeneous validation chunks.
-  - Adapter placement (Q/K/MLP/O) interacts: removing MLP-LoRA cuts most of the params; removing K-LoRA loses most of the contextual adaptation.
-- **Sweep (after blocker resolved):**
-  1. **Rank:** `TTT_LORA_RANK ∈ {32, 64, 96, 128}` at default LR.
-  2. **Chunk size:** `TTT_CHUNK_SIZE ∈ {32, 48, 64, 96, 128}`.
-  3. **LR:** `TTT_LORA_LR ∈ {3e-5, 1e-4, 3e-4, 1e-3}` paired with the best rank.
-  4. **Adapter placement ablation:** turn each of `TTT_K_LORA / TTT_MLP_LORA / TTT_O_LORA` off one at a time; pick the smallest set that keeps the gain.
-  5. **Adaptive LR:** `TTT_ADAPTIVE_LR=1` with `TTT_ADAPT_POWER ∈ {0.5, 1.0, 1.5}` and `TTT_ADAPT_EMA ∈ {0.9, 0.95, 0.99}`.
-- **Decision rule:** keep a setting if it improves TTT BPB ≥0.002 over default with no wallclock blowup (>10%).
+  - Rank trades adapter capacity vs. wallclock and per-batch memory. Empirically rank 48 beats both 32 and 96 on `pg12_varlen_clip14`; rank 192 underperforms (likely undertrained per chunk).
+  - Adaptive LR (`TTT_ADAPTIVE_LR=1`, scales by `chunk_loss/EMA(chunk_loss)`) was neutral in the post-fix sweep — keep off by default.
+  - Adapter placement (Q/K/MLP/O) interacts: removing MLP-LoRA cuts most of the params; removing K-LoRA loses most of the contextual adaptation. Not yet re-ablated post-fix.
+- **Sweep (post-fix, residual exploration):**
+  1. **Adapter placement ablation** (highest priority — never re-run after the RoPE fix): turn each of `TTT_K_LORA / TTT_MLP_LORA / TTT_O_LORA` off one at a time at the new default; pick the smallest set that keeps the gain.
+  2. **Re-test rank** at the new lower band: `TTT_LORA_RANK ∈ {24, 32, 48, 64}` with `TTT_PHASES=2`.
+  3. **Fine LR scan** around the new optimum: `TTT_LORA_LR ∈ {3e-5, 5e-5, 1e-4, 2e-4}` at `TTT_LORA_RANK=48 TTT_PHASES=2`.
+  4. **`TTT_GRAD_STEPS=2`** at `TTT_LORA_RANK=48 TTT_LORA_LR=5e-5` — earlier `_steps2` runs were on rank 96 / pre-fix.
+  5. **Adaptive LR re-test** at the new default: `TTT_ADAPTIVE_LR=1` with `TTT_ADAPT_POWER ∈ {0.5, 1.0}` and `TTT_ADAPT_EMA ∈ {0.95, 0.99}`.
+- **Decision rule:** keep a setting if it improves TTT BPB ≥0.001 over the new `pg12_ttt_r48_phased2` floor (1.07183) without >10% wallclock blowup. Aim is to dip below the non-varlen+TTT record (**1.07077**).
 
 #### SLOT TTT (`SLOT_*`)
 - **Current default:** `SLOT_ENABLED=0`. When on: `SLOT_STEPS=4 SLOT_LR=0.01 SLOT_WD=0.01 SLOT_TRAIN_MODE=context`.
@@ -191,17 +237,18 @@ The four TTT variants are: **LoRA TTT** (per-chunk online adapter, varlen path),
 - **Decision rule:** enable if total TTT BPB improves ≥0.001 (SLOT alone is small but ~free in wallclock).
 
 #### Phased global SGD TTT (`TTT_PHASES`, `TTT_PHASE_SGD_*`)
-- **Current default:** `TTT_PHASES=1` (effectively off — no phase boundary). When on: `TTT_PHASE_SGD_LR=5e-4 MOMENTUM=0.9 EPOCHS=1 SEQ_LEN=1024 BATCH=8 OPT=sgd WD=0`.
+- **Current default:** `TTT_PHASES=2` (post-fix recommended; was effectively off at 1). When on: `TTT_PHASE_SGD_LR=5e-4 MOMENTUM=0.9 EPOCHS=1 SEQ_LEN=1024 BATCH=8 OPT=sgd WD=0`.
+- **Empirically:** at `TTT_LORA_RANK=48`, going from `TTT_PHASES=1` to `TTT_PHASES=2` improved varlen+TTT BPB from 1.07187 → 1.07183 (small but consistent, near-free in wallclock at 2 phases). At rank 96, the same change moves 1.07248 → 1.07240. `TTT_PHASES=3` (`pg12_ttt_phased3`) was 1.07230, no further win.
 - **Hypothesis / rationale:**
   - Per-window LoRA TTT captures local adaptation; phased SGD captures global drift across documents (e.g., topic shift in val data).
   - Score-before-update keeps it legal: SGD only sees already-scored docs.
-  - Cost grows with `TTT_PHASES`; benefit may saturate.
+  - Cost grows with `TTT_PHASES`; benefit appears to saturate by `TTT_PHASES=2` at this scale.
 - **Sweep:**
-  1. `TTT_PHASES ∈ {1, 2, 4, 8}` at default SGD config.
-  2. At best `TTT_PHASES`: `TTT_PHASE_SGD_LR ∈ {1e-4, 5e-4, 1e-3}` × `EPOCHS ∈ {1, 2}`.
+  1. `TTT_PHASES ∈ {2, 4, 8}` at the new LoRA default (rank 48). 1 and 3 already tested.
+  2. At best `TTT_PHASES`: `TTT_PHASE_SGD_LR ∈ {1e-4, 5e-4, 1e-3}` × `EPOCHS ∈ {1, 2}`. The earlier `pg12_ttt_phased2_lr3e4` (1.07847) shows phased SGD is sensitive to LR; do not exceed 5e-4 without an epoch cap.
   3. Try `TTT_PHASE_SGD_OPT='adam'` to see if the better-conditioned optimizer wins on the small phase batches.
   4. Compose with best LoRA + SLOT.
-- **Decision rule:** enable if BPB improves ≥0.002 at acceptable wallclock (each phase boundary adds substantial time).
+- **Decision rule:** enable additional phases if BPB improves ≥0.0005 at acceptable wallclock (each phase boundary adds substantial time).
 
 #### Full-param TTT (`TTT_FP_*`)
 - **Current default:** non-varlen fallback only. `TTT_FP_LR=0.001 TTT_FP_EPOCHS=3 TTT_FP_CHUNK_TOKENS=32768`.

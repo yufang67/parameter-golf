@@ -1,0 +1,57 @@
+[sweep] waiting for training to finish...
+[sweep] training done; checkpoint:
+-rw-r--r-- 1 root root 16349285 Apr 18 02:22 final_model.int6.ptz
+[sweep] === pg12_eval_verify ===
+[sweep] log: logs/pg12_sweep/pg12_eval_verify.log
+[sweep] pg12_eval_verify exit=0
+sliding_perdoc: bin 201/1010 segs:32 tokens:740928 running_loss:2.6658 running_bpb:1.0739 elapsed:25.8s
+sliding_perdoc: bin 251/1010 segs:32 tokens:938560 running_loss:2.6940 running_bpb:1.0761 elapsed:32.2s
+sliding_perdoc: bin 301/1010 segs:32 tokens:1136192 running_loss:2.6983 running_bpb:1.0769 elapsed:38.7s
+sliding_perdoc: bin 351/1010 segs:32 tokens:1335808 running_loss:2.7039 running_bpb:1.0780 elapsed:45.2s
+sliding_perdoc: bin 401/1010 segs:32 tokens:1523520 running_loss:2.7111 running_bpb:1.0778 elapsed:51.7s
+sliding_perdoc: bin 451/1010 segs:32 tokens:1693376 running_loss:2.6957 running_bpb:1.0746 elapsed:58.2s
+sliding_perdoc: bin 501/1010 segs:32 tokens:1894976 running_loss:2.7054 running_bpb:1.0784 elapsed:64.7s
+sliding_perdoc: bin 551/1010 segs:32 tokens:2092608 running_loss:2.7120 running_bpb:1.0785 elapsed:71.2s
+sliding_perdoc: bin 601/1010 segs:32 tokens:2290240 running_loss:2.7164 running_bpb:1.0781 elapsed:77.7s
+sliding_perdoc: bin 651/1010 segs:32 tokens:2497792 running_loss:2.7159 running_bpb:1.0757 elapsed:84.1s
+sliding_perdoc: bin 701/1010 segs:32 tokens:2669632 running_loss:2.7199 running_bpb:1.0776 elapsed:90.6s
+sliding_perdoc: bin 751/1010 segs:32 tokens:2863296 running_loss:2.7207 running_bpb:1.0795 elapsed:97.1s
+sliding_perdoc: bin 801/1010 segs:32 tokens:3027200 running_loss:2.7204 running_bpb:1.0785 elapsed:103.6s
+sliding_perdoc: bin 851/1010 segs:32 tokens:3210944 running_loss:2.7227 running_bpb:1.0772 elapsed:110.1s
+sliding_perdoc: bin 901/1010 segs:33 tokens:3434364 running_loss:2.7227 running_bpb:1.0764 elapsed:116.8s
+sliding_perdoc: bin 951/1010 segs:68 tokens:6123868 running_loss:2.7497 running_bpb:1.0690 elapsed:123.3s
+sliding_perdoc: bin 1001/1010 segs:249 tokens:9400550 running_loss:2.7650 running_bpb:1.0685 elapsed:129.8s
+sliding_perdoc: bin 1010/1010 segs:472 tokens:9990290 running_loss:2.7756 running_bpb:1.0739 elapsed:131.4s
+quantized_sliding_window val_loss:2.77381471 val_bpb:1.07383012 eval_time:134910ms
+quantized_ttt_lora val_loss:2.77020812 val_bpb:1.07243389 eval_time:1283938ms
+[sweep] === pg12_ttt_rank192 ===
+[sweep] log: logs/pg12_sweep/pg12_ttt_rank192.log
+[sweep] pg12_ttt_rank192 exit=0
+  quantized_model_path: final_model.int6.ptz
+quantized_ttt_lora val_loss:2.77914248 val_bpb:1.07589266 eval_time:1392227ms
+[sweep] === pg12_ttt_lr3e4 ===
+[sweep] log: logs/pg12_sweep/pg12_ttt_lr3e4.log
+[sweep] pg12_ttt_lr3e4 exit=0
+  quantized_model_path: final_model.int6.ptz
+quantized_ttt_lora val_loss:2.78587578 val_bpb:1.07849933 eval_time:1139822ms
+[sweep] === pg12_ttt_chunk32 ===
+[sweep] log: logs/pg12_sweep/pg12_ttt_chunk32.log
+[sweep] pg12_ttt_chunk32 exit=0
+  quantized_model_path: final_model.int6.ptz
+quantized_ttt_lora val_loss:2.77120652 val_bpb:1.07282040 eval_time:2045713ms
+[sweep] === pg12_ttt_steps2 ===
+[sweep] log: logs/pg12_sweep/pg12_ttt_steps2.log
+[sweep] pg12_ttt_steps2 exit=0
+  quantized_model_path: final_model.int6.ptz
+quantized_ttt_lora val_loss:2.78083933 val_bpb:1.07654957 eval_time:1821440ms
+[sweep] === pg12_ttt_adaptive ===
+[sweep] log: logs/pg12_sweep/pg12_ttt_adaptive.log
+[sweep] pg12_ttt_adaptive exit=0
+  quantized_model_path: final_model.int6.ptz
+quantized_ttt_lora val_loss:2.77034047 val_bpb:1.07248513 eval_time:1020937ms
+[sweep] === pg12_ttt_phased2 ===
+[sweep] log: logs/pg12_sweep/pg12_ttt_phased2.log
+[sweep] pg12_ttt_phased2 exit=0
+  quantized_model_path: final_model.int6.ptz
+quantized_ttt_lora val_loss:2.77011319 val_bpb:1.07239714 eval_time:1153809ms
+[sweep] all variants complete
