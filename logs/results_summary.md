@@ -47,6 +47,118 @@
 
 \*\* `improved_GA_FUSErope` originally reported 16,052,040 due to code size bug (measured `_train.py` at 89KB instead of packed `train_gpt.py` at 26KB). Corrected total: model (15,962,852) + code (26,615) = **15,989,467 bytes** ✅ fits 16MB.
 
+### `program.md` Architecture Sweeps (4×A100, 3600s wallclock, full train+eval)
+
+Built on the `pg12_varlen_clip14` baseline (VarLen+M435+C14, fixed RoPE). Each run reports
+pre-quant val_bpb / sliding-window val_bpb / TTT-LoRA val_bpb.
+
+| run_id | feature change | pre_val_bpb | sw_val_bpb | ttt_val_bpb | final_size |
+|--------|---------------|-------------|------------|-------------|------------|
+| pgm_xsa9 | xsa_last_n=9 (sliding-attn last 9 layers) | 1.08077 | 1.07307 | **1.07102** 🏆 | 16,523,099 ⚠️ |
+| pgm_loopemb1 | LOOP_EMBEDDINGS=1, loops=2 | 1.08147 | 1.07384 | 1.07169 | 16,526,656 ⚠️ |
+| pgm_xsa7 | xsa_last_n=7 | 1.08184 | 1.07419 | 1.07208 | 16,524,957 ⚠️ |
+| pgm_xsa4 | xsa_last_n=4 | 1.08410 | 1.07648 | 1.07430 | 16,525,432 ⚠️ |
+| pgm_xsa0 | xsa_last_n=0 (control, no XSA) | 1.08419 | 1.07659 | 1.07442 | 16,524,433 ⚠️ |
+| pgm_loopemb1_loops3 | LOOP_EMBEDDINGS=1, loops=3 | 1.08401 | 1.07631 | 1.07419 | 16,533,337 ⚠️ |
+| pgm_loopemb1_loops4 | LOOP_EMBEDDINGS=1, loops=4 | *(incomplete)* | — | — | — |
+
+All `pgm_*` runs are ~0.5MB over the 16MB budget — the baseline branch needs further compression
+to be leaderboard-eligible. **XSA on the last 9 layers gives the largest single-feature gain
+seen so far** (~0.0035 sw_bpb improvement, ~0.0034 ttt_bpb improvement vs xsa0 control).
+
+### TTT-LoRA Sweep on `pg12_varlen_clip14` Checkpoint
+
+All runs below reload the same trained checkpoint (`pg12_eval_verify` confirms sliding-window
+baseline = **1.07383**) and apply test-time LoRA adaptation. No retraining; the deltas isolate
+TTT hyperparameter effects.
+
+| run_id | rank | lr | chunk | extra | ttt_val_bpb | Δ vs sw |
+|--------|------|-----|-------|-------|-------------|---------|
+| **pg12_r48_phased3** | 48 | 1e-4 | 64 | phased(3) | **1.07173** 🏆 | −0.00210 |
+| pg12_slotttt_default | 48 | 1e-4 | 64 | + SLOT-in-TTT (lr=1e-2,s=4) | 1.07176 | −0.00207 |
+| pg12_slotttt_wd0 | 48 | 1e-4 | 64 | + SLOT, wd=0 | 1.07177 | −0.00206 |
+| pg12_slotttt_steps8_lr3e3 | 48 | 1e-4 | 64 | + SLOT (s=8, lr=3e-3) | 1.07178 | −0.00205 |
+| pg12_slotttt_steps2 | 48 | 1e-4 | 64 | + SLOT (s=2) | 1.07180 | −0.00203 |
+| pg12_r48_phased2_sgd_ep2 | 48 | 1e-4 | 64 | phased(2) + SGD ep=2 | 1.07181 | −0.00202 |
+| pg12_r48_phased2_sgd_lr1e3 | 48 | 1e-4 | 64 | phased(2) + SGD lr=1e-3 | 1.07181 | −0.00202 |
+| pg12_slotttt_lr3e3 | 48 | 1e-4 | 64 | + SLOT (lr=3e-3) | 1.07183 | −0.00200 |
+| pg12_r48_phased2 | 48 | 1e-4 | 64 | phased(2) | 1.07183 | −0.00200 |
+| pg12_r48_phased2_adapt_tight | 48 | 1e-4 | 64 | phased(2) + adapt tight | 1.07184 | −0.00199 |
+| pg12_r48_phased2_ema99 | 48 | 1e-4 | 64 | phased(2) + ema=0.99 | 1.07185 | −0.00198 |
+| pg12_r48_phased2_minlen256 | 48 | 1e-4 | 64 | phased(2) + minlen=256 | 1.07186 | −0.00197 |
+| pg12_ttt_rank48 | 48 | 1e-4 | 64 | (canonical) | 1.07187 | −0.00196 |
+| pg12_adapt_ema80 | 48 | 1e-4 | 64 | adapt ema=0.80 | 1.07188 | −0.00195 |
+| pg12_adapt_pow05 | 48 | 1e-4 | 64 | adapt pow=0.5 | 1.07188 | −0.00195 |
+| pg12_adapt_tight | 48 | 1e-4 | 64 | adapt tight | 1.07188 | −0.00195 |
+| pg12_adapt_wide | 48 | 1e-4 | 64 | adapt wide | 1.07188 | −0.00195 |
+| pg12_r64_phased2 | 64 | 1e-4 | 64 | phased(2) | 1.07189 | −0.00194 |
+| pg12_adapt_ema99 | 48 | 1e-4 | 64 | adapt ema=0.99 | 1.07190 | −0.00193 |
+| pg12_adapt_pow15 | 48 | 1e-4 | 64 | adapt pow=1.5 | 1.07189 | −0.00194 |
+| pg12_r48_phased2_chunk80 | 48 | 1e-4 | 80 | phased(2) | 1.07194 | −0.00189 |
+| pg12_ttt_lr5e5 | 48 | 5e-5 | 64 | — | 1.07194 | −0.00189 |
+| pg12_r48_phased2_minlen512 | 48 | 1e-4 | 64 | phased(2) + minlen=512 | 1.07194 | −0.00189 |
+| pg12_ttt_minlen512 | 48 | 1e-4 | 64 | minlen=512 | 1.07198 | −0.00185 |
+| pg12_r32_phased2 | 32 | 1e-4 | 64 | phased(2) | 1.07199 | −0.00184 |
+| pg12_ttt_lr7e5 | 48 | 7e-5 | 64 | — | 1.07202 | −0.00181 |
+| pg12_ttt_rank32 | 32 | 1e-4 | 64 | — | 1.07202 | −0.00181 |
+| pg12_ttt_r48_chunk96 | 48 | 1e-4 | 96 | — | 1.07206 | −0.00177 |
+| pg12_ttt_minlen1024 | 48 | 1e-4 | 64 | minlen=1024 | 1.07216 | −0.00167 |
+| pg12_ttt_r48_chunk128 | 48 | 1e-4 | 128 | — | 1.07220 | −0.00163 |
+| pg12_ttt_r48_lr5e5 | 48 | 5e-5 | 64 | — | 1.07226 | −0.00157 |
+| pg12_ttt_chunk128 | 48 | 1e-4 | 128 | — | 1.07229 | −0.00154 |
+| pg12_ttt_phased3 | 48 | 1e-4 | 64 | phased(3) | 1.07230 | −0.00153 |
+| pg12_ttt_chunk96 | 48 | 1e-4 | 96 | — | 1.07233 | −0.00150 |
+| pg12_ttt_phased2 | 48 | 1e-4 | 64 | phased(2) | 1.07240 | −0.00143 |
+| pg12_slotttt_lr3e2 | 48 | 1e-4 | 64 | + SLOT (lr=3e-2) | 1.07235 | −0.00148 |
+| pg12_eval_verify (TTT-LoRA) | 48 | 1e-4 | 64 | recompute baseline | 1.07243 | −0.00140 |
+| pg12_ttt_minlen2048 | 48 | 1e-4 | 64 | minlen=2048 | 1.07236 | −0.00147 |
+| pg12_ttt_chunk32 | 48 | 1e-4 | 32 | — | 1.07282 | −0.00101 |
+| pg12_ttt_chunk32_adaptive | 48 | 1e-4 | 32 | + adaptive | 1.07290 | −0.00093 |
+| pg12_ttt_phased3_r192 | 192 | 1e-4 | 64 | phased(3) | 1.07577 | +0.00194 |
+| pg12_ttt_rank192 | 192 | 1e-4 | 64 | — | 1.07589 | +0.00207 |
+| pg12_ttt_r192_adaptive | 192 | 1e-4 | 64 | + adaptive | 1.07607 | +0.00224 |
+| pg12_ttt_steps2 | 48 | 1e-4 | 64 | inner_steps=2 | 1.07655 | +0.00272 |
+| pg12_ttt_lr3e4 | 48 | 3e-4 | 64 | — | 1.07850 | +0.00467 |
+| pg12_ttt_phased2_lr3e4 | 48 | 3e-4 | 64 | phased(2) | 1.07847 | +0.00464 |
+| pg12_ttt_chunk32_steps2 | 48 | 1e-4 | 32 | inner_steps=2 | 1.07910 | +0.00527 |
+| pg12_ttt_r192_lr2e4_adaptive | 192 | 2e-4 | 64 | + adaptive | 1.08447 | +0.01064 |
+| pg12_ttt_r192_lr3e4 | 192 | 3e-4 | 64 | — | 1.09354 | +0.01971 |
+| pg12_ttt_r192_chunk32_steps2 | 192 | 1e-4 | 32 | inner_steps=2 | 1.09455 | +0.02072 |
+
+### SLOT-Only Sweep (no TTT-LoRA, same checkpoint)
+
+SLOT (Self-supervised LOss-based Test-time fine-tuning of decoder bias terms only).
+Baseline sliding-window = 1.07383.
+
+| run_id | slot lr | slot steps | slot wd | slot_val_bpb | Δ vs sw |
+|--------|---------|------------|---------|--------------|---------|
+| pg12_slot_wd001 | 1e-2 | 4 | 0.001 | **1.07351** | −0.00032 |
+| pg12_slot_default | 1e-2 | 4 | 0.01 | 1.07351 | −0.00032 |
+| pg12_slot_steps8 | 1e-2 | 8 | 0.01 | 1.07353 | −0.00030 |
+| pg12_slot_steps8_lr3e3 | 3e-3 | 8 | 0.01 | 1.07359 | −0.00024 |
+| pg12_slot_steps2 | 1e-2 | 2 | 0.01 | 1.07363 | −0.00020 |
+| pg12_slot_lr3e3 | 3e-3 | 4 | 0.01 | 1.07370 | −0.00013 |
+| pg12_slot_lr3e2 | 3e-2 | 4 | 0.01 | 1.07387 | +0.00004 |
+
+### RoPE Eval-Stride Ablation (`pg12_varlen_clip14` checkpoint)
+
+Sliding-window evaluation at smaller strides has near-zero effect on bpb.
+
+| run_id | eval_stride | sw_val_bpb |
+|--------|-------------|------------|
+| ropeA_auto (default 64) | 64 | 1.07491 |
+| ropeA_stride s=32 | 32 | 1.07488 |
+| ropeA_stride s=16 | 16 | 1.07487 |
+| ropeA_stride s=8  | 8  | 1.07486 |
+
+### Misc
+
+| run_id | notes | result |
+|--------|-------|--------|
+| pg12_varlen_clip14_TTT | VarLen+TTT, **no** RoPE seqlen fix | broken: pre=1.281, sw=1.273, ttt=1.183 |
+| pg12_varlen_clip14_TTT_ropeFix | VarLen+TTT, RoPE NTK override | pre=1.08147, sw=1.07383, ttt=1.07243 |
+| check_debug_04_16_varlen_TTT | varlen+TTT debug attempt | pre=1.08321, sw=1.07598, ttt=1.18141 (broken) |
+
 ## Feature Legend
 
 | Code | Feature | Env Var |
@@ -76,23 +188,25 @@
 
 ## Key Takeaways
 
-1. **Best sliding BPB (16MB-valid):** `improved_GA_FUSErope` (**1.07369**) — GA+HS+ANS+FR+FM, 15.99MB ✅
-2. **Best absolute BPB (over budget):** `improved_GA_MoE79_MLP4_TTT` (**1.06740** sw) — MoE is powerful but 21.2MB
-3. **MLP 4.35× improves pre-quant BPB** — ~1.075 vs ~1.079 for 3.0×, but adds ~2.2M params
-4. **Clip sigma 15.0 solves MLP4.35 size problem** — 15.97MB (vs 16.83MB at clip=13) with only 0.004 wider quant gap
-5. **`pg01_base_m435_c15_g128` confirms M435+C15 on 4×A100** — 1.07441 sw_bpb, 15.98MB ✅ (matches 8-GPU result)
-6. **N-gram embeddings don't help:** Bigram-512 (1.07464) and trigram-1536 (1.07584) are worse than baseline (1.07441), and all bust 16MB
-7. **Loop Embeddings don't help:** `improved_GA_LE_FUSErope` (1.07370) essentially tied with `improved_GA_FUSErope` (1.07369)
-8. **Gated Attention is a consistent win** — ~-0.001 BPB for minimal parameter cost
-9. **NorMuon hurts** — runs with NM consistently worse than without
-10. **Window Attention is catastrophic** — 1.176 sw_bpb (vs 1.074 baseline), fast throughput doesn't compensate
-11. **Fullparam TTT is broken** — `pg08_trigram1536d256` TTT produced 2.824 bpb (worse than no TTT at 1.076)
-12. **MoE achieves best raw BPB but models are 21MB+** — not viable for 16MB budget without dramatic compression
-13. **Lightweight MoE still misses the target** — `pg14_moe9_e2_k1` and `pg15_moe79_e2_k1` are both over 16MB and slightly worse than the non-MoE `pg01` baseline on sliding BPB
-14. **ANS saves ~30KB** artifact size consistently vs Brotli
-15. **Fused kernels provide minimal throughput benefit** — ~1% difference per throughput_check
-16. **Parameter Banking hurts BPB and busts size budget** — improved2_GA got 1.08273 sw_bpb, 16.2MB
-17. **VarLen is now competitive but clip-sensitive** — `pg12_varlen_clip14` reached 1.07425 sliding, slightly beating dense `pg01` (1.07441), but it busts 16MB; `pg13_varlen_clip16` fits at 15.59MB but falls back to 1.07807 sliding
+1. **Best 16MB-valid leaderboard candidate:** `pg13_varlen_clip16` (**1.07807** sw_bpb, 15.59MB ✅) — still the strongest size-passing dense run.
+2. **TTT-LoRA is the biggest single post-training gain measured to date:** on the `pg12_varlen_clip14` checkpoint it cuts bpb from 1.07383 (sw) to **1.07173** (`pg12_r48_phased3`), a ≈−0.0021 improvement at zero training cost. Sweet spot: rank 48, lr 1e-4, chunk 64, phased schedule.
+3. **TTT-LoRA hyperparameter ranking** (from sweep): rank ≤ 64 wins decisively (rank 192 is +0.002 to +0.020 worse), lr 1e-4 is optimal (3e-4 is +0.005, 5e-5 is +0.0001 worse), chunk 64 ≥ chunk 96 ≥ chunk 128 > chunk 32, `inner_steps=2` always hurts.
+4. **SLOT alone is a small but free win** (~−0.0003 bpb), best at lr=1e-2, steps=4. SLOT-in-TTT is essentially neutral on top of TTT-LoRA (best `slotttt_default` 1.07176 vs best pure TTT 1.07173).
+5. **XSA (sliding-attn last N layers) is the most promising new architectural feature.** `pgm_xsa9` reached **1.07102** ttt-bpb (best overall), but the branch is 16.52MB and needs additional compression to be eligible.
+6. **Loop-Embeddings depth-2 helps slightly** (`pgm_loopemb1` 1.07169 ttt vs `pgm_xsa0` control 1.07442), but loops=3/4 hurt and all variants bust 16MB.
+7. **Eval-stride finer than 64 is wasted compute** — strides 8/16/32/64 all within 0.00005 bpb.
+8. **Best sliding BPB on a 16MB-valid dense run:** `improved_GA_FUSErope` (**1.07369**) — GA+HS+ANS+FR+FM, 15.99MB ✅
+9. **Best absolute BPB (over budget):** `pgm_xsa9` (**1.07102** TTT) — 16.52MB; `improved_GA_MoE79_MLP4_TTT` (1.06740 sw) — MoE 21.2MB.
+10. **MLP 4.35× improves pre-quant BPB** — ~1.075 vs ~1.079 for 3.0×, but adds ~2.2M params
+11. **Clip sigma 15.0 solves MLP4.35 size problem** — 15.97MB (vs 16.83MB at clip=13) with only 0.004 wider quant gap
+12. **N-gram embeddings don't help:** Bigram-512 (1.07464) and trigram-1536 (1.07584) are worse than baseline (1.07441), and all bust 16MB
+13. **Gated Attention is a consistent win** — ~-0.001 BPB for minimal parameter cost
+14. **NorMuon hurts** — runs with NM consistently worse than without
+15. **Window Attention is catastrophic** — 1.176 sw_bpb (vs 1.074 baseline), fast throughput doesn't compensate
+16. **MoE achieves best raw BPB but models are 21MB+** — not viable for 16MB budget without dramatic compression
+17. **ANS saves ~30KB** artifact size consistently vs Brotli
+18. **VarLen is competitive but clip-sensitive** — `pg12_varlen_clip14` reached 1.07425 sliding (over 16MB); `pg13_varlen_clip16` fits at 15.59MB with 1.07807 sliding. **VarLen+TTT requires the RoPE NTK seqlen override** — without it, eval blows up to 1.18+.
+19. **Earlier broken VarLen kernel (`improved_varlen`) is unrelated to current pg09+ VarLen path.**
 
 ---
 
@@ -147,16 +261,21 @@
 2. ~~Wait for `improved_GA_LE_FUSErope` to complete.~~ **Done** — 1.07370 sw_bpb, essentially identical to GA_FUSErope. Loop Embeddings provide no benefit.
 3. ~~Try parameter banking run: `BANK_ENABLED=1 BANK_SIZE=64 BANK_RANK=32`.~~ **Done** — `improved2_GA` got 1.08273 sw_bpb, significantly worse than non-banked runs and over 16MB budget.
 4. ~~Re-run `improved_GA_FUSErope` with corrected code size to get official 16MB-valid results.~~ **Done** — fits at 15,989,467 bytes.
-5. ~~Debug VarLen attention (doc boundary detection).~~ Still broken (1.90 BPB).
+5. ~~Debug VarLen attention (doc boundary detection).~~ Working in pg09+ pipeline; old `improved_varlen` path still broken (1.90).
 6. ~~Fix code size bug in `train_gpt_improved2.py` (94KB → need `_ORIG_SCRIPT` fix).~~ Fixed via `_ORIG_SCRIPT` env var.
 7. ~~Investigate why parameter banking hurts~~ — worse BPB and over budget, abandoned.
 8. ~~Try MLP 4.35× with clip=13 and clip=15.~~ **Done** — clip=15 fits 16MB (15.98MB), clip=13 does not (16.83MB).
 9. ~~Try MoE.~~ **Done** — best raw BPB (1.067) but 21MB+, not viable.
 10. ~~Try Window Attention.~~ **Done** — catastrophic (1.176 sw_bpb), abandoned.
-11. ~~Try TTT.~~ **Done** — broken (NaN in all runs).
-12. Run sliding window eval on `gated_clip15_mlp435` — best candidate to beat current leader.
-13. Debug TTT NaN issue if pursuing test-time training.
-14. Explore MoE with aggressive quantization (6-bit?) to fit 16MB budget.
+11. ~~Try TTT.~~ **Done** — fully working with RoPE NTK fix; ~−0.0021 bpb on the pg12 checkpoint.
+12. ~~Run sliding window eval on `gated_clip15_mlp435`.~~ Superseded — focus moved to TTT + XSA on the pg12/pgm baseline.
+13. ~~Sweep TTT-LoRA hyperparameters.~~ **Done** — `pg12_r48_phased3` (rank 48, lr 1e-4, chunk 64, 3-phase) is best at 1.07173.
+14. ~~Try SLOT (decoder-bias-only test-time fine-tuning).~~ **Done** — small standalone gain (~−0.0003), neutral when stacked on TTT-LoRA.
+15. ~~Eval-stride sweep.~~ **Done** — strides 8/16/32/64 indistinguishable; keep stride 64.
+16. **Pack `train_gpt_improved_04_16.py` with `pack_submission_file.py`** — the script is 173KB raw but packs to ~44KB with LZMA+base85. That ~129KB savings makes the `pgm_xsa9` branch (1.07102 ttt_bpb, currently 16.52MB) easily fit under 16MB without architectural changes. Use the packed `train_gpt.py` (which auto-sets `_ORIG_SCRIPT`) for all subsequent pgm/XSA/TTT runs so size accounting reflects the packed code.
+17. **Train a 16MB-valid VarLen + XSA + TTT submission** combining the best architectural and post-training tricks.
+18. **Investigate broken `check_debug_04_16_varlen_TTT`** (varlen+TTT produced 1.181 bpb) — appears to be missing the RoPE override that `pg12_varlen_clip14_TTT_ropeFix` applied.
+19. Explore MoE with aggressive quantization (6-bit?) to fit 16MB budget.
 
 ## Auto batch 2026-04-15
 

@@ -1,0 +1,24 @@
+nohup: ignoring input
+[pgm-s2] waiting for prior queue to drain...
+[pgm-s2] queue clear. Starting section 2.
+[pgm] === pgm_loopemb1 === (train+eval)
+[pgm] pgm_loopemb1 exit=0
+quantized val_loss:2.79370055 val_bpb:1.08147214 eval_time:19253ms
+quantized_sliding_window val_loss:2.77384618 val_bpb:1.07384230 eval_time:137118ms
+quantized_ttt_lora val_loss:2.76829934 val_bpb:1.07169494 eval_time:1526073ms
+[pgm] === pgm_loopemb1_loops3 === (train+eval)
+[pgm] pgm_loopemb1_loops3 exit=0
+quantized val_loss:2.80024438 val_bpb:1.08400533 eval_time:22641ms
+quantized_sliding_window val_loss:2.78022252 val_bpb:1.07631078 eval_time:158735ms
+quantized_ttt_lora val_loss:2.77475574 val_bpb:1.07419442 eval_time:1765151ms
+[pgm] === pgm_loopemb1_loops4 === (train+eval)
+[pgm] pgm_loopemb1_loops4 exit=0
+quantized val_loss:2.79966247 val_bpb:1.08378007 eval_time:25365ms
+quantized_sliding_window val_loss:2.77967337 val_bpb:1.07609818 eval_time:179867ms
+quantized_ttt_lora val_loss:2.77409699 val_bpb:1.07393939 eval_time:2021930ms
+[pgm-s2] === SECTION 2 LEADERBOARD ===
+name                                       dense    sw       ttt
+pgm_loopemb1                               1.08147214 1.07384230 1.07169494
+pgm_loopemb1_loops4                        1.08378007 1.07609818 1.07393939
+pgm_loopemb1_loops3                        1.08400533 1.07631078 1.07419442
+[pgm-s2] SECTION 2 COMPLETE

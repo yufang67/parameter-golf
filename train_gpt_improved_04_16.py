@@ -250,7 +250,7 @@ class Hyperparameters():
     # Model architecture
     vocab_size = int(os.environ.get('VOCAB_SIZE', 8192))
     num_layers = int(os.environ.get('NUM_LAYERS', 11))
-    xsa_last_n = int(os.environ.get('XSA_LAST_N', 11))
+    xsa_last_n = int(os.environ.get('XSA_LAST_N', 9))
     model_dim = int(os.environ.get('MODEL_DIM', 512))
     embedding_dim = int(os.environ.get('EMBEDDING_DIM', 512))
     num_kv_heads = int(os.environ.get('NUM_KV_HEADS', 4))
@@ -333,7 +333,7 @@ class Hyperparameters():
     ttt_fp_chunk_tokens = int(os.environ.get('TTT_FP_CHUNK_TOKENS', 32768))
     # Phased global SGD TTT: pause LoRA TTT after each phase
     # and run distributed SGD on the already-scored prefix. Score-before-update legal.
-    ttt_phases = int(os.environ.get('TTT_PHASES', 1))
+    ttt_phases = int(os.environ.get('TTT_PHASES', 3))
     ttt_phase_sgd_lr = float(os.environ.get('TTT_PHASE_SGD_LR', 5e-4))
     ttt_phase_sgd_momentum = float(os.environ.get('TTT_PHASE_SGD_MOMENTUM', 0.9))
     ttt_phase_sgd_epochs = int(os.environ.get('TTT_PHASE_SGD_EPOCHS', 1))
@@ -402,7 +402,7 @@ class Hyperparameters():
     moe_layers = os.environ.get('MOE_LAYERS', '3,5,7,9')
 
     # Per-pass loop embeddings
-    loop_embeddings = bool(int(os.environ.get('LOOP_EMBEDDINGS', '0')))
+    loop_embeddings = bool(int(os.environ.get('LOOP_EMBEDDINGS', '1')))
     # Compressibility regularization: multiply WD during warmdown
     warmdown_wd_mult = float(os.environ.get('WARMDOWN_WD_MULT', 1.0))
 

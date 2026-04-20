@@ -1,1 +1,30 @@
 nohup: ignoring input
+[pgm-s1] waiting for prior queue to drain...
+[pgm-s1] queue clear. Starting section 1.
+[pgm] === pgm_xsa0 === (train+eval)
+[pgm] pgm_xsa0 exit=0
+quantized val_loss:2.80072540 val_bpb:1.08419154 eval_time:16378ms
+quantized_sliding_window val_loss:2.78093144 val_bpb:1.07658522 eval_time:111627ms
+quantized_ttt_lora val_loss:2.77533131 val_bpb:1.07441724 eval_time:1348730ms
+[pgm] === pgm_xsa4 === (train+eval)
+[pgm] pgm_xsa4 exit=0
+quantized val_loss:2.80047646 val_bpb:1.08409517 eval_time:16631ms
+quantized_sliding_window val_loss:2.78067081 val_bpb:1.07648432 eval_time:116583ms
+quantized_ttt_lora val_loss:2.77501719 val_bpb:1.07429563 eval_time:1377874ms
+[pgm] === pgm_xsa7 === (train+eval)
+[pgm] pgm_xsa7 exit=0
+quantized val_loss:2.79465502 val_bpb:1.08184163 eval_time:17862ms
+quantized_sliding_window val_loss:2.77474067 val_bpb:1.07418858 eval_time:126182ms
+quantized_ttt_lora val_loss:2.76928585 val_bpb:1.07207685 eval_time:1441533ms
+[pgm] === pgm_xsa9 === (train+eval)
+[pgm] pgm_xsa9 exit=0
+quantized val_loss:2.79189376 val_bpb:1.08077271 eval_time:18778ms
+quantized_sliding_window val_loss:2.77185735 val_bpb:1.07307236 eval_time:131657ms
+quantized_ttt_lora val_loss:2.76654878 val_bpb:1.07101725 eval_time:1491887ms
+[pgm-s1] === SECTION 1 LEADERBOARD ===
+name                                       dense    sw       ttt
+pgm_xsa9                                   1.08077271 1.07307236 1.07101725
+pgm_xsa7                                   1.08184163 1.07418858 1.07207685
+pgm_xsa4                                   1.08409517 1.07648432 1.07429563
+pgm_xsa0                                   1.08419154 1.07658522 1.07441724
+[pgm-s1] SECTION 1 COMPLETE
