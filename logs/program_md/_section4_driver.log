@@ -1,0 +1,19 @@
+nohup: ignoring input
+[pgm-s4] waiting for prior queue to drain...
+[pgm-s4] queue clear. Starting section 4.
+[pgm] === pgm_loopat0_0 === (train+eval)
+[pgm] pgm_loopat0_0 exit=0
+quantized val_loss:2.80320496 val_bpb:1.08515140 eval_time:19205ms
+quantized_sliding_window val_loss:2.78345854 val_bpb:1.07756354 eval_time:134317ms
+quantized_ttt_lora val_loss:2.77780195 val_bpb:1.07537370 eval_time:1512694ms
+[pgm] === pgm_loopat0_15 === (train+eval)
+[pgm] pgm_loopat0_15 exit=0
+quantized val_loss:2.79397767 val_bpb:1.08157942 eval_time:19573ms
+quantized_sliding_window val_loss:2.77405563 val_bpb:1.07392338 eval_time:134425ms
+quantized_ttt_lora val_loss:2.76856383 val_bpb:1.07179734 eval_time:1243171ms
+[pgm] === pgm_loopat0_5 === (train+eval)
+[pgm] pgm_loopat0_5 exit=0
+quantized val_loss:2.78723013 val_bpb:1.07896738 eval_time:19025ms
+quantized_sliding_window val_loss:2.76725715 val_bpb:1.07129148 eval_time:134325ms
+quantized_ttt_lora val_loss:2.76182924 val_bpb:1.06919016 eval_time:1250589ms
+[pgm] === pgm_loopat0_7 === (train+eval)
