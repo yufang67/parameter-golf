@@ -220,15 +220,15 @@ class Hyperparameters():
     val_batch_tokens = int(os.environ.get('VAL_BATCH_TOKENS', 2048 * 32 * 8))
     eval_seq_len = int(os.environ.get('EVAL_SEQ_LEN', 2048))
     val_loss_every = int(os.environ.get('VAL_LOSS_EVERY', 4000))
-    sliding_window_enabled = bool(int(os.environ.get('SLIDING_WINDOW_ENABLED', '1')))
+    sliding_window_enabled = bool(int(os.environ.get('SLIDING_WINDOW_ENABLED', '0')))
     vocab_size = int(os.environ.get('VOCAB_SIZE', 8192))
     num_layers = int(os.environ.get('NUM_LAYERS', 11))
-    xsa_last_n = int(os.environ.get('XSA_LAST_N', 11))
+    xsa_last_n = int(os.environ.get('XSA_LAST_N', 9))
     model_dim = int(os.environ.get('MODEL_DIM', 512))
     embedding_dim = int(os.environ.get('EMBEDDING_DIM', 512))
     num_kv_heads = int(os.environ.get('NUM_KV_HEADS', 4))
     num_heads = int(os.environ.get('NUM_HEADS', 8))
-    mlp_mult = float(os.environ.get('MLP_MULT', 4.0))
+    mlp_mult = float(os.environ.get('MLP_MULT', 4.35))
     skip_gates_enabled = bool(int(os.environ.get('SKIP_GATES_ENABLED', '1')))
     tie_embeddings = bool(int(os.environ.get('TIE_EMBEDDINGS', '1')))
     logit_softcap = float(os.environ.get('LOGIT_SOFTCAP', 20.0)) # 30.0
@@ -239,7 +239,7 @@ class Hyperparameters():
     num_loops = int(os.environ.get('NUM_LOOPS', 2))
     loop_start = int(os.environ.get('LOOP_START', 3))
     loop_end = int(os.environ.get('LOOP_END', 5))
-    enable_looping_at = float(os.environ.get('ENABLE_LOOPING_AT', 0.35))
+    enable_looping_at = float(os.environ.get('ENABLE_LOOPING_AT', 0.5))
     min_lr = float(os.environ.get('MIN_LR', 0.0))
     embed_lr = float(os.environ.get('EMBED_LR', 0.6))
     head_lr = float(os.environ.get('HEAD_LR', 0.008))
@@ -262,21 +262,21 @@ class Hyperparameters():
     muon_wd = float(os.environ.get('MUON_WD', 0.095))
     embed_wd = float(os.environ.get('EMBED_WD', 0.085))
     ema_decay = float(os.environ.get('EMA_DECAY', 0.9965))
-    ttt_enabled = bool(int(os.environ.get('TTT_ENABLED', '0')))
+    ttt_enabled = bool(int(os.environ.get('TTT_ENABLED', '1')))
     ttt_lr = float(os.environ.get('TTT_LR', 0.005))
     ttt_epochs = int(os.environ.get('TTT_EPOCHS', 3))
     ttt_momentum = float(os.environ.get('TTT_MOMENTUM', 0.9))
     ttt_chunk_tokens = int(os.environ.get('TTT_CHUNK_TOKENS', 32768))
     compress_brotli = bool(int(os.environ.get('COMPRESS_BROTLI', '0')))
     compress_ans = bool(int(os.environ.get('COMPRESS_ANS', '1')))
-    gptq_calibration_batches = int(os.environ.get('GPTQ_CALIBRATION_BATCHES', 64))
+    gptq_calibration_batches = int(os.environ.get('GPTQ_CALIBRATION_BATCHES', 128))
     gptq_reserve_seconds = float(os.environ.get('GPTQ_RESERVE_SECONDS', 12.0))
     matrix_bits = int(os.environ.get('MATRIX_BITS', 6))
     embed_bits = int(os.environ.get('EMBED_BITS', 8))
-    matrix_clip_sigmas = float(os.environ.get('MATRIX_CLIP_SIGMAS', 13)) #12.85
+    matrix_clip_sigmas = float(os.environ.get('MATRIX_CLIP_SIGMAS', 15)) #12.85
     embed_clip_sigmas = float(os.environ.get('EMBED_CLIP_SIGMAS', 20.0))
 
-    hessian_clip_lambda = float(os.environ.get('HESSIAN_CLIP_LAMBDA', 0.3))
+    hessian_clip_lambda = float(os.environ.get('HESSIAN_CLIP_LAMBDA', 0.0))
     clip_mult_early = float(os.environ.get('CLIP_MULT_EARLY', 1.0))  # blocks 0-2
     clip_mult_loop = float(os.environ.get('CLIP_MULT_LOOP', 1.0))    # blocks loop_start-loop_end
     clip_mult_mid = float(os.environ.get('CLIP_MULT_MID', 1.0))      # blocks 3,6,7
@@ -301,7 +301,7 @@ class Hyperparameters():
     train_files = os.path.join(datasets_dir, 'fineweb_train_*.bin')
     val_files = os.path.join(datasets_dir, 'fineweb_val_*.bin')
     tokenizer_path = os.path.join(data_dir, 'tokenizers', f'fineweb_{vocab_size}_bpe.model')
-    logfile = f"logs/{run_id}.txt"
+    logfile = f"sub_logs/{run_id}.txt"
     model_path = "final_model.pt"
     quantized_model_path = "final_model.int6.ptz"
 _logger_hparams = None
@@ -1675,7 +1675,7 @@ def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
     timed_eval("quantized", eval_val, h, device, val_data, compiled_model)
     if h.sliding_window_enabled:
         timed_eval("quantized_sliding_window", eval_val_sliding, h, device, val_data, eval_model)
-    if h.ttt_enabled and h.sliding_window_enabled:
+    if h.ttt_enabled:
         del eval_model, compiled_model
         torch._dynamo.reset()
         torch.cuda.empty_cache()

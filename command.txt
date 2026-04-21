@@ -74,7 +74,9 @@ torchrun --standalone --nproc_per_node=4 train_gpt_2026-04-05.py
 RUN_ID=exp58_ttt_stripped MATRIX_CLIP_SIGMAS=15 MLP_MULT=4.35 HESSIAN_CLIP_LAMBDA=0 GPTQ_CALIBRATION_BATCHES=128 TTT_ENABLED=1 FUSED_ROPE=1 MAX_WALLCLOCK_SECONDS=3600 GATED_ATTENTION=1 COMPRESS_ANS=1 to
 rchrun --standalone --nproc_per_node=4 train_gpt.py
 
+RUN_ID=exp58_ttt_default MAX_WALLCLOCK_SECONDS=3000 torchrun --standalone --nproc_per_node=4 train_gpt_sub_04_15.py
+
 # sub
-RUN_ID=log1337  MLP_MULT=4.35 MATRIX_CLIP_SIGMAS=15 HESSIAN_CLIP_LAMBDA=0 GPTQ_CALIBRATION_BATCHES=128 TTT_ENABLED=1 torchrun --standalone --nproc_per_node=8 train_gpt.py
-RUN_ID=log47 SEED=47 SLIDING_WINDOW_ENABLED=0 MLP_MULT=4.35 MATRIX_CLIP_SIGMAS=15 HESSIAN_CLIP_LAMBDA=0 GPTQ_CALIBRATION_BATCHES=128 TTT_ENABLED=1 torchrun --standalone --nproc_per_node=8 train_gpt.py
-RUN_ID=log99 SEED=99 SLIDING_WINDOW_ENABLED=0 MLP_MULT=4.35 MATRIX_CLIP_SIGMAS=15 HESSIAN_CLIP_LAMBDA=0 GPTQ_CALIBRATION_BATCHES=128 TTT_ENABLED=1 torchrun --standalone --nproc_per_node=8 train_gpt.py
+RUN_ID=log1337 SEED=1337 torchrun --standalone --nproc_per_node=8 train_gpt.py
+RUN_ID=log47 SEED=47 torchrun --standalone --nproc_per_node=8 train_gpt.py
+RUN_ID=log99 SEED=99 torchrun --standalone --nproc_per_node=8 train_gpt.py
