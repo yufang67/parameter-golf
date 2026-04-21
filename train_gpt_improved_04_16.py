@@ -268,7 +268,7 @@ class Hyperparameters():
     num_loops = int(os.environ.get('NUM_LOOPS', 2))
     loop_start = int(os.environ.get('LOOP_START', 3))
     loop_end = int(os.environ.get('LOOP_END', 5))
-    enable_looping_at = float(os.environ.get('ENABLE_LOOPING_AT', 0.35))
+    enable_looping_at = float(os.environ.get('ENABLE_LOOPING_AT', 0.5))
     # Optimizer
     min_lr = float(os.environ.get('MIN_LR', 0.0))
     embed_lr = float(os.environ.get('EMBED_LR', 0.6))
@@ -2219,7 +2219,7 @@ def eval_val_sliding_varlen_perdoc(
     is_master = h.rank == 0
     total_bins = len(bins)
     t_start = time.perf_counter()
-    log_every = max(1, total_bins // 20)
+    log_every = max(1, total_bins // 10)
     val_tokens = val_data.val_tokens
     with torch.inference_mode():
         for bi, bin_segs in enumerate(bins):
