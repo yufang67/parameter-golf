@@ -1,3 +1,21 @@
 [pgm-s3] waiting for prior queue to drain...
 [pgm-s3] queue clear. Starting section 3.
 [pgm] === pgm_clipearly075 === (train+eval)
+[pgm] pgm_clipearly075 exit=0
+quantized_sliding_window val_loss:2.76517909 val_bpb:1.07048700 eval_time:134600ms
+quantized_ttt_lora val_loss:2.75975942 val_bpb:1.06838888 eval_time:1250239ms
+[pgm] === pgm_clipearly125 === (train+eval)
+[pgm] pgm_clipearly125 exit=0
+quantized_sliding_window val_loss:2.77006124 val_bpb:1.07237703 eval_time:134375ms
+quantized_ttt_lora val_loss:2.76456010 val_bpb:1.07024737 eval_time:1252903ms
+[pgm] SKIP pgm_clipearly15 (already done)
+[pgm] === pgm_cliploop075 === (train+eval)
+[pgm] pgm_cliploop075 exit=0
+quantized_sliding_window val_loss:2.76313243 val_bpb:1.06969467 eval_time:134297ms
+quantized_ttt_lora val_loss:2.75798408 val_bpb:1.06770158 eval_time:1241042ms
+[pgm] === pgm_cliploop125 === (train+eval)
+[pgm] pgm_cliploop125 exit=0
+quantized_sliding_window val_loss:2.77304975 val_bpb:1.07353397 eval_time:134070ms
+quantized_ttt_lora val_loss:2.76734573 val_bpb:1.07132577 eval_time:1257148ms
+[pgm] SKIP pgm_cliploop15 (already done)
+[pgm] === pgm_clipmid075 === (train+eval)
