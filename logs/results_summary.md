@@ -62,9 +62,29 @@ pre-quant val_bpb / sliding-window val_bpb / TTT-LoRA val_bpb.
 | pgm_loopemb1_loops3 | LOOP_EMBEDDINGS=1, loops=3 | 1.08401 | 1.07631 | 1.07419 | 16,533,337 ⚠️ |
 | pgm_loopemb1_loops4 | LOOP_EMBEDDINGS=1, loops=4 | *(incomplete)* | — | — | — |
 
+#### `ENABLE_LOOPING_AT` Sweep (LOOP_EMBEDDINGS=1, loops=2)
+
+All on the `pg12_varlen_clip14` baseline with `LOOP_EMBEDDINGS=1`. Varies when looping activates
+during training. Later activation → more steps (cheaper non-looped forward) but less time with
+17-step depth.
+
+| run_id | enable_looping_at | pre_val_bpb | sw_val_bpb | ttt_val_bpb | steps | final_size |
+|--------|-------------------|-------------|------------|-------------|-------|------------|
+| pgm_loopat0_5 | 0.5 | **1.06630** | **1.07129** | **1.06919** 🏆 | 5,716 | 16,525,791 ⚠️ |
+| pgm_loopat0_15 | 0.15 | 1.06881 | 1.07392 | 1.07180 | 4,647 | 16,528,431 ⚠️ |
+| pgm_loopat0_7 | 0.7 | 1.06893 | 1.07368 | 1.07159 | 6,190 | 16,525,093 ⚠️ |
+| pgm_loopat0_0 | 0.0 (no curriculum) | 1.07246 | 1.07756 | 1.07537 | 4,353 | 16,530,286 ⚠️ |
+
+**Takeaways:** `enable_looping_at=0.5` is the clear winner across all metrics (best pre-quant
+1.06630, best sw 1.07129, best ttt 1.06919). Immediate looping (0.0) is worst — the curriculum
+matters. The sweet spot is mid-training activation; too early (0.0/0.15) or too late (0.7)
+underperforms 0.5. **`pgm_loopat0_5` holds the best absolute TTT BPB (1.06919)** across all
+runs, but is ~0.5MB over 16MB.
+
 All `pgm_*` runs are ~0.5MB over the 16MB budget — the baseline branch needs further compression
 to be leaderboard-eligible. **XSA on the last 9 layers gives the largest single-feature gain
 seen so far** (~0.0035 sw_bpb improvement, ~0.0034 ttt_bpb improvement vs xsa0 control).
+**`enable_looping_at=0.5` with loop embeddings is the new best absolute BPB** (1.06919 ttt).
 
 ### TTT-LoRA Sweep on `pg12_varlen_clip14` Checkpoint
 
@@ -192,11 +212,12 @@ Sliding-window evaluation at smaller strides has near-zero effect on bpb.
 2. **TTT-LoRA is the biggest single post-training gain measured to date:** on the `pg12_varlen_clip14` checkpoint it cuts bpb from 1.07383 (sw) to **1.07173** (`pg12_r48_phased3`), a ≈−0.0021 improvement at zero training cost. Sweet spot: rank 48, lr 1e-4, chunk 64, phased schedule.
 3. **TTT-LoRA hyperparameter ranking** (from sweep): rank ≤ 64 wins decisively (rank 192 is +0.002 to +0.020 worse), lr 1e-4 is optimal (3e-4 is +0.005, 5e-5 is +0.0001 worse), chunk 64 ≥ chunk 96 ≥ chunk 128 > chunk 32, `inner_steps=2` always hurts.
 4. **SLOT alone is a small but free win** (~−0.0003 bpb), best at lr=1e-2, steps=4. SLOT-in-TTT is essentially neutral on top of TTT-LoRA (best `slotttt_default` 1.07176 vs best pure TTT 1.07173).
-5. **XSA (sliding-attn last N layers) is the most promising new architectural feature.** `pgm_xsa9` reached **1.07102** ttt-bpb (best overall), but the branch is 16.52MB and needs additional compression to be eligible.
+5. **XSA (sliding-attn last N layers) is the most promising new architectural feature.** `pgm_xsa9` reached **1.07102** ttt-bpb, but the branch is 16.52MB and needs additional compression to be eligible.
 6. **Loop-Embeddings depth-2 helps slightly** (`pgm_loopemb1` 1.07169 ttt vs `pgm_xsa0` control 1.07442), but loops=3/4 hurt and all variants bust 16MB.
-7. **Eval-stride finer than 64 is wasted compute** — strides 8/16/32/64 all within 0.00005 bpb.
-8. **Best sliding BPB on a 16MB-valid dense run:** `improved_GA_FUSErope` (**1.07369**) — GA+HS+ANS+FR+FM, 15.99MB ✅
-9. **Best absolute BPB (over budget):** `pgm_xsa9` (**1.07102** TTT) — 16.52MB; `improved_GA_MoE79_MLP4_TTT` (1.06740 sw) — MoE 21.2MB.
+7. **`ENABLE_LOOPING_AT=0.5` is the new best absolute BPB.** `pgm_loopat0_5` reached **1.06919** ttt-bpb and **1.06630** pre-quant (both new records). Curriculum matters: immediate looping (0.0) is worst. All `pgm_loopat0_*` are ~0.5MB over 16MB.
+8. **Eval-stride finer than 64 is wasted compute** — strides 8/16/32/64 all within 0.00005 bpb.
+9. **Best sliding BPB on a 16MB-valid dense run:** `improved_GA_FUSErope` (**1.07369**) — GA+HS+ANS+FR+FM, 15.99MB ✅
+10. **Best absolute BPB (over budget):** `pgm_loopat0_5` (**1.06919** TTT) — 16.53MB; `improved_GA_MoE79_MLP4_TTT` (1.06740 sw) — MoE 21.2MB.
 10. **MLP 4.35× improves pre-quant BPB** — ~1.075 vs ~1.079 for 3.0×, but adds ~2.2M params
 11. **Clip sigma 15.0 solves MLP4.35 size problem** — 15.97MB (vs 16.83MB at clip=13) with only 0.004 wider quant gap
 12. **N-gram embeddings don't help:** Bigram-512 (1.07464) and trigram-1536 (1.07584) are worse than baseline (1.07441), and all bust 16MB

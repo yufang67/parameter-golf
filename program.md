@@ -29,16 +29,16 @@
 
 | Metric | 16MB-valid baseline | Best pre-quant (over budget) | Best with TTT (over budget) |
 |--------|---------------------|------------------------------|------------------------------|
-| Run | `pg11_varlen_gptq192` | `pg12_varlen_clip14` | `pg12_ttt_r48_phased2` (on `pg12_varlen_clip14` ckpt) |
-| Sliding-window BPB | **1.07722** ✅ | 1.07425 ⚠ | — (TTT path only) |
-| TTT BPB (`quantized_ttt_lora`) | — | — | **1.07183** ⚠ |
-| Pre-quant BPB | 1.07000 | **1.06882** | 1.06882 |
-| Quant BPB | 1.08440 | 1.08142 | 1.08142 |
-| Total artifact | 15,977,377 B ✅ | 16,388,003 B ⚠ | 16,388,003 B ⚠ |
-| Steps | 4,883 | 5,077 | 5,077 |
-| Config | `+ VARLEN_ATTENTION=1 GPTQ_CALIBRATION_BATCHES=192` | `+ VARLEN_ATTENTION=1 CLIP_SIGMAS=14` | `+ TTT_ENABLED=1 TTT_LORA_RANK=48 TTT_PHASES=2` |
+| Run | `pg11_varlen_gptq192` | `pgm_loopat0_5` | `pgm_loopat0_5` (TTT on same ckpt) |
+| Sliding-window BPB | **1.07722** ✅ | 1.07129 ⚠ | — (TTT path only) |
+| TTT BPB (`quantized_ttt_lora`) | — | — | **1.06919** ⚠ |
+| Pre-quant BPB | 1.07000 | **1.06630** | 1.06630 |
+| Quant BPB | 1.08440 | 1.07897 | 1.07897 |
+| Total artifact | 15,977,377 B ✅ | 16,525,791 B ⚠ | 16,525,791 B ⚠ |
+| Steps | 4,883 | 5,716 | 5,716 |
+| Config | `+ VARLEN_ATTENTION=1 GPTQ_CALIBRATION_BATCHES=192` | `+ VARLEN_ATTENTION=1 LOOP_EMBEDDINGS=1 ENABLE_LOOPING_AT=0.5` | `+ TTT_ENABLED=1` |
 
-**Headline:** the best leaderboard-eligible result is still the non-varlen 1.07369. Varlen wins on the model side (best pre-quant 1.06882) and now wins post-TTT (1.07183 ≪ varlen sliding 1.07425), but both varlen winners currently bust the 16 MB budget. Closing the artifact-size gap on `pg12_varlen_clip14` is the highest-leverage open task.
+**Headline:** the best leaderboard-eligible result is still the non-varlen 1.07369. Varlen wins on the model side (best pre-quant **1.06630** via `pgm_loopat0_5`) and now wins post-TTT (**1.06919** ≪ varlen sliding 1.07129), but all varlen winners currently bust the 16 MB budget (~0.5MB over). Closing the artifact-size gap is the highest-leverage open task.
 
 ## Workflow
 
@@ -130,6 +130,16 @@ MATRIX_CLIP_SIGMAS=15 MLP_MULT=4.35 GPTQ_CALIBRATION_BATCHES=128 TTT_ENABLED=1 M
   2. Pair the best value with `CLIP_MULT_LOOP` sweep to catch interactions at the switch-over.
   3. Check the training log right after `layer_loop:enabled` for loss spikes or `grad_norm` jumps; if present, prefer a later switch or a tighter `CLIP_MULT_LOOP`.
 - **Decision rule:** replace default only if BPB improves ≥0.002 at matched wallclock. If two settings tie on BPB, prefer the later switch (cheaper wallclock, more stable).
+- **Results (with `LOOP_EMBEDDINGS=1`, loops=2):**
+
+| Run | `ENABLE_LOOPING_AT` | pre_val_bpb | sw_val_bpb | ttt_val_bpb | steps |
+|-----|---------------------|-------------|------------|-------------|-------|
+| pgm_loopat0_5 | 0.5 | **1.06630** | **1.07129** | **1.06919** 🏆 | 5,716 |
+| pgm_loopat0_15 | 0.15 | 1.06881 | 1.07392 | 1.07180 | 4,647 |
+| pgm_loopat0_7 | 0.7 | 1.06893 | 1.07368 | 1.07159 | 6,190 |
+| pgm_loopat0_0 | 0.0 | 1.07246 | 1.07756 | 1.07537 | 4,353 |
+
+  **Conclusion:** `ENABLE_LOOPING_AT=0.5` is the clear winner — **new best absolute TTT BPB (1.06919)** and best pre-quant (1.06630). Immediate looping (0.0) is worst; curriculum matters. **Update default from 0.35 → 0.5.**
 
 ### Parallel residuals placement (`PARALLEL_RESIDUAL_START`)
 - **What it controls:** index of the **first block** that switches from sequential (`x + attn; x + mlp(x)`) to parallel (`x + attn + mlp(x)`) residuals. Blocks `[PARALLEL_RESIDUAL_START..num_layers-1]` use the parallel layout; earlier blocks stay sequential. Set `≥ num_layers` to disable entirely; set `0` to make the whole stack parallel.

@@ -53,21 +53,21 @@ run_variant "pg12_eval_verify"
 
 # Variants: TTT-only to save time (~10min vs 30min each)
 # Larger LoRA rank
-run_variant "pg12_ttt_rank192"   RUN_TTT_ONLY=1  TTT_LORA_RANK=192
+run_variant "pg12_ttt_rank192"   SLIDING_WINDOW_ENABLED=0  TTT_LORA_RANK=192
 
 # 3) Higher LoRA LR
-run_variant "pg12_ttt_lr3e4"     RUN_TTT_ONLY=1  TTT_LORA_LR=3e-4
+run_variant "pg12_ttt_lr3e4"     SLIDING_WINDOW_ENABLED=0  TTT_LORA_LR=3e-4
 
 # 4) Smaller chunk size (more frequent updates)
-run_variant "pg12_ttt_chunk32"   RUN_TTT_ONLY=1  TTT_CHUNK_SIZE=32
+run_variant "pg12_ttt_chunk32"   SLIDING_WINDOW_ENABLED=0  TTT_CHUNK_SIZE=32
 
 # 5) More grad steps per chunk
-run_variant "pg12_ttt_steps2"    RUN_TTT_ONLY=1  TTT_GRAD_STEPS=2
+run_variant "pg12_ttt_steps2"    SLIDING_WINDOW_ENABLED=0  TTT_GRAD_STEPS=2
 
 # 6) Adaptive per-chunk LR
-run_variant "pg12_ttt_adaptive"  RUN_TTT_ONLY=1  TTT_ADAPTIVE_LR=1
+run_variant "pg12_ttt_adaptive"  SLIDING_WINDOW_ENABLED=0  TTT_ADAPTIVE_LR=1
 
 # 7) Phased global SGD on already-scored prefix
-run_variant "pg12_ttt_phased2"   RUN_TTT_ONLY=1  TTT_PHASES=2
+run_variant "pg12_ttt_phased2"   SLIDING_WINDOW_ENABLED=0  TTT_PHASES=2
 
 echo "[sweep] all variants complete"

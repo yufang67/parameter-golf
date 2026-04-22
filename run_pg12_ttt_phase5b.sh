@@ -28,7 +28,7 @@ run_slot() {
         RUN_ID="$name" \
         MATRIX_CLIP_SIGMAS=14 MLP_MULT=4.35 GPTQ_CALIBRATION_BATCHES=128 \
         VARLEN_ATTENTION=1 SLIDING_WINDOW_ENABLED=1 SKIP_TRAINING=1 \
-        RUN_SW_ONLY=1 MAX_WALLCLOCK_SECONDS=3600 \
+        TTT_ENABLED=0 MAX_WALLCLOCK_SECONDS=3600 \
         SLOT_ENABLED=1 \
         "$@" \
         torchrun --standalone --nproc_per_node=4 train_gpt_improved_04_16.py \

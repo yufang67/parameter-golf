@@ -37,7 +37,7 @@ try:
     import triton, triton.language as tl
     _HAS_TRITON = True
 
-    # ── Fused LeakyReLU(0.5)² kernel ──
+    # Fused LeakyReLU(0.5)² kernel
     @triton.jit
     def _lrelu_sq_fwd(X, Y, N: tl.constexpr, B: tl.constexpr):
         o = tl.program_id(0) * B + tl.arange(0, B)
@@ -73,10 +73,7 @@ try:
 
     fused_leaky_relu_sq = _FusedLReluSq.apply
 
-    # ── Fused QK-norm + partial-RoPE + Q-gain kernel (2D all-heads) ──
-    # Grid: (N,) where N=B*T. Each program processes ALL heads for one row.
-    # Uses 2D [H, D] indexing so H independent RMS norms run in parallel.
-    # Input x: [N, H, D] contiguous; cos/sin: [T, RH]; gain: [H].
+    # Fused QK-norm + partial-RoPE + Q-gain (2D all-heads). x:[N,H,D] cos/sin:[T,RH] gain:[H].
     @triton.jit
     def _norm_rope_gain_fwd(
         X, Y, COS, SIN, GAIN,
@@ -87,37 +84,29 @@ try:
     ):
         row = tl.program_id(0)
         base = row * stride_xn
-        # 2D indices: [H, D] and [H, RH]
         h_idx = tl.arange(0, H)
         d_idx = tl.arange(0, D)
         r_idx = tl.arange(0, RH)
-        hd = h_idx[:, None] * D + d_idx[None, :]   # [H, D]
-        hr = h_idx[:, None] * D + r_idx[None, :]    # [H, RH]
+        hd = h_idx[:, None] * D + d_idx[None, :]
+        hr = h_idx[:, None] * D + r_idx[None, :]
         hr2 = h_idx[:, None] * D + RH + r_idx[None, :]  # [H, RH] second half
-        # Load all heads [H, D]
         x = tl.load(X + base + hd).to(tl.float32)
-        # Per-head RMS norm: reduce over D (axis=1)
-        var = tl.sum(x * x, axis=1) / D  # [H]
-        rrms = 1.0 / tl.sqrt(var + 1e-6)  # [H]
-        xn = x * rrms[:, None]  # [H, D]
-        # Extract rope halves from normed x [H, RH]
+        var = tl.sum(x * x, axis=1) / D
+        rrms = 1.0 / tl.sqrt(var + 1e-6)
+        xn = x * rrms[:, None]
         xn1 = tl.load(X + base + hr).to(tl.float32) * rrms[:, None]
         xn2 = tl.load(X + base + hr2).to(tl.float32) * rrms[:, None]
-        # cos/sin: [RH] broadcast to [H, RH]
         t_idx = row % T
-        c = tl.load(COS + t_idx * stride_cn + r_idx).to(tl.float32)  # [RH]
-        s = tl.load(SIN + t_idx * stride_cn + r_idx).to(tl.float32)  # [RH]
-        r1 = xn1 * c[None, :] + xn2 * s[None, :]       # [H, RH]
-        r2 = xn1 * (-s[None, :]) + xn2 * c[None, :]     # [H, RH]
-        # Apply gain [H] -> [H, 1]
+        c = tl.load(COS + t_idx * stride_cn + r_idx).to(tl.float32)
+        s = tl.load(SIN + t_idx * stride_cn + r_idx).to(tl.float32)
+        r1 = xn1 * c[None, :] + xn2 * s[None, :]
+        r2 = xn1 * (-s[None, :]) + xn2 * c[None, :]
         if HAS_GAIN:
-            g = tl.load(GAIN + h_idx).to(tl.float32)  # [H]
+            g = tl.load(GAIN + h_idx).to(tl.float32)
             r1 = r1 * g[:, None]
             r2 = r2 * g[:, None]
-        # Store rope parts [H, RH]
         tl.store(Y + base + hr, r1.to(tl.bfloat16))
         tl.store(Y + base + hr2, r2.to(tl.bfloat16))
-        # Store passthrough [H, D] masked for dims >= 2*RH
         if D > 2 * RH:
             xn_out = xn
             if HAS_GAIN:
@@ -150,23 +139,23 @@ try:
         t_idx = row % T
         c = tl.load(COS + t_idx * stride_cn + r_idx).to(tl.float32)
         s = tl.load(SIN + t_idx * stride_cn + r_idx).to(tl.float32)
-        dy_full = tl.load(DY + base + hd).to(tl.float32)  # [H, D]
-        dy1 = tl.load(DY + base + hr).to(tl.float32)      # [H, RH]
-        dy2 = tl.load(DY + base + hr2).to(tl.float32)     # [H, RH]
+        dy_full = tl.load(DY + base + hd).to(tl.float32)
+        dy1 = tl.load(DY + base + hr).to(tl.float32)
+        dy2 = tl.load(DY + base + hr2).to(tl.float32)
         if HAS_GAIN:
-            g = tl.load(GAIN + h_idx).to(tl.float32)  # [H]
+            g = tl.load(GAIN + h_idx).to(tl.float32)
             r1 = xn1 * c[None, :] + xn2 * s[None, :]
             r2 = xn1 * (-s[None, :]) + xn2 * c[None, :]
-            dg = tl.sum(dy1 * r1, axis=1) + tl.sum(dy2 * r2, axis=1)  # [H]
+            dg = tl.sum(dy1 * r1, axis=1) + tl.sum(dy2 * r2, axis=1)
             if D > 2 * RH:
                 pmask = d_idx[None, :] >= 2 * RH
                 dg += tl.sum(tl.where(pmask, dy_full * xn, 0.0), axis=1)
             tl.atomic_add(DGAIN + h_idx, dg)
             dy1 = dy1 * g[:, None]
             dy2 = dy2 * g[:, None]
-        dxn1 = dy1 * c[None, :] + dy2 * (-s[None, :])   # [H, RH]
-        dxn2 = dy1 * s[None, :] + dy2 * c[None, :]       # [H, RH]
-        dot = tl.sum(dxn1 * xn1, axis=1) + tl.sum(dxn2 * xn2, axis=1)  # [H]
+        dxn1 = dy1 * c[None, :] + dy2 * (-s[None, :])
+        dxn2 = dy1 * s[None, :] + dy2 * c[None, :]
+        dot = tl.sum(dxn1 * xn1, axis=1) + tl.sum(dxn2 * xn2, axis=1)
         dy_pass = None
         if D > 2 * RH:
             if HAS_GAIN:
@@ -255,10 +244,10 @@ class Hyperparameters():
     embedding_dim = int(os.environ.get('EMBEDDING_DIM', 512))
     num_kv_heads = int(os.environ.get('NUM_KV_HEADS', 4))
     num_heads = int(os.environ.get('NUM_HEADS', 8))
-    mlp_mult = float(os.environ.get('MLP_MULT', 4.0))
+    mlp_mult = float(os.environ.get('MLP_MULT', 4.35))
     skip_gates_enabled = bool(int(os.environ.get('SKIP_GATES_ENABLED', '1')))
     tie_embeddings = bool(int(os.environ.get('TIE_EMBEDDINGS', '1')))
-    logit_softcap = float(os.environ.get('LOGIT_SOFTCAP', 20.0)) # 30.0
+    logit_softcap = float(os.environ.get('LOGIT_SOFTCAP', 20.0))
     rope_base = float(os.environ.get('ROPE_BASE', 10000.0))
     rope_dims = int(os.environ.get('ROPE_DIMS', 32)) # 16
     rope_train_seq_len = int(os.environ.get('ROPE_TRAIN_SEQ_LEN', 2048))
@@ -294,22 +283,16 @@ class Hyperparameters():
     
     # Test-Time Training (TTT): score-first sliding window
     # varlen → LoRA TTT, non-varlen → fullparam TTT
-    ttt_enabled = bool(int(os.environ.get('TTT_ENABLED', '0')))
+    ttt_enabled = bool(int(os.environ.get('TTT_ENABLED', '1')))
     # LoRA TTT params
     ttt_lora_rank = int(os.environ.get('TTT_LORA_RANK', 48))
     ttt_lora_lr = float(os.environ.get('TTT_LORA_LR', 1e-4))
     ttt_chunk_size = int(os.environ.get('TTT_CHUNK_SIZE', 64))
     ttt_eval_seq_len = int(os.environ.get('TTT_EVAL_SEQ_LEN', 2048))
-    # RoPE base mismatch fix: training packs ~train_batch_tokens/(world*grad_accum)
-    # tokens per row, triggering NTK-aware RoPE rescaling. Eval (dense / sliding /
-    # TTT) processes shorter rows and would otherwise compute a different NTK base
-    # → encoding mismatch (~+0.12 BPB on TTT). When >0, force Rotary at every call
-    # site to use this value as the effective base seq_len. When 0, auto-derive in
-    # main() to train_batch_tokens // (world*grad_accum). Set explicitly to
-    # train_seq_len to disable NTK rescaling entirely (scale=1 → base unchanged).
+    # Force NTK base seq_len at every RoPE call site (avoids train/eval mismatch).
+    # 0 = auto-derive from train_batch_tokens // (world*grad_accum) in main().
     rope_force_base_seqlen = int(os.environ.get('ROPE_FORCE_BASE_SEQLEN', 0))
-    # Legacy alias kept for the TTT-only override; only consulted as a fallback
-    # when rope_force_base_seqlen is 0.
+    # Legacy TTT-only fallback, used only when rope_force_base_seqlen == 0.
     ttt_rope_base_seqlen = int(os.environ.get('TTT_ROPE_BASE_SEQLEN', 0))
     ttt_batch_size = int(os.environ.get('TTT_BATCH_SIZE', 64))
     ttt_grad_steps = int(os.environ.get('TTT_GRAD_STEPS', 1))
@@ -331,8 +314,7 @@ class Hyperparameters():
     ttt_fp_lr = float(os.environ.get('TTT_FP_LR', 0.001))
     ttt_fp_epochs = int(os.environ.get('TTT_FP_EPOCHS', 3))
     ttt_fp_chunk_tokens = int(os.environ.get('TTT_FP_CHUNK_TOKENS', 32768))
-    # Phased global SGD TTT: pause LoRA TTT after each phase
-    # and run distributed SGD on the already-scored prefix. Score-before-update legal.
+    # Phased global SGD: pause LoRA TTT each phase, run distributed SGD on already-scored prefix.
     ttt_phases = int(os.environ.get('TTT_PHASES', 3))
     ttt_phase_sgd_lr = float(os.environ.get('TTT_PHASE_SGD_LR', 5e-4))
     ttt_phase_sgd_momentum = float(os.environ.get('TTT_PHASE_SGD_MOMENTUM', 0.9))
@@ -344,19 +326,15 @@ class Hyperparameters():
     ttt_max_docs = int(os.environ.get('TTT_MAX_DOCS', 0))  # 0 = all; dev helper for faster testing
     # Skip LoRA gradient updates for docs shorter than this (still scored). 0 = no filter.
     ttt_min_doc_len = int(os.environ.get('TTT_MIN_DOC_LEN', 0))
-    # SLOT-4: per-window zero-init logit delta optimized with AdamW.
-    # Legal variant trains delta on context positions only (already-scored tokens from
-    # previous sliding windows), then uses it to score the new stride positions.
+    # SLOT-4: per-window zero-init logit delta (AdamW). Trained on context positions only.
     slot_enabled = bool(int(os.environ.get('SLOT_ENABLED', '0')))
     slot_steps = int(os.environ.get('SLOT_STEPS', 4))
     slot_lr = float(os.environ.get('SLOT_LR', 0.01))
     slot_wd = float(os.environ.get('SLOT_WD', 0.01))
     slot_train_mode = os.environ.get('SLOT_TRAIN_MODE', 'context')  # 'context' (legal) or 'all'
     slot_max_windows = int(os.environ.get('SLOT_MAX_WINDOWS', 0))  # 0 = all; dev helper
-    # SLOT-in-TTT composition: during TTT scoring, optimize per-chunk logit delta on
-    # the already-scored context (positions before chunk_offset within the window),
-    # then score the chunk with corrected logits. TTT gradient updates still use the
-    # un-corrected loss to avoid double-dipping.
+    # SLOT-in-TTT: per-chunk logit delta trained on already-scored context within the window.
+    # TTT gradient updates use the uncorrected loss to avoid double-dipping.
     slot_in_ttt = bool(int(os.environ.get('SLOT_IN_TTT', '0')))
     slot_in_ttt_steps = int(os.environ.get('SLOT_IN_TTT_STEPS', 4))
     slot_in_ttt_lr = float(os.environ.get('SLOT_IN_TTT_LR', 0.01))
@@ -366,14 +344,14 @@ class Hyperparameters():
     compress_brotli = bool(int(os.environ.get('COMPRESS_BROTLI', '0')))
     compress_ans = bool(int(os.environ.get('COMPRESS_ANS', '1')))
     compress_lzma = bool(int(os.environ.get('COMPRESS_LZMA', '0')))
-    gptq_calibration_batches = int(os.environ.get('GPTQ_CALIBRATION_BATCHES', 64))
+    gptq_calibration_batches = int(os.environ.get('GPTQ_CALIBRATION_BATCHES', 128))
     gptq_reserve_seconds = float(os.environ.get('GPTQ_RESERVE_SECONDS', 12.0))
     matrix_bits = int(os.environ.get('MATRIX_BITS', 6))
     embed_bits = int(os.environ.get('EMBED_BITS', 8))
-    matrix_clip_sigmas = float(os.environ.get('MATRIX_CLIP_SIGMAS', 13)) #12.85
+    matrix_clip_sigmas = float(os.environ.get('MATRIX_CLIP_SIGMAS', 12)) #12.85
     embed_clip_sigmas = float(os.environ.get('EMBED_CLIP_SIGMAS', 20.0))
     # Hessian-aware SDClip: per-row clip modulation using GPTQ Hessian
-    hessian_clip_lambda = float(os.environ.get('HESSIAN_CLIP_LAMBDA', 0.3))
+    hessian_clip_lambda = float(os.environ.get('HESSIAN_CLIP_LAMBDA', 0.0))
     # Per-group clip multipliers (from 3-seed Hessian analysis)
     clip_mult_early = float(os.environ.get('CLIP_MULT_EARLY', 1.0))  # blocks 0-2
     clip_mult_loop = float(os.environ.get('CLIP_MULT_LOOP', 1.0))    # blocks loop_start-loop_end
@@ -414,12 +392,9 @@ class Hyperparameters():
     mixed_seq_len = int(os.environ.get('MIXED_SEQ_LEN', 0))  # 0=disabled, e.g. 6144
     mixed_seq_gpu_frac = float(os.environ.get('MIXED_SEQ_GPU_FRAC', 0.375))  # fraction of GPUs on long seqs
 
-    # Eval-only hooks: skip training and/or restrict eval passes when iterating
-    # on the eval pipeline against an existing final_model.int6.ptz artifact.
+    # Eval-only hooks for iterating on eval pipeline against an existing artifact.
     skip_training = bool(int(os.environ.get('SKIP_TRAINING', '0')))
     force_dense_eval = bool(int(os.environ.get('FORCE_DENSE_EVAL', '0')))
-    run_ttt_only = bool(int(os.environ.get('RUN_TTT_ONLY', '0')))
-    run_sw_only = bool(int(os.environ.get('RUN_SW_ONLY', '0')))
 
     # Distributed setup
     distributed = "RANK" in os.environ and "WORLD_SIZE" in os.environ
@@ -476,8 +451,7 @@ def build_sentencepiece_luts(
     sp: spm.SentencePieceProcessor, vocab_size: int, device: torch.device
 ) -> tuple[Tensor, Tensor, Tensor]:
     sp_vocab_size = int(sp.vocab_size())
-    # The BPB calculation assumes "▁" is its own token so that leading-space bytes
-    # are counted correctly. See https://github.com/openai/parameter-golf/issues/897
+    # BPB calculation requires "▁" as its own token (leading-space bytes). See issue #897.
     assert sp.piece_to_id("\u2581") != sp.unk_id(), \
         "Tokenizer must have '▁' (space) as its own token for correct BPB byte counting"
     table_size = max(sp_vocab_size, vocab_size)
@@ -505,7 +479,6 @@ def load_validation_tokens(pattern: str, seq_len: int) -> Tensor:
     files = [Path(p) for p in sorted(glob.glob(pattern))]
     if not files:
         raise FileNotFoundError(f"No files found for pattern: {pattern}")
-    # The export pipeline writes the fixed first-50k-doc validation set to fineweb_val_*.
     tokens = torch.cat([load_data_shard(file) for file in files]).contiguous()
     usable = ((tokens.numel() - 1) // seq_len) * seq_len
     if usable <= 0:
@@ -515,7 +488,6 @@ def load_data_shard(file: Path) -> Tensor:
     header_bytes = 256 * np.dtype("<i4").itemsize
     token_bytes = np.dtype("<u2").itemsize
     header = np.fromfile(file, dtype="<i4", count=256)
-    # SHARD HEADER INTS & SHARD_MAGIC
     if header.size != 256 or int(header[0]) != 20240520 or int(header[1]) != 1:
         raise ValueError(f"Unexpected shard header for {file}")
     num_tokens = int(header[2])
@@ -718,20 +690,15 @@ class Rotary(nn.Module):
         self.rope_dims = rope_dims if rope_dims > 0 else dim
         inv_freq = 1.0 / (base ** (torch.arange(0, self.rope_dims, 2, dtype=torch.float32) / self.rope_dims))
         self.register_buffer("inv_freq", inv_freq, persistent=False)
-        # Precompute for train_seq_len; registered as buffers so dispatch keys stay
-        # stable across train/eval transitions (avoids dynamo recompilation).
+        # Precompute as buffers so dispatch keys stay stable (avoids dynamo recompilation).
         t = torch.arange(train_seq_len, dtype=torch.float32)
         freqs = torch.outer(t, inv_freq)
         self.register_buffer("_cos_cached", freqs.cos()[None, :, None, :].clone(), persistent=False)
         self.register_buffer("_sin_cached", freqs.sin()[None, :, None, :].clone(), persistent=False)
     def forward(self, seq_len: int, device: torch.device, dtype: torch.dtype,
                 ntk_seq_len: int = 0) -> tuple[Tensor, Tensor]:
-        # ntk_seq_len overrides which seq_len is used to pick the NTK base
-        # (positions returned are still 0..seq_len-1). Lets eval reproduce the
-        # exact RoPE rotations used during training even when packed buffers differ.
-        # Global env override (ROPE_FORCE_BASE_SEQLEN) wins over the kwarg so it
-        # also reaches call sites that don't thread ntk_seq_len through (e.g.
-        # _block_with_lora used by TTT).
+        # ntk_seq_len overrides the seq_len used to pick NTK base (positions still 0..seq_len-1).
+        # ROPE_FORCE_BASE_SEQLEN env override wins over the kwarg.
         force = int(os.environ.get('ROPE_FORCE_BASE_SEQLEN', '0'))
         if force > 0:
             ntk_seq_len = force
@@ -852,7 +819,6 @@ class MLP(nn.Module):
             return self.proj(fused_leaky_relu_sq(h))
         return self.proj(F.leaky_relu(h, negative_slope=0.5).square())
 
-
 class MoEMLP(nn.Module):
     """Mixture-of-Experts MLP with top-k routing."""
     def __init__(self, dim: int, mlp_mult: int, num_experts: int = 4,
@@ -881,7 +847,7 @@ class MoEMLP(nn.Module):
                 out = out + mask * w * expert_out
         return out.reshape(B, T, D)
 
-# ── LoRA modules for TTT ──────────────────────────────────
+# LoRA modules for TTT
 class BatchedLinearLoRA(nn.Module):
     """Batched low-rank adapter: each sample in the batch gets its own LoRA."""
     def __init__(self, bsz: int, in_features: int, out_features: int, rank: int):
@@ -897,7 +863,6 @@ class BatchedLinearLoRA(nn.Module):
 
     def forward(self, x: Tensor) -> Tensor:
         return (x @ self.A.transpose(1, 2)) @ self.B.transpose(1, 2)
-
 
 class BatchedTTTLoRA(nn.Module):
     """Container for all LoRA adapters applied during TTT."""
@@ -927,7 +892,6 @@ class BatchedTTTLoRA(nn.Module):
                 if loras is not None:
                     for lora in loras:
                         lora.reset()
-
 
 class Block(nn.Module):
     def __init__(self, dim: int, num_heads: int, num_kv_heads: int, mlp_mult: int,
@@ -2095,7 +2059,6 @@ def eval_val_sliding(
     base_model.train()
     return _loss_bpb(loss_sum, token_count, byte_count)
 
-
 def _perdoc_varlen_segments(val_tokens: Tensor, seq_len: int, stride: int
                             ) -> list[tuple[int, int, int, int]]:
     """Build per-document segments for varlen sliding eval.
@@ -2140,13 +2103,11 @@ def _perdoc_varlen_segments(val_tokens: Tensor, seq_len: int, stride: int
             off += stride
     return segments
 
-
 def _bucket_max_seqlen(L: int) -> int:
     for b in (256, 512, 1024, 2048, 4096):
         if L <= b:
             return b
     return _get_next_multiple_of_n(L, 256)
-
 
 def _pack_segments(segments: list[tuple[int, int, int, int]],
                    capacity: int
@@ -2170,7 +2131,6 @@ def _pack_segments(segments: list[tuple[int, int, int, int]],
             bin_loads.append(L)
     return bins
 
-
 def eval_val_sliding_varlen_perdoc(
     h: Hyperparameters,
     device: torch.device,
@@ -2189,10 +2149,7 @@ def eval_val_sliding_varlen_perdoc(
     assert getattr(base_model, 'use_varlen', False) and _HAS_VARLEN
     base_model.eval()
     run_forward_logits = base_model.forward_logits if forward_logits_fn is None else forward_logits_fn
-    # Optional Option-A fix: force RoPE to use the same buffer length as training
-    # for choosing the NTK base, even when eval bins are smaller/variable.
-    # Default: auto-derive the per-rank per-microbatch packed length used at training.
-    # Override with EVAL_ROPE_NTK_SEQLEN=<int>; set to 0 to disable.
+    # Force RoPE NTK base to training buffer length. Auto-derived; override via EVAL_ROPE_NTK_SEQLEN.
     env_ntk = os.environ.get('EVAL_ROPE_NTK_SEQLEN', '')
     if env_ntk:
         ntk_override = int(env_ntk)
@@ -2283,7 +2240,6 @@ def eval_val_sliding_varlen_perdoc(
             blk.attn.eval_ntk_seq_len = 0
     base_model.train()
     return _loss_bpb(loss_sum, token_count, byte_count)
-
 
 def eval_val_slot(
     h: Hyperparameters,
@@ -2468,7 +2424,6 @@ def eval_val_slot(
     base_model.train()
     return _loss_bpb(loss_sum, token_count, byte_count)
 
-
 def _find_docs(all_tokens: Tensor) -> list[tuple[int, int]]:
     """Find document boundaries using BOS_ID. Returns list of (start, length)."""
     bos_positions = (all_tokens == BOS_ID).nonzero(as_tuple=True)[0].numpy()
@@ -2482,7 +2437,6 @@ def _find_docs(all_tokens: Tensor) -> list[tuple[int, int]]:
             docs.append((start, end - start))
     return docs
 
-
 def _compute_chunk_window(ci: int, pred_len: int, num_chunks: int,
                           chunk_size: int, eval_seq_len: int):
     chunk_end = pred_len if ci == num_chunks - 1 else (ci + 1) * chunk_size
@@ -2492,7 +2446,6 @@ def _compute_chunk_window(ci: int, pred_len: int, num_chunks: int,
     chunk_offset = chunk_start - win_start
     chunk_len = chunk_end - chunk_start
     return win_start, win_len, chunk_offset, chunk_len
-
 
 def _run_phase_sgd(h, device, val_data, all_tokens_idx, scored_docs, base_model, phase_num: int):
     """Distributed global SGD on already-scored prefix docs.
@@ -2508,8 +2461,7 @@ def _run_phase_sgd(h, device, val_data, all_tokens_idx, scored_docs, base_model,
     bsz = h.ttt_phase_sgd_batch
     world_size = dist.get_world_size() if (dist.is_available() and dist.is_initialized()) else 1
     rank = dist.get_rank() if (dist.is_available() and dist.is_initialized()) else 0
-    # Build flat token stream from scored docs (concatenate with doc boundaries intact).
-    # Use non-overlapping seq_len+1 windows from each doc; pad short docs with themselves cycling.
+    # Flatten scored docs into non-overlapping seq_len+1 windows (cycling-pad short docs).
     windows = []
     for doc_start, doc_len in scored_docs:
         if doc_len <= 1:
@@ -2593,8 +2545,7 @@ def _run_phase_sgd(h, device, val_data, all_tokens_idx, scored_docs, base_model,
             denom = mask.float().sum().clamp_min(1.0)
             loss = per_tok.sum() / denom if has_any else per_tok.sum() * 0.0
             loss.backward()
-            # Ensure every param has a grad so the subsequent all_reduce loop
-            # is collective-symmetric across ranks (ghost steps / unused params).
+            # Ensure every param has a grad for collective-symmetric all_reduce across ranks.
             if world_size > 1:
                 for p in trainable:
                     if p.grad is None:
@@ -2619,7 +2570,6 @@ def _run_phase_sgd(h, device, val_data, all_tokens_idx, scored_docs, base_model,
     del opt
     torch.cuda.empty_cache()
 
-
 def _build_ttt_global_batches(doc_entries, h, ascending=False):
     batch_size = h.ttt_batch_size
     global_doc_entries = sorted(doc_entries, key=lambda x: x[1][1])
@@ -2632,11 +2582,9 @@ def _build_ttt_global_batches(doc_entries, h, ascending=False):
         indexed.sort(key=lambda ib: -max(dl for _, (_, dl) in ib[1]))
     return indexed
 
-
 def _init_batch_counter(path):
     with open(path, "wb") as f:
         f.write((0).to_bytes(4, "little"))
-
 
 def _claim_next_batch(counter_path, queue_len):
     import fcntl
@@ -2650,7 +2598,6 @@ def _claim_next_batch(counter_path, queue_len):
     except FileNotFoundError:
         return queue_len
     return idx
-
 
 def _accumulate_bpb(ptl, x, y, chunk_offsets, chunk_lens, pos_idx,
                     base_bytes_lut, has_leading_space_lut, is_boundary_token_lut,
@@ -2667,7 +2614,6 @@ def _accumulate_bpb(ptl, x, y, chunk_offsets, chunk_lens, pos_idx,
     loss_sum += (ptl.to(torch.float64) * mask_f64).sum()
     byte_sum += (tok_bytes * mask_f64).sum()
     token_count += chunk_lens.to(torch.float64).sum()
-
 
 def _slot_in_ttt_correct(
     base_model, cur_lora, x, y, chunk_offsets, chunk_lens, ctx_pos,
@@ -2712,7 +2658,6 @@ def _slot_in_ttt_correct(
         ).reshape(bsz, T)
     return per_tok_loss
 
-
 def eval_val_ttt(
     h: Hyperparameters,
     device: torch.device,
@@ -2741,8 +2686,7 @@ def eval_val_ttt(
         forward_ttt_train = base_model.forward_ttt
     global_batches_sorted = _build_ttt_global_batches(doc_entries, h)
     queue_len = len(global_batches_sorted)
-    # Phased global SGD: split queue into ttt_phases contiguous slices (by queue idx).
-    # After each phase (except the last), run distributed SGD on all docs scored so far.
+    # Phased global SGD: after each phase (except last), run distributed SGD on scored prefix.
     num_phases = max(1, h.ttt_phases)
     phase_boundaries = [int(round(queue_len * p / num_phases)) for p in range(num_phases + 1)]
     phase_boundaries[0] = 0
@@ -3007,7 +2951,6 @@ def eval_val_ttt(
     val_bpb = val_loss / math.log(2.0) * (token_count.item() / byte_sum.item())
     return val_loss, val_bpb
 
-
 def eval_val_ttt_fullparam(
     h: Hyperparameters,
     device: torch.device,
@@ -3177,7 +3120,6 @@ def eval_val_ttt_fullparam(
         p.requires_grad_(True)
     base_model.train()
     return _loss_bpb(loss_sum, token_count, byte_count)
-
 
 def timed_eval(label: str, fn, *args, **kwargs) -> tuple[float, float]:
     torch.cuda.synchronize()
@@ -3359,6 +3301,61 @@ def train_model(h: Hyperparameters, device: torch.device, val_data: ValidationDa
     avg_state = {name: t.to(dtype=current_state[name].dtype) for name, t in ema_state.items()}
     base_model.load_state_dict(avg_state, strict=True)
     return base_model, compiled_model
+
+def _run_ttt_eval(h, device, val_data, ttt_model):
+    """Run TTT evaluation: fullparam (non-varlen) or LoRA (varlen)."""
+    use_varlen = getattr(ttt_model, 'use_varlen', False) and _HAS_VARLEN
+    if not use_varlen:
+        timed_eval("quantized_ttt_fullparam", eval_val_ttt_fullparam,
+                    h, device, val_data, ttt_model)
+        return
+    # LoRA TTT — optionally override RoPE base for ablations
+    prev_rope_force = os.environ.get('ROPE_FORCE_BASE_SEQLEN', '0')
+    if h.ttt_rope_base_seqlen > 0:
+        os.environ['ROPE_FORCE_BASE_SEQLEN'] = str(h.ttt_rope_base_seqlen)
+        log(f"ttt_lora:rope_base_override ROPE_FORCE_BASE_SEQLEN={h.ttt_rope_base_seqlen}")
+    else:
+        log(f"ttt_lora:rope_base inherited ROPE_FORCE_BASE_SEQLEN={prev_rope_force}")
+    for p in ttt_model.parameters():
+        p.requires_grad_(False)
+    # Lazy torch.compile with warmup
+    _compiled = [None]
+    def _fwd_ttt_inner(input_ids, target_ids, lora):
+        return ttt_model.forward_ttt(input_ids, target_ids, lora=lora)
+    def fwd_ttt_compiled(input_ids, target_ids, lora):
+        if _compiled[0] is None:
+            _compiled[0] = torch.compile(_fwd_ttt_inner, dynamic=True)
+        return _compiled[0](input_ids, target_ids, lora=lora)
+    log("ttt_lora:warming up compile")
+    val_tokens_idx = val_data.val_tokens.to(torch.int32)
+    t_warmup = time.perf_counter()
+    wl = BatchedTTTLoRA(
+        h.ttt_batch_size, ttt_model, h.ttt_lora_rank,
+        k_lora=h.ttt_k_lora, mlp_lora=h.ttt_mlp_lora, o_lora=h.ttt_o_lora,
+    ).to(device)
+    wo = torch.optim.AdamW(
+        wl.parameters(), lr=h.ttt_lora_lr,
+        betas=(h.ttt_beta1, h.ttt_beta2),
+        eps=1e-10, weight_decay=h.ttt_weight_decay, fused=True,
+    )
+    for ctx_len in (h.ttt_chunk_size, h.ttt_eval_seq_len):
+        col_w = torch.arange(ctx_len + 1)
+        idx_w = col_w.clamp_(max=val_data.val_tokens.numel() - 1)
+        row_w = val_tokens_idx[idx_w].to(device=device, dtype=torch.int64)
+        xw = row_w[:ctx_len].unsqueeze(0).expand(h.ttt_batch_size, -1).contiguous()
+        yw = row_w[1:ctx_len + 1].unsqueeze(0).expand(h.ttt_batch_size, -1).contiguous()
+        with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
+            ptl = fwd_ttt_compiled(xw, yw, lora=wl)
+        ptl[:, :min(h.ttt_chunk_size, ctx_len)].mean(dim=-1).sum().backward()
+        wo.step()
+        wo.zero_grad(set_to_none=True)
+    del wl, wo, val_tokens_idx
+    torch.cuda.empty_cache()
+    log(f"ttt_lora:compile warmup done ({time.perf_counter() - t_warmup:.1f}s)")
+    timed_eval("quantized_ttt_lora", eval_val_ttt, h, device, val_data, ttt_model,
+                forward_ttt_train=fwd_ttt_compiled)
+    os.environ['ROPE_FORCE_BASE_SEQLEN'] = prev_rope_force
+
 def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
     random.seed(h.seed)
     np.random.seed(h.seed)
@@ -3367,20 +3364,18 @@ def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
     val_data = ValidationData(h, device)
     log(f"train_shards: {len(list(Path(h.datasets_dir).resolve().glob('fineweb_train_*.bin')))}")
     log(f"val_tokens: {val_data.val_tokens.numel() - 1}")
-    base_model = None
-    compiled_model = None
     if not h.skip_training:
         base_model, compiled_model = train_model(h, device, val_data)
         torch._dynamo.reset()
         timed_eval("pre-quantization post-ema", eval_val, h, device, val_data, compiled_model)
-        # Use the compressed loader (train_gpt.py) as code artifact when launched
-        # via the packed submission; fall back to this file for direct runs.
         code_path = Path(os.environ.get("_ORIG_SCRIPT", __file__))
         serialize(h, base_model, code_path.read_text(encoding="utf-8"))
         if h.distributed:
             dist.barrier()
     else:
         log("SKIP_TRAINING=1 — reusing existing final_model.int6.ptz")
+
+    # Quantized evaluation
     eval_model = deserialize(h, device)
     if h.num_loops > 0:
         eval_model.looping_active = True
@@ -3389,82 +3384,27 @@ def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
         eval_model.use_varlen = False
         for b in eval_model.blocks:
             b.attn.use_varlen = False
-    if not h.run_ttt_only and not h.run_sw_only:
-        compiled_model = torch.compile(eval_model, dynamic=False, fullgraph=True)
-        timed_eval("quantized", eval_val, h, device, val_data, compiled_model)
-    if h.sliding_window_enabled and not h.run_ttt_only:
-        if h.slot_enabled:
-            timed_eval("quantized_slot", eval_val_slot, h, device, val_data, eval_model)
-        else:
-            timed_eval("quantized_sliding_window", eval_val_sliding, h, device, val_data, eval_model)
-    if h.ttt_enabled and h.sliding_window_enabled and not h.run_sw_only:
+
+    # Dense eval (only when SW and TTT are both off)
+    if not h.sliding_window_enabled and not h.ttt_enabled:
+        compiled_eval = torch.compile(eval_model, dynamic=False, fullgraph=True)
+        timed_eval("quantized", eval_val, h, device, val_data, compiled_eval)
+
+    # Sliding-window eval
+    if h.sliding_window_enabled:
+        sw_fn = eval_val_slot if h.slot_enabled else eval_val_sliding
+        sw_label = "quantized_slot" if h.slot_enabled else "quantized_sliding_window"
+        timed_eval(sw_label, sw_fn, h, device, val_data, eval_model)
+
+    # TTT eval (needs a fresh model for LoRA / fullparam mutation)
+    if h.ttt_enabled:
         del eval_model
-        try:
-            del compiled_model
-        except (NameError, UnboundLocalError):
-            pass
         torch._dynamo.reset()
         torch.cuda.empty_cache()
         ttt_model = deserialize(h, device)
         if h.num_loops > 0:
             ttt_model.looping_active = True
-        use_varlen = getattr(ttt_model, 'use_varlen', False) and _HAS_VARLEN
-        if not use_varlen:
-            # Non-varlen → fullparam TTT
-            timed_eval("quantized_ttt_fullparam", eval_val_ttt_fullparam,
-                        h, device, val_data, ttt_model)
-        else:
-            # Varlen → LoRA TTT
-            # ROPE_FORCE_BASE_SEQLEN is already published globally in main() so
-            # _block_with_lora picks up the same NTK base as training. Allow a
-            # TTT-specific override via ttt_rope_base_seqlen for ablations.
-            prev_rope_force = os.environ.get('ROPE_FORCE_BASE_SEQLEN', '0')
-            if h.ttt_rope_base_seqlen > 0:
-                os.environ['ROPE_FORCE_BASE_SEQLEN'] = str(h.ttt_rope_base_seqlen)
-                log(f"ttt_lora:rope_base_override ROPE_FORCE_BASE_SEQLEN={h.ttt_rope_base_seqlen}")
-            else:
-                log(f"ttt_lora:rope_base inherited ROPE_FORCE_BASE_SEQLEN={prev_rope_force}")
-            for p in ttt_model.parameters():
-                p.requires_grad_(False)
-            # Lazy torch.compile with warmup
-            def _fwd_ttt_inner(input_ids, target_ids, lora):
-                return ttt_model.forward_ttt(input_ids, target_ids, lora=lora)
-            _fwd_ttt_compiled_inner = None
-            def _fwd_ttt(input_ids, target_ids, lora):
-                nonlocal _fwd_ttt_compiled_inner
-                if _fwd_ttt_compiled_inner is None:
-                    _fwd_ttt_compiled_inner = torch.compile(_fwd_ttt_inner, dynamic=True)
-                return _fwd_ttt_compiled_inner(input_ids, target_ids, lora=lora)
-            fwd_ttt_compiled = _fwd_ttt
-            log("ttt_lora:warming up compile")
-            val_tokens_idx = val_data.val_tokens.to(torch.int32)
-            t_warmup = time.perf_counter()
-            wl = BatchedTTTLoRA(
-                h.ttt_batch_size, ttt_model, h.ttt_lora_rank,
-                k_lora=h.ttt_k_lora, mlp_lora=h.ttt_mlp_lora, o_lora=h.ttt_o_lora,
-            ).to(device)
-            wo = torch.optim.AdamW(
-                wl.parameters(), lr=h.ttt_lora_lr,
-                betas=(h.ttt_beta1, h.ttt_beta2),
-                eps=1e-10, weight_decay=h.ttt_weight_decay, fused=True,
-            )
-            for ctx_len in (h.ttt_chunk_size, h.ttt_eval_seq_len):
-                col_w = torch.arange(ctx_len + 1)
-                idx_w = col_w.clamp_(max=val_data.val_tokens.numel() - 1)
-                row_w = val_tokens_idx[idx_w].to(device=device, dtype=torch.int64)
-                xw = row_w[:ctx_len].unsqueeze(0).expand(h.ttt_batch_size, -1).contiguous()
-                yw = row_w[1:ctx_len + 1].unsqueeze(0).expand(h.ttt_batch_size, -1).contiguous()
-                with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
-                    ptl = fwd_ttt_compiled(xw, yw, lora=wl)
-                ptl[:, :min(h.ttt_chunk_size, ctx_len)].mean(dim=-1).sum().backward()
-                wo.step()
-                wo.zero_grad(set_to_none=True)
-            del wl, wo, val_tokens_idx
-            torch.cuda.empty_cache()
-            log(f"ttt_lora:compile warmup done ({time.perf_counter() - t_warmup:.1f}s)")
-            timed_eval("quantized_ttt_lora", eval_val_ttt, h, device, val_data, ttt_model,
-                        forward_ttt_train=fwd_ttt_compiled)
-            os.environ['ROPE_FORCE_BASE_SEQLEN'] = prev_rope_force
+        _run_ttt_eval(h, device, val_data, ttt_model)
         del ttt_model
 def main():
     os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
@@ -3492,8 +3432,7 @@ def main():
     enable_math_sdp(False)
     torch._dynamo.config.optimize_ddp = False
     h = Hyperparameters()
-    # Resolve and globally publish the RoPE base-seqlen so training, dense eval,
-    # sliding eval and TTT all see the same NTK base. Auto-derive when unset.
+    # Globally publish RoPE base-seqlen so all eval paths see the same NTK base.
     if h.rope_force_base_seqlen <= 0:
         h.rope_force_base_seqlen = max(
             h.train_seq_len + 1,

@@ -24,7 +24,7 @@ BASE_ENV=(
   TTT_ENABLED=1
   SLIDING_WINDOW_ENABLED=1
   SKIP_TRAINING=1
-  RUN_TTT_ONLY=1
+  SLIDING_WINDOW_ENABLED=0
   MAX_WALLCLOCK_SECONDS=3600
   # phase-3/4 winner
   TTT_LORA_RANK=48
@@ -44,7 +44,7 @@ run_p5() {
     grep -E "quantized_(ttt_lora|sliding_window) val_loss" "$log" | tail -3
 }
 
-# Helper for SLOT runs (need RUN_SW_ONLY since SLOT runs in sliding-window pass)
+# Helper for SLOT runs (need TTT_ENABLED=0 since SLOT runs in sliding-window pass)
 run_p5_slot() {
     local name="$1"; shift
     local log="$LOGDIR/${name}.log"
@@ -53,7 +53,7 @@ run_p5_slot() {
         RUN_ID="$name" \
         MATRIX_CLIP_SIGMAS=14 MLP_MULT=4.35 GPTQ_CALIBRATION_BATCHES=128 \
         VARLEN_ATTENTION=1 SLIDING_WINDOW_ENABLED=1 SKIP_TRAINING=1 \
-        RUN_SW_ONLY=1 MAX_WALLCLOCK_SECONDS=3600 \
+        TTT_ENABLED=0 MAX_WALLCLOCK_SECONDS=3600 \
         SLOT_ENABLED=1 \
         "$@" \
         torchrun --standalone --nproc_per_node=4 train_gpt_improved_04_16.py \
