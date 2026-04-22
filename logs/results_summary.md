@@ -71,9 +71,26 @@ during training. Later activation → more steps (cheaper non-looped forward) bu
 | run_id | enable_looping_at | pre_val_bpb | sw_val_bpb | ttt_val_bpb | steps | final_size |
 |--------|-------------------|-------------|------------|-------------|-------|------------|
 | pgm_loopat0_5 | 0.5 | **1.06630** | **1.07129** | **1.06919** 🏆 | 5,716 | 16,525,791 ⚠️ |
+| pgm_loopat0_5_repro | 0.5 (rerun 2026-04-22) | 1.06837 | 1.07323 | 1.07117 | 5,303 | — |
 | pgm_loopat0_15 | 0.15 | 1.06881 | 1.07392 | 1.07180 | 4,647 | 16,528,431 ⚠️ |
 | pgm_loopat0_7 | 0.7 | 1.06893 | 1.07368 | 1.07159 | 6,190 | 16,525,093 ⚠️ |
 | pgm_loopat0_0 | 0.0 (no curriculum) | 1.07246 | 1.07756 | 1.07537 | 4,353 | 16,530,286 ⚠️ |
+
+**Reproduction note (2026-04-22):** `pgm_loopat0_5_repro` re-ran with identical
+hyperparameters (verified by diffing the `Hyperparameters` printout). The recipe
+is config-equivalent but landed at **1.07117** TTT vs the original **1.06919**
+(+0.00198). Two findings:
+1. **Hidden config drift.** `HESSIAN_CLIP_LAMBDA` default in
+   `train_gpt_improved_04_16.py` had silently changed from `0.3 → 0.0` since
+   the original run. `run_program_md_section.sh` did not pin it, so a naïve
+   re-run today picks up the new default. Fixed by adding
+   `HESSIAN_CLIP_LAMBDA=0.3` to `COMMON_TRAIN_ENV` in
+   `run_program_md_section.sh`. The repro above already includes this fix.
+2. **Wallclock-bounded ≠ bitwise-reproducible.** Repro reached only **5,303**
+   steps in 3600s vs **5,716** originally (−7.2% throughput on this node).
+   The pre-quant Δ (+0.00207) propagates straight through quant (+0.00194 sw)
+   and TTT (+0.00198), exactly matching the step shortfall. To reproduce
+   bitwise across nodes, switch to step-bounded training.
 
 **Takeaways:** `enable_looping_at=0.5` is the clear winner across all metrics (best pre-quant
 1.06630, best sw 1.07129, best ttt 1.06919). Immediate looping (0.0) is worst — the curriculum

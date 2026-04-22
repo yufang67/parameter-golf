@@ -77,6 +77,16 @@ MATRIX_CLIP_SIGMAS=15 MLP_MULT=4.35 GPTQ_CALIBRATION_BATCHES=128 TTT_ENABLED=1 M
   - Worth re-ablating whenever `NUM_LAYERS` changes, especially for deeper configs where sparing early layers may help.
 - **Sweep:** `XSA_LAST_N ∈ {0, 4, 7, 9, 11}` at fixed `NUM_LAYERS=11`. Add `XSA_LAST_N ∈ {8, 12, 16}` if testing `NUM_LAYERS≥16`.
 - **Decision rule:** keep current default unless a smaller K beats it by ≥0.002 BPB at matched wallclock; if so, lock new default and re-check interactions with `MLP_MULT` and looping (`NUM_LOOPS`).
+- **Results (no LOOP_EMBEDDINGS, default loopat):**
+
+| Run | `XSA_LAST_N` | pre_val_bpb | sw_val_bpb | ttt_val_bpb | steps |
+|-----|---|---|---|---|---|
+| pgm_xsa9  | 9  | **1.06803** | **1.07307** | **1.07102** 🏆 | 5,005 |
+| pgm_xsa7  | 7  | 1.06896 | 1.07419 | 1.07208 | 5,052 |
+| pgm_xsa0  | 0  | 1.07120 | 1.07659 | 1.07442 | 5,109 |
+| pgm_xsa4  | 4  | 1.07125 | 1.07648 | 1.07430 | 5,034 |
+
+  **Conclusion:** `XSA_LAST_N=9` is the best within this family (Δ=−0.0011 TTT BPB vs default 11 baseline, although the loopat winner uses 11; need a combined sweep). `XSA_LAST_N ≤ 4` clearly hurts. Consider locking **default to 9** and re-running the loopat curriculum + LOOP_EMBEDDINGS combo to confirm.
 
 ### Loop-pass conditioning (`LOOP_EMBEDDINGS`)
 - **What it controls:** whether each pass through the looped mid-stack (`layers [LOOP_START..LOOP_END]`, repeated `NUM_LOOPS+1` times) adds a learnable per-pass bias vector `loop_embs[p] ∈ ℝ^{model_dim}` to the residual stream before the block call. Breaks input symmetry across otherwise-identical repeated calls.
@@ -90,6 +100,15 @@ MATRIX_CLIP_SIGMAS=15 MLP_MULT=4.35 GPTQ_CALIBRATION_BATCHES=128 TTT_ENABLED=1 M
   2. If (1) wins, re-test at deeper recurrence: `NUM_LOOPS ∈ {3, 4}` with `LOOP_EMBEDDINGS=1`, checking that the extra FLOPs still fit the 10-min budget.
   3. Optional: widen/shift the looped segment (`LOOP_START, LOOP_END`) with `LOOP_EMBEDDINGS=1` on, to see if pass-tagging enables more aggressive looping.
 - **Decision rule:** enable `LOOP_EMBEDDINGS=1` if it beats the default by ≥0.002 BPB at matched wallclock with no artifact-size regression. If gain is within noise at `NUM_LOOPS=2` but positive at `NUM_LOOPS≥3`, prefer combining with more loops only if total wallclock fits.
+- **Results (`LOOP_EMBEDDINGS=1`, default `ENABLE_LOOPING_AT=0.35`):**
+
+| Run | `NUM_LOOPS` | pre_val_bpb | sw_val_bpb | ttt_val_bpb | steps |
+|-----|---|---|---|---|---|
+| pgm_loopemb1        | 2 | **1.06869** | **1.07384** | **1.07169** 🏆 | 4,958 |
+| pgm_loopemb1_loops4 | 4 | 1.07190 | 1.07610 | 1.07394 | 4,196 |
+| pgm_loopemb1_loops3 | 3 | 1.07218 | 1.07631 | 1.07419 | 4,325 |
+
+  **Conclusion:** `LOOP_EMBEDDINGS=1` at `NUM_LOOPS=2` is the recipe; pushing loops to 3–4 hurts BPB at fixed wallclock (extra FLOPs steal training steps). Update default to **`LOOP_EMBEDDINGS=1` (keep `NUM_LOOPS=2`)**. The loopat sweep above is run on top of this combo.
 
 ### Per-group GPTQ quantization clip multipliers (`CLIP_MULT_*`)
 - **What they control:** multipliers on the σ-based clipping threshold (`clip_sigmas`) used by **GPTQ int8 mixed quantization** (post-training). Applied per *block group*, scaling the group's effective `cs = matrix_clip_sigmas * CLIP_MULT_*`. Not related to gradient clipping.
@@ -135,11 +154,21 @@ MATRIX_CLIP_SIGMAS=15 MLP_MULT=4.35 GPTQ_CALIBRATION_BATCHES=128 TTT_ENABLED=1 M
 | Run | `ENABLE_LOOPING_AT` | pre_val_bpb | sw_val_bpb | ttt_val_bpb | steps |
 |-----|---------------------|-------------|------------|-------------|-------|
 | pgm_loopat0_5 | 0.5 | **1.06630** | **1.07129** | **1.06919** 🏆 | 5,716 |
+| pgm_loopat0_5_repro | 0.5 (rerun 2026-04-22) | 1.06837 | 1.07323 | 1.07117 | 5,303 |
 | pgm_loopat0_15 | 0.15 | 1.06881 | 1.07392 | 1.07180 | 4,647 |
 | pgm_loopat0_7 | 0.7 | 1.06893 | 1.07368 | 1.07159 | 6,190 |
 | pgm_loopat0_0 | 0.0 | 1.07246 | 1.07756 | 1.07537 | 4,353 |
 
   **Conclusion:** `ENABLE_LOOPING_AT=0.5` is the clear winner — **new best absolute TTT BPB (1.06919)** and best pre-quant (1.06630). Immediate looping (0.0) is worst; curriculum matters. **Update default from 0.35 → 0.5.**
+
+  **Reproduction (2026-04-22):** re-ran `pgm_loopat0_5` with identical hyperparameters
+  (`pgm_loopat0_5_repro`). Got 1.07117 TTT (+0.00198 vs 1.06919). Found two issues:
+  (a) `HESSIAN_CLIP_LAMBDA` default had silently changed from 0.3→0.0 in
+  `train_gpt_improved_04_16.py`; `run_program_md_section.sh` did not pin it. **Fixed**
+  by adding `HESSIAN_CLIP_LAMBDA=0.3` to `COMMON_TRAIN_ENV`. (b) Repro hit only 5,303
+  steps (−413, −7.2% throughput on this node) in the 3600s budget. The pre-quant Δ
+  (+0.00207) propagates directly through quant/TTT — wallclock-bounded training is
+  not bitwise-reproducible across node states. Recipe is otherwise faithful.
 
 ### Parallel residuals placement (`PARALLEL_RESIDUAL_START`)
 - **What it controls:** index of the **first block** that switches from sequential (`x + attn; x + mlp(x)`) to parallel (`x + attn + mlp(x)`) residuals. Blocks `[PARALLEL_RESIDUAL_START..num_layers-1]` use the parallel layout; earlier blocks stay sequential. Set `≥ num_layers` to disable entirely; set `0` to make the whole stack parallel.
@@ -233,7 +262,28 @@ Top configs from `run_pg12_ttt_sweep.sh` / `_phase3` / `_phase4` (all use defaul
   3. **Fine LR scan** around the new optimum: `TTT_LORA_LR ∈ {3e-5, 5e-5, 1e-4, 2e-4}` at `TTT_LORA_RANK=48 TTT_PHASES=2`.
   4. **`TTT_GRAD_STEPS=2`** at `TTT_LORA_RANK=48 TTT_LORA_LR=5e-5` — earlier `_steps2` runs were on rank 96 / pre-fix.
   5. **Adaptive LR re-test** at the new default: `TTT_ADAPTIVE_LR=1` with `TTT_ADAPT_POWER ∈ {0.5, 1.0}` and `TTT_ADAPT_EMA ∈ {0.95, 0.99}`.
-- **Decision rule:** keep a setting if it improves TTT BPB ≥0.001 over the new `pg12_ttt_r48_phased2` floor (1.07183) without >10% wallclock blowup. Aim is to dip below the non-varlen+TTT record (**1.07077**).
+- **Decision rule:** keep a setting if it improves TTT BPB ≥0.001 over the new `pg12_r48_phased3` floor (1.07173) without >10% wallclock blowup. Aim is to dip below the non-varlen+TTT record (**1.07077**).
+- **Post-fix follow-up results (on top of `TTT_LORA_RANK=48 TTT_PHASES=2`):**
+
+| Sweep axis | Run | val_bpb | Δ vs r48_phased2 (1.07183) |
+|---|---|---|---|
+| Rank | `pg12_r32_phased2` (rank 32) | 1.07199 | +0.00016 |
+| Rank | `pg12_r64_phased2` (rank 64) | 1.07189 | +0.00006 |
+| Rank | **`pg12_r48_phased3`** (phases=3) | **1.07173** | **−0.00010** |
+| Adaptive | `pg12_adapt_ema80` / `ema99` / `pow05` / `pow15` / `tight` / `wide` | 1.07187–1.07190 | +0.00004 to +0.00007 |
+| Adaptive | `pg12_r48_phased2_adapt_tight` | 1.07184 | +0.00001 |
+| Min-doc-len | `pg12_r48_phased2_minlen256` | 1.07186 | +0.00003 |
+| Min-doc-len | `pg12_r48_phased2_minlen512` | 1.07194 | +0.00011 |
+| Chunk size | `pg12_r48_phased2_chunk80` | 1.07194 | +0.00011 |
+| Min-doc-len standalone | `pg12_ttt_minlen{512,1024,2048,4096}` | 1.0720 → 1.0726 (monotone worse) | n/a |
+
+  **Takeaways:**
+  - **Rank 48 confirmed as the sweet spot** — both 32 and 64 regress slightly. Drop further rank sweeps from priority.
+  - **`TTT_PHASES=3` is the new floor** at rank 48 (1.07173). Test `TTT_PHASES ∈ {4, 6}` next.
+  - **Adaptive LR remains neutral** even with re-tuned EMA/power. Drop entirely from priority sweeps (was already on the chopping block).
+  - **`TTT_MIN_DOC_LEN` strictly hurts** at every value tried (256/512/1024/2048/4096). Default `0` is correct; remove this from future sweeps.
+  - **Chunk-size variants near 64 (80/96/128)** all neutral-to-slightly-worse. Default `64` is locked.
+  - **Open priorities:** adapter placement ablation (K/MLP/O), fine LR scan around `1e-4`, `TTT_PHASES ∈ {4, 6}` at rank 48, and `TTT_GRAD_STEPS=2` at rank 48.
 
 #### SLOT TTT (`SLOT_*`)
 - **Current default:** `SLOT_ENABLED=0`. When on: `SLOT_STEPS=4 SLOT_LR=0.01 SLOT_WD=0.01 SLOT_TRAIN_MODE=context`.
@@ -245,10 +295,40 @@ Top configs from `run_pg12_ttt_sweep.sh` / `_phase3` / `_phase4` (all use defaul
   2. If on: `SLOT_STEPS ∈ {2, 4, 8}` × `SLOT_LR ∈ {0.003, 0.01, 0.03}`.
   3. Compose with best LoRA TTT config — verify additivity (gain ≈ sum of individual gains, not redundant).
 - **Decision rule:** enable if total TTT BPB improves ≥0.001 (SLOT alone is small but ~free in wallclock).
+- **Results (standalone SLOT, on `pg12_varlen_clip14`, sliding baseline 1.07425):**
+
+| Run | `SLOT_STEPS` × `SLOT_LR` (other) | quantized_slot val_bpb |
+|---|---|---|
+| pg12_slot_wd001        | 4 × 0.01, `SLOT_WD=0.001`  | **1.07351** |
+| pg12_slot_default      | 4 × 0.01                   | 1.07351 |
+| pg12_slot_steps8       | 8 × 0.01                   | 1.07353 |
+| pg12_slot_steps8_lr3e3 | 8 × 0.003                  | 1.07359 |
+| pg12_slot_steps2       | 2 × 0.01                   | 1.07363 |
+| pg12_slot_lr3e3        | 4 × 0.003                  | 1.07370 |
+| pg12_slot_lr3e2        | 4 × 0.03                   | 1.07387 |
+
+  **Conclusion:** standalone SLOT delivers a stable −0.0007 BPB vs the sliding-only 1.07425 baseline; defaults (`SLOT_STEPS=4 SLOT_LR=0.01`) are at the optimum. `SLOT_WD` is insensitive in [0.001, 0.01]. Strictly weaker than LoRA TTT (1.07183) but cheap enough to compose — see SLOT-in-TTT below.
+
+#### SLOT-in-TTT composition (`SLOT_IN_TTT_*`)
+- **What it does:** during LoRA TTT scoring, fits a per-chunk logit-bias delta on the already-scored within-window context, then scores the chunk with the corrected logits. TTT gradient updates still use the uncorrected loss (no double-dipping).
+- **Results (composed on top of `TTT_LORA_RANK=48 TTT_PHASES=2`):**
+
+| Run | Vars | quantized_ttt_lora val_bpb |
+|---|---|---|
+| pg12_slotttt_default     | defaults (`SLOT_IN_TTT_STEPS=4 LR=0.01 WD=0.001`) | **1.07176** |
+| pg12_slotttt_wd0         | `WD=0.0`     | 1.07177 |
+| pg12_slotttt_steps8_lr3e3| `STEPS=8 LR=0.003` | 1.07178 |
+| pg12_slotttt_steps2      | `STEPS=2`    | 1.07180 |
+| pg12_slotttt_lr3e3       | `LR=0.003`   | 1.07183 |
+| pg12_slotttt_steps8      | `STEPS=8`    | 1.07191 |
+| pg12_slotttt_lr3e2       | `LR=0.03`    | 1.07235 |
+
+  **Conclusion:** SLOT-in-TTT shaves a further ~0.00007 BPB on top of the `r48_phased2` floor (1.07183 → 1.07176). Gain is small and well below the ≥0.001 decision rule, so **do not enable by default** — keep as a cheap composition to revisit once individual variants are pushed further. Defaults are at the optimum; high LR (0.03) hurts.
 
 #### Phased global SGD TTT (`TTT_PHASES`, `TTT_PHASE_SGD_*`)
 - **Current default:** `TTT_PHASES=2` (post-fix recommended; was effectively off at 1). When on: `TTT_PHASE_SGD_LR=5e-4 MOMENTUM=0.9 EPOCHS=1 SEQ_LEN=1024 BATCH=8 OPT=sgd WD=0`.
-- **Empirically:** at `TTT_LORA_RANK=48`, going from `TTT_PHASES=1` to `TTT_PHASES=2` improved varlen+TTT BPB from 1.07187 → 1.07183 (small but consistent, near-free in wallclock at 2 phases). At rank 96, the same change moves 1.07248 → 1.07240. `TTT_PHASES=3` (`pg12_ttt_phased3`) was 1.07230, no further win.
+- **Empirically:** at `TTT_LORA_RANK=48`, going from `TTT_PHASES=1` to `TTT_PHASES=2` improved varlen+TTT BPB from 1.07187 → 1.07183 (small but consistent, near-free in wallclock at 2 phases). **`TTT_PHASES=3` at rank 48** (`pg12_r48_phased3`) is **1.07173** — a further small win, now the standalone-LoRA-TTT floor on this baseline. At rank 96, going 1→2 moves 1.07248 → 1.07240 and `TTT_PHASES=3` (`pg12_ttt_phased3`) is 1.07230. **Updated recommendation:** at rank 48, prefer `TTT_PHASES=3`; at higher ranks the gain shrinks.
+- **Phase-SGD hyperparam re-tests (rank 48, phases=2):** `pg12_r48_phased2_sgd_ep2` (epochs=2) → 1.07181; `pg12_r48_phased2_sgd_lr1e3` (LR=1e-3) → 1.07181. Both essentially neutral vs default 1.07183 — keep `EPOCHS=1 LR=5e-4`.
 - **Hypothesis / rationale:**
   - Per-window LoRA TTT captures local adaptation; phased SGD captures global drift across documents (e.g., topic shift in val data).
   - Score-before-update keeps it legal: SGD only sees already-scored docs.

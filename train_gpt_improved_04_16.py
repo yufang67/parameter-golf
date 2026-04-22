@@ -244,7 +244,7 @@ class Hyperparameters():
     embedding_dim = int(os.environ.get('EMBEDDING_DIM', 512))
     num_kv_heads = int(os.environ.get('NUM_KV_HEADS', 4))
     num_heads = int(os.environ.get('NUM_HEADS', 8))
-    mlp_mult = float(os.environ.get('MLP_MULT', 4.35))
+    mlp_mult = float(os.environ.get('MLP_MULT', 4.0))
     skip_gates_enabled = bool(int(os.environ.get('SKIP_GATES_ENABLED', '1')))
     tie_embeddings = bool(int(os.environ.get('TIE_EMBEDDINGS', '1')))
     logit_softcap = float(os.environ.get('LOGIT_SOFTCAP', 20.0))
@@ -348,10 +348,10 @@ class Hyperparameters():
     gptq_reserve_seconds = float(os.environ.get('GPTQ_RESERVE_SECONDS', 12.0))
     matrix_bits = int(os.environ.get('MATRIX_BITS', 6))
     embed_bits = int(os.environ.get('EMBED_BITS', 8))
-    matrix_clip_sigmas = float(os.environ.get('MATRIX_CLIP_SIGMAS', 12)) #12.85
+    matrix_clip_sigmas = float(os.environ.get('MATRIX_CLIP_SIGMAS', 15)) #12.85
     embed_clip_sigmas = float(os.environ.get('EMBED_CLIP_SIGMAS', 20.0))
     # Hessian-aware SDClip: per-row clip modulation using GPTQ Hessian
-    hessian_clip_lambda = float(os.environ.get('HESSIAN_CLIP_LAMBDA', 0.0))
+    hessian_clip_lambda = float(os.environ.get('HESSIAN_CLIP_LAMBDA', 0.3))
     # Per-group clip multipliers (from 3-seed Hessian analysis)
     clip_mult_early = float(os.environ.get('CLIP_MULT_EARLY', 1.0))  # blocks 0-2
     clip_mult_loop = float(os.environ.get('CLIP_MULT_LOOP', 1.0))    # blocks loop_start-loop_end

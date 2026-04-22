@@ -1,0 +1,5 @@
+nohup: ignoring input
+[pgm] === pgm_loopat0_5_repro === (train+eval) starting 2026-04-22T03:25:02+00:00
+[pgm] pgm_loopat0_5_repro exit=0 at 2026-04-22T05:03:52+00:00
+quantized_sliding_window val_loss:2.77226658 val_bpb:1.07323078 eval_time:137850ms
+quantized_ttt_lora val_loss:2.76694062 val_bpb:1.07116894 eval_time:1524232ms

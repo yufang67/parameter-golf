@@ -1,0 +1,16 @@
+[pgm-s4] waiting for prior queue to drain...
+[pgm-s4] queue clear. Starting section 4.
+[pgm] SKIP pgm_loopat0_0 (already done)
+[pgm] SKIP pgm_loopat0_15 (already done)
+[pgm] SKIP pgm_loopat0_5 (already done)
+[pgm] SKIP pgm_loopat0_7 (already done)
+[pgm-s4] === SECTION 4 LEADERBOARD ===
+name                                       dense    sw       ttt
+pgm_loopat0_7                              - - -
+pgm_loopat0_5                              1.07896738 1.07129148 1.06919016
+pgm_loopat0_5_repro                        - 1.07323078 1.07116894
+pgm_loopat0_5_repro.driver                 - 1.07323078 1.07116894
+pgm_loopat0_7_evalonly                     1.08135546 1.07368192 1.07159626
+pgm_loopat0_15                             1.08157942 1.07392338 1.07179734
+pgm_loopat0_0                              1.08515140 1.07756354 1.07537370
+[pgm-s4] SECTION 4 COMPLETE
