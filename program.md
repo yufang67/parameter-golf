@@ -146,6 +146,21 @@ MATRIX_CLIP_SIGMAS=15 MLP_MULT=4.35 GPTQ_CALIBRATION_BATCHES=128 TTT_ENABLED=1 M
   | pgm_cliplate125 | LATE | 1.25 | 1.07382 | 1.07163 | +0.00244 |
 
   **Conclusion:** every group prefers **tighter** clipping (0.75); every 1.25 regresses. Sensitivity ranking by (1.25 − 0.75) Δttt: **LATE 0.0041 > LOOP 0.0036 > MID 0.0024 > EARLY 0.0019**. New best absolute TTT BPB: **1.06756** (`pgm_cliplate075`, beats 1.06919 by 0.00163). The original hypothesis ("LOOP needs larger `cs`") is **inverted**. Next step: stack the two strongest signals (`CLIP_MULT_LATE=0.75 + CLIP_MULT_LOOP=0.75`) and probe sub-0.75 (e.g. 0.5 / 0.6) on LATE/LOOP since both still want tighter at the swept boundary.
+- **Stacking + sub-0.75 follow-up (section 7, 2026-04-23):**
+
+  | Run | Config | sw_val_bpb | ttt_val_bpb | Δ vs prior best (1.06756) |
+  |-----|--------|------------|-------------|---------------------------|
+  | **pgm_clip_lateloop05** | LATE=0.5 + LOOP=0.5 | **1.06559** | **1.06372** 🏆 | **−0.00385** |
+  | pgm_clip_all075 | all 4 groups = 0.75 | 1.06614 | 1.06426 | −0.00330 |
+  | pgm_clip_lateloop075 | LATE=0.75 + LOOP=0.75 | 1.06814 | 1.06626 | −0.00131 |
+  | pgm_clip_late05 | LATE=0.5 | 1.06848 | 1.06650 | −0.00106 |
+  | pgm_clip_late06 | LATE=0.6 | 1.06859 | 1.06660 | −0.00097 |
+  | pgm_clip_loop05 | LOOP=0.5 | 1.06857 | 1.06664 | −0.00092 |
+  | pgm_clip_loop06 | LOOP=0.6 | 1.06905 | 1.06708 | −0.00048 |
+
+  **Conclusion:** stacking is **super-additive** — LATE=0.5 alone (−0.00106) + LOOP=0.5 alone (−0.00092) → combined **−0.00385** (much more than the sum). Sub-0.75 keeps winning: 0.5 > 0.6 > 0.75 ordering on both LATE and LOOP. **New record: 1.06372 TTT** (`pgm_clip_lateloop05`), beats prior 1.06919 by 0.00547. **Defaults updated:** `CLIP_MULT_LATE 1.0→0.5`, `CLIP_MULT_LOOP 1.0→0.5` in `train_gpt_improved_04_16.py`. Open follow-ups: probe sub-0.5 on LATE/LOOP (e.g. 0.35), all-groups=0.5, full 4-way stack.
+
+- **Wallclock-budget sensitivity (`pgm_cliplate075_w3000`):** rerunning the prior best with `MAX_WALLCLOCK_SECONDS=3000` (vs 3600) gave pre-quant 1.07299 / sw 1.07561 / **ttt 1.07359** — a +0.00603 TTT regression for a 17% wallclock cut. The recipe is genuinely budget-hungry; a step-bounded re-run would isolate this from the throughput jitter discussed in the loopat0_5 reproduction note.
 
 ### Loop-activation curriculum (`ENABLE_LOOPING_AT`)
 - **What it controls:** training-progress fraction at which `looping_active` flips from `False` to `True`. Before the switch the forward uses the non-looped 11-step graph; after, it uses the looped 17-step graph. `frac` is the same measure that drives `lr_mul`/`wd_mul` (elapsed-wallclock-based when `MAX_WALLCLOCK_SECONDS` is set).

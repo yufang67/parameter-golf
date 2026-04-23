@@ -1,0 +1,3 @@
+[pgm-s8] waiting for prior queue to drain...
+[pgm-s8] queue clear. Starting section 8.
+[pgm] === pgm_clip_lateloop035 === (train+eval)

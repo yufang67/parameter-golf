@@ -129,6 +129,41 @@ Sensitivity ranking by (1.25 − 0.75) Δttt: **LATE 0.00407 > LOOP 0.00362 > MI
 by 0.00163. Natural follow-ups: stack `LATE=0.75 + LOOP=0.75` and probe sub-0.75
 (0.5 / 0.6) on LATE/LOOP since both still want tighter at the swept boundary.
 
+#### `CLIP_MULT_*` Stacking + Sub-0.75 Sweep (section 7, 2026-04-23)
+
+Same recipe; tests stacking and sub-0.75 magnitudes for the two strongest groups
+(LATE, LOOP) plus a uniform all-0.75 reference.
+
+| run_id | config | sw_val_bpb | ttt_val_bpb | Δ vs prior best (1.06756) |
+|--------|--------|------------|-------------|---------------------------|
+| **pgm_clip_lateloop05** | LATE=0.5 + LOOP=0.5 | **1.06559** | **1.06372** 🏆 | **−0.00385** |
+| pgm_clip_all075 | all 4 groups = 0.75 | 1.06614 | 1.06426 | −0.00330 |
+| pgm_clip_lateloop075 | LATE=0.75 + LOOP=0.75 | 1.06814 | 1.06626 | −0.00131 |
+| pgm_clip_late05 | LATE=0.5 | 1.06848 | 1.06650 | −0.00106 |
+| pgm_clip_late06 | LATE=0.6 | 1.06859 | 1.06660 | −0.00097 |
+| pgm_clip_loop05 | LOOP=0.5 | 1.06857 | 1.06664 | −0.00092 |
+| pgm_clip_loop06 | LOOP=0.6 | 1.06905 | 1.06708 | −0.00048 |
+
+**Takeaways:** stacking is **super-additive** — LATE=0.5 alone (−0.00106) + LOOP=0.5
+alone (−0.00092) → combined **−0.00385** (~2× the linear sum). Sub-0.75 keeps winning:
+0.5 > 0.6 > 0.75 ordering on both LATE and LOOP. **New absolute TTT record: 1.06372**
+(`pgm_clip_lateloop05`), beats `pgm_loopat0_5` (1.06919) by **0.00547**. **Defaults
+updated:** `CLIP_MULT_LATE 1.0→0.5`, `CLIP_MULT_LOOP 1.0→0.5` in
+`train_gpt_improved_04_16.py`. Open follow-ups: sub-0.5 on LATE/LOOP, all-groups=0.5,
+full 4-way stack.
+
+#### Wallclock-budget Sensitivity (`pgm_cliplate075_w3000`)
+
+Re-ran the section-3 winner with `MAX_WALLCLOCK_SECONDS=3000` (vs 3600).
+
+| run_id | wallclock | pre_val_bpb | sw_val_bpb | ttt_val_bpb |
+|--------|-----------|-------------|------------|-------------|
+| pgm_cliplate075 | 3600s | 1.06834 | 1.06955 | 1.06756 |
+| pgm_cliplate075_w3000 | 3000s | 1.07299 | 1.07561 | 1.07359 |
+
+A 17% wallclock cut costs **+0.00603 TTT BPB** — the recipe is genuinely
+budget-hungry, not just bottlenecked on TTT eval.
+
 ### TTT-LoRA Sweep on `pg12_varlen_clip14` Checkpoint
 
 All runs below reload the same trained checkpoint (`pg12_eval_verify` confirms sliding-window
@@ -260,8 +295,8 @@ Sliding-window evaluation at smaller strides has near-zero effect on bpb.
 7. **`ENABLE_LOOPING_AT=0.5` is the new best absolute BPB.** `pgm_loopat0_5` reached **1.06919** ttt-bpb and **1.06630** pre-quant (both new records). Curriculum matters: immediate looping (0.0) is worst. All `pgm_loopat0_*` are ~0.5MB over 16MB.
 8. **Eval-stride finer than 64 is wasted compute** — strides 8/16/32/64 all within 0.00005 bpb.
 9. **Best sliding BPB on a 16MB-valid dense run:** `improved_GA_FUSErope` (**1.07369**) — GA+HS+ANS+FR+FM, 15.99MB ✅
-10. **Best absolute BPB (over budget):** `pgm_cliplate075` (**1.06756** TTT, 1.06955 sw) ← new — beats prior `pgm_loopat0_5` (1.06919 TTT) by 0.00163 with `CLIP_MULT_LATE=0.75` on top of the loopat0_5 recipe; `improved_GA_MoE79_MLP4_TTT` (1.06740 sw) — MoE 21.2MB.
-11. **GPTQ wants tighter, not looser, per-group clipping.** All four `CLIP_MULT_*` groups (EARLY/LOOP/MID/LATE) prefer 0.75 over 1.25; sensitivity ranking LATE > LOOP > MID > EARLY. Stacking LATE+LOOP at 0.75 (or going sub-0.75) is the natural next sweep.
+10. **Best absolute BPB (over budget):** `pgm_clip_lateloop05` (**1.06372** TTT, 1.06559 sw) ← new — `CLIP_MULT_LATE=0.5 + CLIP_MULT_LOOP=0.5` on top of the loopat0_5 recipe; beats prior record 1.06919 by 0.00547. `pgm_clip_all075` (1.06426 TTT) close behind with all 4 groups at 0.75. `improved_GA_MoE79_MLP4_TTT` (1.06740 sw) — MoE 21.2MB.
+11. **GPTQ wants tighter, not looser, per-group clipping — and stacking is super-additive.** Section 3 found every group prefers 0.75 over 1.25 (sensitivity LATE > LOOP > MID > EARLY). Section 7 then showed LATE=0.5 + LOOP=0.5 stacks to −0.00385 vs the linear sum 0.00198. Defaults bumped: `CLIP_MULT_LATE 1.0→0.5`, `CLIP_MULT_LOOP 1.0→0.5`.
 10. **MLP 4.35× improves pre-quant BPB** — ~1.075 vs ~1.079 for 3.0×, but adds ~2.2M params
 11. **Clip sigma 15.0 solves MLP4.35 size problem** — 15.97MB (vs 16.83MB at clip=13) with only 0.004 wider quant gap
 12. **N-gram embeddings don't help:** Bigram-512 (1.07464) and trigram-1536 (1.07584) are worse than baseline (1.07441), and all bust 16MB

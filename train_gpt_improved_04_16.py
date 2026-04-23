@@ -354,9 +354,9 @@ class Hyperparameters():
     hessian_clip_lambda = float(os.environ.get('HESSIAN_CLIP_LAMBDA', 0.3))
     # Per-group clip multipliers (from 3-seed Hessian analysis)
     clip_mult_early = float(os.environ.get('CLIP_MULT_EARLY', 1.0))  # blocks 0-2
-    clip_mult_loop = float(os.environ.get('CLIP_MULT_LOOP', 1.0))    # blocks loop_start-loop_end
+    clip_mult_loop = float(os.environ.get('CLIP_MULT_LOOP', 0.5))    # blocks loop_start-loop_end (sec 7: 0.5+0.5 stack -> 1.06372 ttt)
     clip_mult_mid = float(os.environ.get('CLIP_MULT_MID', 1.0))      # blocks 3,6,7
-    clip_mult_late = float(os.environ.get('CLIP_MULT_LATE', 1.0))     # blocks 8+
+    clip_mult_late = float(os.environ.get('CLIP_MULT_LATE', 0.5))    # blocks 8+ (sec 7: 0.5+0.5 stack -> 1.06372 ttt)
     # Per-layer quant for looped layers (different bits/clip for shared params)
     loop_layer_bits = int(os.environ.get('LOOP_LAYER_BITS', 0))  # 0 = use matrix_bits
     loop_layer_clip_sigmas = float(os.environ.get('LOOP_LAYER_CLIP_SIGMAS', 0))  # 0 = use matrix_clip_sigmas

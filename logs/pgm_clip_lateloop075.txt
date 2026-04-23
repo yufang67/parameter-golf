@@ -202,3 +202,433 @@ warmup_step: 10/20
 warmup_step: 20/20
 loop_warmup:enabled encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
 loop_warmup_step: 1/20
+====================================================================================================
+Hyperparameters:
+  adam_eps: 1e-08
+  adam_wd: 0.02
+  beta1: 0.9
+  beta2: 0.95
+  clip_mult_early: 1.0
+  clip_mult_late: 0.75
+  clip_mult_loop: 0.75
+  clip_mult_mid: 1.0
+  compress_ans: True
+  compress_brotli: False
+  compress_lzma: False
+  data_dir: ./data/
+  datasets_dir: ./data/datasets/fineweb10B_sp8192
+  distributed: True
+  effective_train_seq_len: <property object at 0x14f3d2a70b80>
+  ema_decay: 0.9965
+  embed_bits: 8
+  embed_clip_sigmas: 20.0
+  embed_lr: 0.6
+  embed_wd: 0.085
+  embedding_dim: 512
+  enable_looping_at: 0.5
+  eval_seq_len: 2048
+  eval_stride: 64
+  force_dense_eval: False
+  fused_mlp: True
+  fused_rope: True
+  gated_attention: True
+  gptq_calibration_batches: 128
+  gptq_reserve_seconds: 12.0
+  grad_accum_steps: 2
+  grad_clip_norm: 0.3
+  head_lr: 0.008
+  hessian_clip_lambda: 0.3
+  is_main_process: True
+  iterations: 20000
+  ln_scale: True
+  local_rank: 0
+  logfile: logs/pgm_clip_lateloop075.txt
+  logit_softcap: 20.0
+  loop_embeddings: True
+  loop_end: 5
+  loop_layer_bits: 0
+  loop_layer_clip_sigmas: 0.0
+  loop_start: 3
+  matrix_bits: 6
+  matrix_clip_sigmas: 14.0
+  matrix_lr: 0.022
+  max_wallclock_seconds: 3600.0
+  min_lr: 0.0
+  mixed_seq_gpu_frac: 0.375
+  mixed_seq_len: 0
+  mlp_mult: 4.35
+  model_dim: 512
+  model_path: final_model.pt
+  moe_enabled: False
+  moe_layers: 3,5,7,9
+  moe_num_experts: 3
+  moe_top_k: 2
+  muon_backend_steps: 5
+  muon_beta2: 0.95
+  muon_momentum: 0.97
+  muon_momentum_warmup_start: 0.92
+  muon_momentum_warmup_steps: 1500
+  muon_row_normalize: True
+  muon_wd: 0.095
+  num_heads: 8
+  num_kv_heads: 4
+  num_layers: 11
+  num_loops: 2
+  parallel_residual_start: 7
+  qk_gain_init: 5.25
+  quantized_model_path: final_model.int6.ptz
+  rank: 0
+  rope_base: 10000.0
+  rope_dims: 32
+  rope_force_base_seqlen: 0
+  rope_train_seq_len: 2048
+  run_id: pgm_clip_lateloop075
+  scalar_lr: 0.022
+  seed: 1337
+  skip_gates_enabled: True
+  skip_training: False
+  sliding_window_enabled: True
+  slot_enabled: False
+  slot_in_ttt: False
+  slot_in_ttt_lr: 0.01
+  slot_in_ttt_steps: 4
+  slot_in_ttt_wd: 0.001
+  slot_lr: 0.01
+  slot_max_windows: 0
+  slot_steps: 4
+  slot_train_mode: context
+  slot_wd: 0.01
+  tie_embeddings: True
+  tied_embed_init_std: 0.005
+  tied_embed_lr: 0.03
+  tokenizer_path: ./data/tokenizers/fineweb_8192_bpe.model
+  train_batch_tokens: 786432
+  train_files: ./data/datasets/fineweb10B_sp8192/fineweb_train_*.bin
+  train_log_every: 500
+  train_seq_len: 2048
+  ttt_adapt_ema: 0.95
+  ttt_adapt_max_scale: 2.0
+  ttt_adapt_min_scale: 0.5
+  ttt_adapt_power: 1.0
+  ttt_adaptive_lr: False
+  ttt_batch_size: 64
+  ttt_beta1: 0.9
+  ttt_beta2: 0.99
+  ttt_chunk_size: 64
+  ttt_enabled: True
+  ttt_eval_seq_len: 2048
+  ttt_fp_chunk_tokens: 32768
+  ttt_fp_epochs: 3
+  ttt_fp_lr: 0.001
+  ttt_grad_clip: 1.0
+  ttt_grad_steps: 1
+  ttt_k_lora: True
+  ttt_lora_lr: 0.0001
+  ttt_lora_rank: 48
+  ttt_max_docs: 0
+  ttt_min_doc_len: 0
+  ttt_mlp_lora: True
+  ttt_nan_guard: True
+  ttt_o_lora: True
+  ttt_phase_sgd_batch: 8
+  ttt_phase_sgd_epochs: 1
+  ttt_phase_sgd_lr: 0.0005
+  ttt_phase_sgd_momentum: 0.9
+  ttt_phase_sgd_optimizer: sgd
+  ttt_phase_sgd_seq_len: 1024
+  ttt_phase_sgd_wd: 0.0
+  ttt_phases: 3
+  ttt_rope_base_seqlen: 0
+  ttt_weight_decay: 0.2
+  val_batch_tokens: 524288
+  val_files: ./data/datasets/fineweb10B_sp8192/fineweb_val_*.bin
+  val_loss_every: 4000
+  varlen_attention: True
+  vocab_size: 8192
+  warmdown_frac: 0.85
+  warmdown_wd_mult: 1.0
+  warmup_steps: 20
+  window_attn_layers: 
+  window_attn_size: 0
+  world_size: 4
+  xsa_last_n: 9
+====================================================================================================
+Running Python 3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]
+Running PyTorch 2.11.0+cu130
+Thu Apr 23 02:17:21 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.2     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100 80GB PCIe          On  |   00000001:00:00.0 Off |                    0 |
+| N/A   62C    P0             96W /  300W |     733MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100 80GB PCIe          On  |   00000002:00:00.0 Off |                    0 |
+| N/A   63C    P0            101W /  300W |     733MiB /  81920MiB |      7%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100 80GB PCIe          On  |   00000003:00:00.0 Off |                    0 |
+| N/A   62C    P0             93W /  300W |     733MiB /  81920MiB |      9%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100 80GB PCIe          On  |   00000004:00:00.0 Off |                    0 |
+| N/A   67C    P0            107W /  300W |     733MiB /  81920MiB |      9%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A          230295      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    1   N/A  N/A          230296      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    2   N/A  N/A          230297      C   ...ameter-golf/.venv/bin/python3        724MiB |
+|    3   N/A  N/A          230298      C   ...ameter-golf/.venv/bin/python3        724MiB |
++-----------------------------------------------------------------------------------------+
+
+====================================================================================================
+train_shards: 80
+val_tokens: 40540160
+model_params:38153904
+gptq:reserving 12s, effective=3588000ms
+warmup_step: 1/20
+warmup_step: 2/20
+warmup_step: 3/20
+warmup_step: 4/20
+warmup_step: 5/20
+warmup_step: 6/20
+warmup_step: 10/20
+warmup_step: 20/20
+loop_warmup:enabled encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+loop_warmup_step: 1/20
+loop_warmup_step: 2/20
+loop_warmup_step: 3/20
+loop_warmup_step: 4/20
+loop_warmup_step: 5/20
+loop_warmup_step: 6/20
+loop_warmup_step: 10/20
+loop_warmup_step: 20/20
+0/20000 val_loss: 9.0079 val_bpb: 3.4871
+1/20000 train_loss: 9.0071 train_time: 0.0m tok/s: 1692609
+2/20000 train_loss: 11.3340 train_time: 0.0m tok/s: 1686784
+3/20000 train_loss: 9.9837 train_time: 0.0m tok/s: 1665995
+4/20000 train_loss: 8.5436 train_time: 0.0m tok/s: 1658623
+5/20000 train_loss: 7.4973 train_time: 0.0m tok/s: 1653672
+500/20000 train_loss: 3.2944 train_time: 5.5m tok/s: 1184877
+1000/20000 train_loss: 3.1423 train_time: 9.6m tok/s: 1362250
+1500/20000 train_loss: 3.0091 train_time: 13.7m tok/s: 1435447
+2000/20000 train_loss: 2.9855 train_time: 17.8m tok/s: 1473996
+2500/20000 train_loss: 2.3831 train_time: 21.9m tok/s: 1498511
+3000/20000 train_loss: 2.9477 train_time: 25.9m tok/s: 1515375
+layer_loop:enabled step:3485 frac:0.500 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+3500/20000 train_loss: 3.0563 train_time: 30.1m tok/s: 1524528
+4000/20000 train_loss: 2.9409 train_time: 38.0m tok/s: 1378458
+4000/20000 val_loss: 2.9200 val_bpb: 1.1304
+4500/20000 train_loss: 2.8695 train_time: 44.7m tok/s: 1319333
+5000/20000 train_loss: 3.1758 train_time: 51.0m tok/s: 1285897
+5500/20000 train_loss: 2.7071 train_time: 57.2m tok/s: 1259846
+5705/20000 val_loss: 2.7565 val_bpb: 1.0671
+stopping_early: wallclock_cap train_time: 3588599ms step: 5705/20000
+peak memory allocated: 39349 MiB reserved: 39458 MiB
+ema:applying EMA weights
+pre-quantization post-ema val_loss:2.75502290 val_bpb:1.06649960 eval_time:19411ms
+Serialized model: 144276071 bytes
+Code size: 169321 bytes
+GPTQ:collecting Hessians from calibration data...
+GPTQ:collected 67 Hessians in 51.1s
+Quantized weights:
+  gptq (int6): blocks.attn.c_k.weight, blocks.attn.c_q.weight, blocks.attn.c_v.weight, blocks.attn.proj.weight, blocks.mlp.fc.weight, blocks.mlp.proj.weight
+  gptq (int8): tok_emb.weight
+  passthrough (float16): blocks.attn.gate_proj.bias, blocks.attn.gate_proj.weight, blocks.attn.q_gain, blocks.attn_scale, blocks.mlp_scale, blocks.resid_mix, loop_embs, skip_gates, skip_weights
+compress:ans 17294342 bytes (15.2s)
+  ans: model=17294342 total=17463663
+compress:using ans (17294342 bytes)
+Serialized model quantized+ans: 17294342 bytes
+Total submission size quantized+ans: 17463663 bytes
+sliding_perdoc: RoPE NTK seqlen override = 98304
+sliding_perdoc: bin 1/1010 segs:32 tokens:0 running_loss:0.0000 running_bpb:0.0000 elapsed:0.0s
+sliding_perdoc: bin 102/1010 segs:32 tokens:359616 running_loss:2.5975 running_bpb:1.0539 elapsed:12.8s
+sliding_perdoc: bin 203/1010 segs:32 tokens:754944 running_loss:2.6530 running_bpb:1.0674 elapsed:25.8s
+sliding_perdoc: bin 304/1010 segs:32 tokens:1148288 running_loss:2.6841 running_bpb:1.0708 elapsed:38.8s
+sliding_perdoc: bin 405/1010 segs:32 tokens:1539648 running_loss:2.6928 running_bpb:1.0711 elapsed:51.9s
+sliding_perdoc: bin 506/1010 segs:32 tokens:1913152 running_loss:2.6913 running_bpb:1.0725 elapsed:64.9s
+sliding_perdoc: bin 607/1010 segs:32 tokens:2318400 running_loss:2.7020 running_bpb:1.0716 elapsed:78.0s
+sliding_perdoc: bin 708/1010 segs:32 tokens:2699840 running_loss:2.7049 running_bpb:1.0724 elapsed:91.1s
+sliding_perdoc: bin 809/1010 segs:32 tokens:3059456 running_loss:2.7076 running_bpb:1.0733 elapsed:104.2s
+sliding_perdoc: bin 910/1010 segs:33 tokens:3484538 running_loss:2.7083 running_bpb:1.0706 elapsed:117.3s
+sliding_perdoc: bin 1010/1010 segs:472 tokens:9990290 running_loss:2.7608 running_bpb:1.0682 elapsed:130.5s
+quantized_sliding_window val_loss:2.75912522 val_bpb:1.06814336 eval_time:134321ms
+ttt_lora:rope_base inherited ROPE_FORCE_BASE_SEQLEN=98304
+ttt_lora:warming up compile
+ttt_lora:compile warmup done (85.1s)
+ttt_lora:docs:50000 rank:48 lr:0.0001 chunk:64
+ttt_lora:phased_sgd enabled phases=3 boundaries=[0, 261, 521, 782] sgd_lr=0.0005 sgd_epochs=1 sgd_opt=sgd
+ttt_progress: batch 782/782 batch_loss:2.5622 batch_bpb:1.0345 running_loss:2.5622 running_bpb:1.0345 doc_len:26524-79464
+ttt_progress: batch 767/782 batch_loss:2.7410 batch_bpb:1.0944 running_loss:2.6115 running_bpb:1.0511 doc_len:3963-4123
+ttt_progress: batch 762/782 batch_loss:2.8104 batch_bpb:1.0697 running_loss:2.6497 running_bpb:1.0548 doc_len:3431-3533
+ttt_progress: batch 758/782 batch_loss:2.8621 batch_bpb:1.0799 running_loss:2.6811 running_bpb:1.0587 doc_len:3108-3187
+ttt_progress: batch 755/782 batch_loss:2.6752 batch_bpb:1.0365 running_loss:2.6804 running_bpb:1.0560 doc_len:2899-2972
+ttt_progress: batch 750/782 batch_loss:2.8133 batch_bpb:1.0614 running_loss:2.6936 running_bpb:1.0565 doc_len:2638-2688
+ttt_progress: batch 747/782 batch_loss:2.7678 batch_bpb:1.0527 running_loss:2.6999 running_bpb:1.0562 doc_len:2501-2538
+ttt_progress: batch 743/782 batch_loss:2.6943 batch_bpb:1.0373 running_loss:2.6995 running_bpb:1.0548 doc_len:2355-2388
+ttt_progress: batch 738/782 batch_loss:2.7320 batch_bpb:1.0481 running_loss:2.7016 running_bpb:1.0543 doc_len:2194-2227
+ttt_progress: batch 735/782 batch_loss:2.8145 batch_bpb:1.0718 running_loss:2.7083 running_bpb:1.0554 doc_len:2116-2140
+ttt_progress: batch 731/782 batch_loss:2.7586 batch_bpb:1.0528 running_loss:2.7109 running_bpb:1.0553 doc_len:2017-2041
+ttt_progress: batch 727/782 batch_loss:2.7549 batch_bpb:1.0487 running_loss:2.7131 running_bpb:1.0549 doc_len:1936-1960
+ttt_progress: batch 723/782 batch_loss:2.7635 batch_bpb:1.0543 running_loss:2.7153 running_bpb:1.0549 doc_len:1861-1885
+ttt_progress: batch 719/782 batch_loss:2.6666 batch_bpb:1.0225 running_loss:2.7133 running_bpb:1.0536 doc_len:1793-1816
+ttt_progress: batch 714/782 batch_loss:2.7902 batch_bpb:1.0620 running_loss:2.7162 running_bpb:1.0539 doc_len:1711-1725
+ttt_progress: batch 710/782 batch_loss:2.7388 batch_bpb:1.0618 running_loss:2.7170 running_bpb:1.0542 doc_len:1661-1673
+ttt_progress: batch 706/782 batch_loss:2.6992 batch_bpb:1.0376 running_loss:2.7164 running_bpb:1.0536 doc_len:1617-1627
+ttt_progress: batch 702/782 batch_loss:2.7835 batch_bpb:1.0588 running_loss:2.7185 running_bpb:1.0538 doc_len:1572-1581
+ttt_progress: batch 698/782 batch_loss:2.7636 batch_bpb:1.0243 running_loss:2.7199 running_bpb:1.0529 doc_len:1534-1543
+ttt_progress: batch 694/782 batch_loss:2.7480 batch_bpb:1.0606 running_loss:2.7207 running_bpb:1.0531 doc_len:1494-1504
+ttt_progress: batch 690/782 batch_loss:2.8198 batch_bpb:1.0566 running_loss:2.7233 running_bpb:1.0532 doc_len:1458-1467
+ttt_progress: batch 686/782 batch_loss:2.7839 batch_bpb:1.0459 running_loss:2.7248 running_bpb:1.0530 doc_len:1422-1432
+ttt_progress: batch 682/782 batch_loss:2.7837 batch_bpb:1.0634 running_loss:2.7263 running_bpb:1.0532 doc_len:1393-1400
+ttt_progress: batch 677/782 batch_loss:2.8434 batch_bpb:1.1022 running_loss:2.7290 running_bpb:1.0544 doc_len:1353-1360
+ttt_progress: batch 673/782 batch_loss:2.7929 batch_bpb:1.0488 running_loss:2.7304 running_bpb:1.0542 doc_len:1327-1334
+ttt_progress: batch 669/782 batch_loss:2.7638 batch_bpb:1.0480 running_loss:2.7311 running_bpb:1.0541 doc_len:1301-1308
+ttt_progress: batch 665/782 batch_loss:2.7209 batch_bpb:1.0254 running_loss:2.7309 running_bpb:1.0535 doc_len:1275-1282
+ttt_progress: batch 661/782 batch_loss:2.7033 batch_bpb:1.0135 running_loss:2.7303 running_bpb:1.0527 doc_len:1251-1258
+ttt_progress: batch 657/782 batch_loss:2.7619 batch_bpb:1.0372 running_loss:2.7309 running_bpb:1.0524 doc_len:1227-1234
+ttt_progress: batch 653/782 batch_loss:2.7385 batch_bpb:1.0274 running_loss:2.7311 running_bpb:1.0519 doc_len:1203-1209
+ttt_progress: batch 649/782 batch_loss:2.7886 batch_bpb:1.0518 running_loss:2.7321 running_bpb:1.0519 doc_len:1183-1188
+ttt_progress: batch 645/782 batch_loss:2.7798 batch_bpb:1.0876 running_loss:2.7329 running_bpb:1.0525 doc_len:1160-1166
+ttt_progress: batch 641/782 batch_loss:2.7474 batch_bpb:1.0344 running_loss:2.7331 running_bpb:1.0522 doc_len:1140-1144
+ttt_progress: batch 637/782 batch_loss:2.7842 batch_bpb:1.0727 running_loss:2.7339 running_bpb:1.0525 doc_len:1120-1123
+ttt_progress: batch 632/782 batch_loss:2.7131 batch_bpb:1.0191 running_loss:2.7336 running_bpb:1.0520 doc_len:1096-1101
+ttt_progress: batch 628/782 batch_loss:2.7510 batch_bpb:1.0404 running_loss:2.7339 running_bpb:1.0519 doc_len:1078-1082
+ttt_progress: batch 624/782 batch_loss:2.7748 batch_bpb:1.0677 running_loss:2.7344 running_bpb:1.0521 doc_len:1060-1064
+ttt_progress: batch 619/782 batch_loss:2.7755 batch_bpb:1.0515 running_loss:2.7350 running_bpb:1.0521 doc_len:1037-1041
+ttt_progress: batch 614/782 batch_loss:2.7692 batch_bpb:1.0592 running_loss:2.7355 running_bpb:1.0522 doc_len:1016-1020
+ttt_progress: batch 610/782 batch_loss:2.8109 batch_bpb:1.0553 running_loss:2.7364 running_bpb:1.0522 doc_len:999-1004
+ttt_progress: batch 606/782 batch_loss:2.7993 batch_bpb:1.0771 running_loss:2.7372 running_bpb:1.0525 doc_len:982-986
+ttt_progress: batch 602/782 batch_loss:2.7605 batch_bpb:1.0325 running_loss:2.7375 running_bpb:1.0523 doc_len:966-971
+ttt_progress: batch 598/782 batch_loss:2.7873 batch_bpb:1.0617 running_loss:2.7381 running_bpb:1.0524 doc_len:950-954
+ttt_progress: batch 594/782 batch_loss:2.8828 batch_bpb:1.0949 running_loss:2.7398 running_bpb:1.0529 doc_len:937-940
+ttt_progress: batch 590/782 batch_loss:2.7117 batch_bpb:1.0206 running_loss:2.7394 running_bpb:1.0525 doc_len:924-927
+ttt_progress: batch 585/782 batch_loss:2.7405 batch_bpb:1.0566 running_loss:2.7395 running_bpb:1.0525 doc_len:908-911
+ttt_progress: batch 581/782 batch_loss:2.7092 batch_bpb:1.0106 running_loss:2.7391 running_bpb:1.0521 doc_len:894-897
+ttt_progress: batch 577/782 batch_loss:2.7391 batch_bpb:1.0360 running_loss:2.7391 running_bpb:1.0519 doc_len:880-884
+ttt_progress: batch 571/782 batch_loss:2.6897 batch_bpb:1.0260 running_loss:2.7386 running_bpb:1.0517 doc_len:862-865
+ttt_progress: batch 567/782 batch_loss:2.6623 batch_bpb:1.0254 running_loss:2.7379 running_bpb:1.0514 doc_len:849-852
+ttt_progress: batch 563/782 batch_loss:2.7854 batch_bpb:1.0567 running_loss:2.7383 running_bpb:1.0515 doc_len:837-840
+ttt_progress: batch 559/782 batch_loss:2.7365 batch_bpb:1.0400 running_loss:2.7383 running_bpb:1.0513 doc_len:824-827
+ttt_progress: batch 555/782 batch_loss:2.7350 batch_bpb:1.0438 running_loss:2.7383 running_bpb:1.0513 doc_len:812-815
+ttt_progress: batch 551/782 batch_loss:2.8092 batch_bpb:1.0589 running_loss:2.7389 running_bpb:1.0513 doc_len:801-804
+ttt_progress: batch 546/782 batch_loss:2.8072 batch_bpb:1.0659 running_loss:2.7395 running_bpb:1.0515 doc_len:788-790
+ttt_progress: batch 541/782 batch_loss:2.7786 batch_bpb:1.0516 running_loss:2.7398 running_bpb:1.0515 doc_len:774-776
+ttt_progress: batch 536/782 batch_loss:2.7597 batch_bpb:1.0645 running_loss:2.7400 running_bpb:1.0516 doc_len:762-764
+ttt_progress: batch 532/782 batch_loss:2.7886 batch_bpb:1.0471 running_loss:2.7404 running_bpb:1.0515 doc_len:752-754
+ttt_progress: batch 528/782 batch_loss:2.7328 batch_bpb:1.0237 running_loss:2.7403 running_bpb:1.0513 doc_len:742-745
+ttt_progress: batch 524/782 batch_loss:2.7938 batch_bpb:1.0440 running_loss:2.7408 running_bpb:1.0513 doc_len:732-735
+ttt_phase_sgd[phase=1]:docs=16656 windows/rank=9013 lr=0.0005 epochs=1 bsz=8 seq_len=1024 opt=sgd
+ttt_phase_sgd[phase=1]:epoch 1/1 loss=2.8039 steps=1127 t=112.9s
+ttt_progress: batch 520/782 batch_loss:2.7705 batch_bpb:1.0500 running_loss:2.7410 running_bpb:1.0512 doc_len:723-725
+ttt_progress: batch 514/782 batch_loss:2.8928 batch_bpb:1.0911 running_loss:2.7421 running_bpb:1.0515 doc_len:707-710
+ttt_progress: batch 510/782 batch_loss:2.7351 batch_bpb:1.0116 running_loss:2.7421 running_bpb:1.0512 doc_len:698-700
+ttt_progress: batch 506/782 batch_loss:2.7882 batch_bpb:1.0681 running_loss:2.7424 running_bpb:1.0514 doc_len:688-690
+ttt_progress: batch 502/782 batch_loss:2.8081 batch_bpb:1.0545 running_loss:2.7428 running_bpb:1.0514 doc_len:680-682
+ttt_progress: batch 496/782 batch_loss:2.8108 batch_bpb:1.0418 running_loss:2.7433 running_bpb:1.0513 doc_len:666-668
+ttt_progress: batch 491/782 batch_loss:2.7181 batch_bpb:1.0241 running_loss:2.7431 running_bpb:1.0511 doc_len:655-657
+ttt_progress: batch 487/782 batch_loss:2.7894 batch_bpb:1.0656 running_loss:2.7434 running_bpb:1.0512 doc_len:647-649
+ttt_progress: batch 483/782 batch_loss:2.7269 batch_bpb:1.0428 running_loss:2.7433 running_bpb:1.0512 doc_len:639-641
+ttt_progress: batch 479/782 batch_loss:2.6864 batch_bpb:1.0253 running_loss:2.7430 running_bpb:1.0510 doc_len:630-632
+ttt_progress: batch 473/782 batch_loss:2.8104 batch_bpb:1.0693 running_loss:2.7434 running_bpb:1.0511 doc_len:618-620
+ttt_progress: batch 468/782 batch_loss:2.7622 batch_bpb:1.0486 running_loss:2.7435 running_bpb:1.0511 doc_len:608-610
+ttt_progress: batch 464/782 batch_loss:2.6915 batch_bpb:1.0666 running_loss:2.7432 running_bpb:1.0512 doc_len:600-602
+ttt_progress: batch 460/782 batch_loss:2.7691 batch_bpb:1.0503 running_loss:2.7433 running_bpb:1.0512 doc_len:593-595
+ttt_progress: batch 454/782 batch_loss:2.8145 batch_bpb:1.0657 running_loss:2.7437 running_bpb:1.0513 doc_len:582-584
+ttt_progress: batch 449/782 batch_loss:2.7756 batch_bpb:1.0447 running_loss:2.7439 running_bpb:1.0512 doc_len:573-575
+ttt_progress: batch 445/782 batch_loss:2.7416 batch_bpb:1.0541 running_loss:2.7439 running_bpb:1.0513 doc_len:566-568
+ttt_progress: batch 441/782 batch_loss:2.6854 batch_bpb:1.0337 running_loss:2.7436 running_bpb:1.0512 doc_len:559-560
+ttt_progress: batch 434/782 batch_loss:2.7023 batch_bpb:1.0326 running_loss:2.7434 running_bpb:1.0511 doc_len:545-547
+ttt_progress: batch 430/782 batch_loss:2.7358 batch_bpb:1.0386 running_loss:2.7433 running_bpb:1.0510 doc_len:539-540
+ttt_progress: batch 426/782 batch_loss:2.7040 batch_bpb:1.0582 running_loss:2.7431 running_bpb:1.0510 doc_len:532-533
+ttt_progress: batch 419/782 batch_loss:2.7681 batch_bpb:1.0287 running_loss:2.7433 running_bpb:1.0509 doc_len:519-521
+ttt_progress: batch 415/782 batch_loss:2.8229 batch_bpb:1.0725 running_loss:2.7436 running_bpb:1.0510 doc_len:513-514
+ttt_progress: batch 409/782 batch_loss:2.6831 batch_bpb:1.0366 running_loss:2.7434 running_bpb:1.0510 doc_len:503-505
+ttt_progress: batch 404/782 batch_loss:2.7644 batch_bpb:1.0608 running_loss:2.7435 running_bpb:1.0510 doc_len:495-497
+ttt_progress: batch 399/782 batch_loss:2.7230 batch_bpb:1.0314 running_loss:2.7434 running_bpb:1.0509 doc_len:487-489
+ttt_progress: batch 393/782 batch_loss:2.8237 batch_bpb:1.0754 running_loss:2.7437 running_bpb:1.0510 doc_len:478-479
+ttt_progress: batch 389/782 batch_loss:2.7697 batch_bpb:1.0550 running_loss:2.7438 running_bpb:1.0510 doc_len:471-473
+ttt_progress: batch 382/782 batch_loss:2.8850 batch_bpb:1.1231 running_loss:2.7444 running_bpb:1.0513 doc_len:461-463
+ttt_progress: batch 378/782 batch_loss:2.7936 batch_bpb:1.0869 running_loss:2.7446 running_bpb:1.0515 doc_len:456-457
+ttt_progress: batch 371/782 batch_loss:2.7732 batch_bpb:1.0600 running_loss:2.7447 running_bpb:1.0515 doc_len:446-447
+ttt_progress: batch 367/782 batch_loss:2.8093 batch_bpb:1.0551 running_loss:2.7450 running_bpb:1.0515 doc_len:440-441
+ttt_progress: batch 362/782 batch_loss:2.7882 batch_bpb:1.0542 running_loss:2.7451 running_bpb:1.0515 doc_len:433-434
+ttt_progress: batch 356/782 batch_loss:2.6736 batch_bpb:1.0388 running_loss:2.7449 running_bpb:1.0515 doc_len:424-426
+ttt_progress: batch 351/782 batch_loss:2.8150 batch_bpb:1.0834 running_loss:2.7451 running_bpb:1.0516 doc_len:418-419
+ttt_progress: batch 345/782 batch_loss:2.8384 batch_bpb:1.1007 running_loss:2.7455 running_bpb:1.0518 doc_len:410-412
+ttt_progress: batch 340/782 batch_loss:2.8007 batch_bpb:1.0833 running_loss:2.7457 running_bpb:1.0519 doc_len:403-404
+ttt_progress: batch 334/782 batch_loss:2.8448 batch_bpb:1.0947 running_loss:2.7460 running_bpb:1.0520 doc_len:395-396
+ttt_progress: batch 330/782 batch_loss:2.8413 batch_bpb:1.0832 running_loss:2.7463 running_bpb:1.0521 doc_len:390-392
+ttt_progress: batch 323/782 batch_loss:2.7989 batch_bpb:1.0411 running_loss:2.7465 running_bpb:1.0521 doc_len:381-382
+ttt_progress: batch 319/782 batch_loss:2.8059 batch_bpb:1.1008 running_loss:2.7467 running_bpb:1.0523 doc_len:376-377
+ttt_progress: batch 312/782 batch_loss:2.7074 batch_bpb:1.0569 running_loss:2.7466 running_bpb:1.0523 doc_len:367-368
+ttt_progress: batch 308/782 batch_loss:2.7685 batch_bpb:1.0756 running_loss:2.7466 running_bpb:1.0523 doc_len:362-363
+ttt_progress: batch 301/782 batch_loss:2.7634 batch_bpb:1.0746 running_loss:2.7467 running_bpb:1.0524 doc_len:353-354
+ttt_progress: batch 297/782 batch_loss:2.7751 batch_bpb:1.0514 running_loss:2.7468 running_bpb:1.0524 doc_len:348-349
+ttt_progress: batch 290/782 batch_loss:2.8419 batch_bpb:1.0767 running_loss:2.7470 running_bpb:1.0525 doc_len:340-341
+ttt_progress: batch 286/782 batch_loss:2.8668 batch_bpb:1.0890 running_loss:2.7474 running_bpb:1.0526 doc_len:335-336
+ttt_progress: batch 280/782 batch_loss:2.8037 batch_bpb:1.0881 running_loss:2.7475 running_bpb:1.0527 doc_len:329-329
+ttt_progress: batch 275/782 batch_loss:2.7332 batch_bpb:1.0571 running_loss:2.7475 running_bpb:1.0527 doc_len:323-324
+ttt_progress: batch 268/782 batch_loss:2.8272 batch_bpb:1.0870 running_loss:2.7477 running_bpb:1.0528 doc_len:315-316
+ttt_progress: batch 263/782 batch_loss:2.8179 batch_bpb:1.0976 running_loss:2.7479 running_bpb:1.0529 doc_len:310-311
+ttt_phase_sgd[phase=2]:docs=33296 windows/rank=13173 lr=0.0005 epochs=1 bsz=8 seq_len=1024 opt=sgd
+ttt_phase_sgd[phase=2]:epoch 1/1 loss=2.8064 steps=1647 t=160.1s
+ttt_progress: batch 261/782 batch_loss:2.8521 batch_bpb:1.1156 running_loss:2.7481 running_bpb:1.0531 doc_len:308-309
+ttt_progress: batch 254/782 batch_loss:2.8794 batch_bpb:1.1342 running_loss:2.7485 running_bpb:1.0533 doc_len:299-300
+ttt_progress: batch 247/782 batch_loss:2.7666 batch_bpb:1.0690 running_loss:2.7485 running_bpb:1.0533 doc_len:292-293
+ttt_progress: batch 243/782 batch_loss:2.7968 batch_bpb:1.0907 running_loss:2.7486 running_bpb:1.0534 doc_len:288-289
+ttt_progress: batch 236/782 batch_loss:2.8283 batch_bpb:1.0993 running_loss:2.7488 running_bpb:1.0535 doc_len:281-282
+ttt_progress: batch 232/782 batch_loss:2.9099 batch_bpb:1.1255 running_loss:2.7492 running_bpb:1.0536 doc_len:277-278
+ttt_progress: batch 225/782 batch_loss:2.8618 batch_bpb:1.1146 running_loss:2.7494 running_bpb:1.0538 doc_len:270-271
+ttt_progress: batch 221/782 batch_loss:2.8117 batch_bpb:1.1284 running_loss:2.7496 running_bpb:1.0539 doc_len:266-267
+ttt_progress: batch 214/782 batch_loss:2.9118 batch_bpb:1.1202 running_loss:2.7499 running_bpb:1.0541 doc_len:259-260
+ttt_progress: batch 210/782 batch_loss:2.8276 batch_bpb:1.1128 running_loss:2.7501 running_bpb:1.0542 doc_len:255-256
+ttt_progress: batch 204/782 batch_loss:2.8808 batch_bpb:1.1206 running_loss:2.7503 running_bpb:1.0543 doc_len:250-251
+ttt_progress: batch 200/782 batch_loss:2.8209 batch_bpb:1.0842 running_loss:2.7505 running_bpb:1.0544 doc_len:247-247
+ttt_progress: batch 192/782 batch_loss:2.8823 batch_bpb:1.1361 running_loss:2.7507 running_bpb:1.0545 doc_len:239-240
+ttt_progress: batch 189/782 batch_loss:2.9403 batch_bpb:1.1934 running_loss:2.7511 running_bpb:1.0548 doc_len:237-237
+ttt_progress: batch 180/782 batch_loss:2.8746 batch_bpb:1.1210 running_loss:2.7513 running_bpb:1.0549 doc_len:229-230
+ttt_progress: batch 176/782 batch_loss:2.7849 batch_bpb:1.0925 running_loss:2.7514 running_bpb:1.0550 doc_len:225-226
+ttt_progress: batch 170/782 batch_loss:2.9738 batch_bpb:1.1628 running_loss:2.7518 running_bpb:1.0552 doc_len:220-221
+ttt_progress: batch 165/782 batch_loss:2.9124 batch_bpb:1.1524 running_loss:2.7521 running_bpb:1.0553 doc_len:216-217
+ttt_progress: batch 160/782 batch_loss:2.8417 batch_bpb:1.1168 running_loss:2.7522 running_bpb:1.0554 doc_len:212-212
+ttt_progress: batch 154/782 batch_loss:2.9708 batch_bpb:1.1499 running_loss:2.7526 running_bpb:1.0556 doc_len:207-207
+ttt_progress: batch 148/782 batch_loss:2.9451 batch_bpb:1.1447 running_loss:2.7529 running_bpb:1.0557 doc_len:202-203
+ttt_progress: batch 141/782 batch_loss:2.8675 batch_bpb:1.1305 running_loss:2.7531 running_bpb:1.0558 doc_len:196-197
+ttt_progress: batch 136/782 batch_loss:2.9348 batch_bpb:1.1708 running_loss:2.7533 running_bpb:1.0560 doc_len:192-193
+ttt_progress: batch 132/782 batch_loss:2.9096 batch_bpb:1.1197 running_loss:2.7536 running_bpb:1.0561 doc_len:189-189
+ttt_progress: batch 125/782 batch_loss:2.9780 batch_bpb:1.1801 running_loss:2.7539 running_bpb:1.0563 doc_len:184-185
+ttt_progress: batch 121/782 batch_loss:2.8266 batch_bpb:1.1198 running_loss:2.7540 running_bpb:1.0564 doc_len:181-181
+ttt_progress: batch 115/782 batch_loss:2.8396 batch_bpb:1.1458 running_loss:2.7541 running_bpb:1.0565 doc_len:176-177
+ttt_progress: batch 108/782 batch_loss:2.8427 batch_bpb:1.0917 running_loss:2.7542 running_bpb:1.0565 doc_len:171-172
+ttt_progress: batch 102/782 batch_loss:2.7730 batch_bpb:1.1166 running_loss:2.7543 running_bpb:1.0566 doc_len:167-168
+ttt_progress: batch 98/782 batch_loss:2.9597 batch_bpb:1.1747 running_loss:2.7545 running_bpb:1.0567 doc_len:164-164
+ttt_progress: batch 93/782 batch_loss:2.9269 batch_bpb:1.1741 running_loss:2.7547 running_bpb:1.0569 doc_len:160-160
+ttt_progress: batch 86/782 batch_loss:3.0059 batch_bpb:1.2511 running_loss:2.7550 running_bpb:1.0571 doc_len:154-155
+ttt_progress: batch 80/782 batch_loss:2.8808 batch_bpb:1.1800 running_loss:2.7552 running_bpb:1.0572 doc_len:150-151
+ttt_progress: batch 74/782 batch_loss:3.0991 batch_bpb:1.2668 running_loss:2.7556 running_bpb:1.0575 doc_len:145-146
+ttt_progress: batch 70/782 batch_loss:3.0420 batch_bpb:1.1560 running_loss:2.7559 running_bpb:1.0576 doc_len:142-143
+ttt_progress: batch 63/782 batch_loss:2.9843 batch_bpb:1.2036 running_loss:2.7561 running_bpb:1.0577 doc_len:137-138
+ttt_progress: batch 59/782 batch_loss:3.0317 batch_bpb:1.1842 running_loss:2.7564 running_bpb:1.0579 doc_len:134-134
+ttt_progress: batch 52/782 batch_loss:3.0223 batch_bpb:1.1826 running_loss:2.7567 running_bpb:1.0580 doc_len:128-129
+ttt_progress: batch 49/782 batch_loss:2.9420 batch_bpb:1.1607 running_loss:2.7569 running_bpb:1.0581 doc_len:126-126
+ttt_progress: batch 43/782 batch_loss:2.9719 batch_bpb:1.1818 running_loss:2.7571 running_bpb:1.0582 doc_len:121-122
+ttt_progress: batch 38/782 batch_loss:3.0054 batch_bpb:1.1996 running_loss:2.7573 running_bpb:1.0583 doc_len:117-118
+ttt_progress: batch 33/782 batch_loss:3.0746 batch_bpb:1.2036 running_loss:2.7576 running_bpb:1.0584 doc_len:113-114
+ttt_progress: batch 27/782 batch_loss:3.0702 batch_bpb:1.2257 running_loss:2.7578 running_bpb:1.0586 doc_len:107-108
+ttt_progress: batch 22/782 batch_loss:3.1551 batch_bpb:1.2299 running_loss:2.7582 running_bpb:1.0587 doc_len:103-104
+ttt_progress: batch 17/782 batch_loss:3.1088 batch_bpb:1.2322 running_loss:2.7584 running_bpb:1.0588 doc_len:98-99
+ttt_progress: batch 12/782 batch_loss:3.1622 batch_bpb:1.2326 running_loss:2.7587 running_bpb:1.0590 doc_len:92-93
+ttt_progress: batch 7/782 batch_loss:3.1867 batch_bpb:1.2227 running_loss:2.7590 running_bpb:1.0591 doc_len:84-86
+ttt_progress: batch 2/782 batch_loss:3.1197 batch_bpb:1.1571 running_loss:2.7592 running_bpb:1.0591 doc_len:70-75
+quantized_ttt_lora val_loss:2.75424876 val_bpb:1.06625553 eval_time:1244283ms

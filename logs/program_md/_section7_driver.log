@@ -1,3 +1,40 @@
 [pgm-s7] waiting for prior queue to drain...
 [pgm-s7] queue clear. Starting section 7.
 [pgm] === pgm_clip_lateloop075 === (train+eval)
+[pgm] pgm_clip_lateloop075 exit=0
+quantized_sliding_window val_loss:2.75912522 val_bpb:1.06814336 eval_time:134321ms
+quantized_ttt_lora val_loss:2.75424876 val_bpb:1.06625553 eval_time:1244283ms
+[pgm] === pgm_clip_late05 === (train+eval)
+[pgm] pgm_clip_late05 exit=0
+quantized_sliding_window val_loss:2.75998448 val_bpb:1.06847600 eval_time:134398ms
+quantized_ttt_lora val_loss:2.75488202 val_bpb:1.06650068 eval_time:1229718ms
+[pgm] === pgm_clip_late06 === (train+eval)
+[pgm] pgm_clip_late06 exit=0
+quantized_sliding_window val_loss:2.76027588 val_bpb:1.06858881 eval_time:133961ms
+quantized_ttt_lora val_loss:2.75513514 val_bpb:1.06659867 eval_time:1231301ms
+[pgm] === pgm_clip_loop05 === (train+eval)
+[pgm] pgm_clip_loop05 exit=0
+quantized_sliding_window val_loss:2.76022230 val_bpb:1.06856807 eval_time:134196ms
+quantized_ttt_lora val_loss:2.75525320 val_bpb:1.06664438 eval_time:1241566ms
+[pgm] === pgm_clip_loop06 === (train+eval)
+[pgm] pgm_clip_loop06 exit=0
+quantized_sliding_window val_loss:2.76147851 val_bpb:1.06905439 eval_time:134657ms
+quantized_ttt_lora val_loss:2.75638920 val_bpb:1.06708416 eval_time:1246052ms
+[pgm] === pgm_clip_lateloop05 === (train+eval)
+[pgm] pgm_clip_lateloop05 exit=0
+quantized_sliding_window val_loss:2.75252783 val_bpb:1.06558930 eval_time:133723ms
+quantized_ttt_lora val_loss:2.74769277 val_bpb:1.06371750 eval_time:1232918ms
+[pgm] === pgm_clip_all075 === (train+eval)
+[pgm] pgm_clip_all075 exit=0
+quantized_sliding_window val_loss:2.75396005 val_bpb:1.06614376 eval_time:134116ms
+quantized_ttt_lora val_loss:2.74910242 val_bpb:1.06426322 eval_time:1236635ms
+[pgm-s7] === SECTION 7 LEADERBOARD ===
+name                                       dense    sw       ttt
+pgm_clip_lateloop05                        - 1.06558930 1.06371750
+pgm_clip_all075                            - 1.06614376 1.06426322
+pgm_clip_lateloop075                       - 1.06814336 1.06625553
+pgm_clip_late05                            - 1.06847600 1.06650068
+pgm_clip_late06                            - 1.06858881 1.06659867
+pgm_clip_loop05                            - 1.06856807 1.06664438
+pgm_clip_loop06                            - 1.06905439 1.06708416
+[pgm-s7] SECTION 7 COMPLETE

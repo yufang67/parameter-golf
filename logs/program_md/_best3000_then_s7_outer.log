@@ -1,0 +1,5 @@
+nohup: ignoring input
+[pgm] === pgm_cliplate075_w3000 === (train+eval) starting 2026-04-23T00:57:01+00:00
+[pgm] pgm_cliplate075_w3000 exit=0 at 2026-04-23T02:17:15+00:00
+quantized_sliding_window val_loss:2.77841559 val_bpb:1.07561126 eval_time:133489ms
+quantized_ttt_lora val_loss:2.77318505 val_bpb:1.07358635 eval_time:1250780ms

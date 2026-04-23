@@ -124,6 +124,17 @@ case "$SECTION" in
     train_then_eval "pgm_clip_all075"        CLIP_MULT_EARLY=0.75 CLIP_MULT_LOOP=0.75 CLIP_MULT_MID=0.75 CLIP_MULT_LATE=0.75
     print_section_leaderboard "pgm_clip_"
     ;;
+8)
+    # Push sub-0.5 on the winners + full 4-way stacks.
+    # Section 7 found LATE=0.5 + LOOP=0.5 -> 1.06372 TTT (record).
+    # Defaults already bumped to LATE=0.5, LOOP=0.5; explicit env overrides kept for clarity.
+    train_then_eval "pgm_clip_lateloop035"   CLIP_MULT_LATE=0.35 CLIP_MULT_LOOP=0.35
+    train_then_eval "pgm_clip_late035"       CLIP_MULT_LATE=0.35 CLIP_MULT_LOOP=0.5
+    train_then_eval "pgm_clip_loop035"       CLIP_MULT_LATE=0.5  CLIP_MULT_LOOP=0.35
+    train_then_eval "pgm_clip_all05"         CLIP_MULT_EARLY=0.5 CLIP_MULT_LOOP=0.5 CLIP_MULT_MID=0.5 CLIP_MULT_LATE=0.5
+    train_then_eval "pgm_clip_4way_mix"      CLIP_MULT_EARLY=0.75 CLIP_MULT_LOOP=0.5 CLIP_MULT_MID=0.75 CLIP_MULT_LATE=0.5
+    print_section_leaderboard "pgm_clip_"
+    ;;
 *)
     echo "Unknown SECTION=$SECTION"; exit 1;;
 esac
