@@ -103,6 +103,32 @@ to be leaderboard-eligible. **XSA on the last 9 layers gives the largest single-
 seen so far** (~0.0035 sw_bpb improvement, ~0.0034 ttt_bpb improvement vs xsa0 control).
 **`enable_looping_at=0.5` with loop embeddings is the new best absolute BPB** (1.06919 ttt).
 
+#### `CLIP_MULT_*` Per-Group GPTQ Sweep (built on `pgm_loopat0_5` recipe)
+
+All on the `pgm_loopat0_5` recipe (`MATRIX_CLIP_SIGMAS=14`, `LOOP_EMBEDDINGS=1`,
+`ENABLE_LOOPING_AT=0.5`, `HESSIAN_CLIP_LAMBDA=0.3`, varlen + TTT, 3600s wallclock,
+4× A100). Each run flips one of `CLIP_MULT_{EARLY,LOOP,MID,LATE}` to 0.75 or 1.25
+(others stay at 1.0). The 1.5 leg was skipped to halve cost; 0.75 vs 1.25 is the
+informative pair.
+
+| run_id | group | mult | sw_val_bpb | ttt_val_bpb | Δ vs baseline (1.06919) |
+|--------|-------|------|------------|-------------|-------------------------|
+| **pgm_cliplate075** | LATE | 0.75 | **1.06955** | **1.06756** 🏆 | **−0.00163** |
+| pgm_cliploop075 | LOOP | 0.75 | 1.06969 | 1.06770 | −0.00149 |
+| pgm_clipearly075 | EARLY | 0.75 | 1.07049 | 1.06839 | −0.00080 |
+| pgm_clipmid075 | MID | 0.75 | 1.07051 | 1.06844 | −0.00075 |
+| pgm_clipearly125 | EARLY | 1.25 | 1.07238 | 1.07025 | +0.00106 |
+| pgm_clipmid125 | MID | 1.25 | 1.07296 | 1.07082 | +0.00163 |
+| pgm_cliploop125 | LOOP | 1.25 | 1.07353 | 1.07133 | +0.00214 |
+| pgm_cliplate125 | LATE | 1.25 | 1.07382 | 1.07163 | +0.00244 |
+
+**Takeaways:** every group prefers **tighter** clipping (0.75); every 1.25 regresses.
+Sensitivity ranking by (1.25 − 0.75) Δttt: **LATE 0.00407 > LOOP 0.00362 > MID 0.00238
+> EARLY 0.00186**. The original "LOOP needs larger `cs`" hypothesis is **inverted**.
+**New best absolute TTT BPB: 1.06756** (`pgm_cliplate075`), beats prior record 1.06919
+by 0.00163. Natural follow-ups: stack `LATE=0.75 + LOOP=0.75` and probe sub-0.75
+(0.5 / 0.6) on LATE/LOOP since both still want tighter at the swept boundary.
+
 ### TTT-LoRA Sweep on `pg12_varlen_clip14` Checkpoint
 
 All runs below reload the same trained checkpoint (`pg12_eval_verify` confirms sliding-window
@@ -234,7 +260,8 @@ Sliding-window evaluation at smaller strides has near-zero effect on bpb.
 7. **`ENABLE_LOOPING_AT=0.5` is the new best absolute BPB.** `pgm_loopat0_5` reached **1.06919** ttt-bpb and **1.06630** pre-quant (both new records). Curriculum matters: immediate looping (0.0) is worst. All `pgm_loopat0_*` are ~0.5MB over 16MB.
 8. **Eval-stride finer than 64 is wasted compute** — strides 8/16/32/64 all within 0.00005 bpb.
 9. **Best sliding BPB on a 16MB-valid dense run:** `improved_GA_FUSErope` (**1.07369**) — GA+HS+ANS+FR+FM, 15.99MB ✅
-10. **Best absolute BPB (over budget):** `pgm_loopat0_5` (**1.06919** TTT) — 16.53MB; `improved_GA_MoE79_MLP4_TTT` (1.06740 sw) — MoE 21.2MB.
+10. **Best absolute BPB (over budget):** `pgm_cliplate075` (**1.06756** TTT, 1.06955 sw) ← new — beats prior `pgm_loopat0_5` (1.06919 TTT) by 0.00163 with `CLIP_MULT_LATE=0.75` on top of the loopat0_5 recipe; `improved_GA_MoE79_MLP4_TTT` (1.06740 sw) — MoE 21.2MB.
+11. **GPTQ wants tighter, not looser, per-group clipping.** All four `CLIP_MULT_*` groups (EARLY/LOOP/MID/LATE) prefer 0.75 over 1.25; sensitivity ranking LATE > LOOP > MID > EARLY. Stacking LATE+LOOP at 0.75 (or going sub-0.75) is the natural next sweep.
 10. **MLP 4.35× improves pre-quant BPB** — ~1.075 vs ~1.079 for 3.0×, but adds ~2.2M params
 11. **Clip sigma 15.0 solves MLP4.35 size problem** — 15.97MB (vs 16.83MB at clip=13) with only 0.004 wider quant gap
 12. **N-gram embeddings don't help:** Bigram-512 (1.07464) and trigram-1536 (1.07584) are worse than baseline (1.07441), and all bust 16MB

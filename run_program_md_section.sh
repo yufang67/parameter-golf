@@ -112,6 +112,18 @@ case "$SECTION" in
     done
     print_section_leaderboard "pgm_wattn"
     ;;
+7)
+    # CLIP_MULT stacking + sub-0.75 follow-up to section 3.
+    # Section 3 found every group prefers 0.75; LATE and LOOP are most sensitive.
+    train_then_eval "pgm_clip_lateloop075"   CLIP_MULT_LATE=0.75 CLIP_MULT_LOOP=0.75
+    train_then_eval "pgm_clip_late05"        CLIP_MULT_LATE=0.5
+    train_then_eval "pgm_clip_late06"        CLIP_MULT_LATE=0.6
+    train_then_eval "pgm_clip_loop05"        CLIP_MULT_LOOP=0.5
+    train_then_eval "pgm_clip_loop06"        CLIP_MULT_LOOP=0.6
+    train_then_eval "pgm_clip_lateloop05"    CLIP_MULT_LATE=0.5  CLIP_MULT_LOOP=0.5
+    train_then_eval "pgm_clip_all075"        CLIP_MULT_EARLY=0.75 CLIP_MULT_LOOP=0.75 CLIP_MULT_MID=0.75 CLIP_MULT_LATE=0.75
+    print_section_leaderboard "pgm_clip_"
+    ;;
 *)
     echo "Unknown SECTION=$SECTION"; exit 1;;
 esac

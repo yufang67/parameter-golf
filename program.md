@@ -132,6 +132,20 @@ MATRIX_CLIP_SIGMAS=15 MLP_MULT=4.35 GPTQ_CALIBRATION_BATCHES=128 TTT_ENABLED=1 M
   4. **Interaction with `MATRIX_CLIP_SIGMAS`:** the multiplier scales this base; if the baseline `MATRIX_CLIP_SIGMAS` changes (currently 15), re-run step 1.
 - **Decision rule:** accept per-group values only if the combined config beats the uniform 1.0 baseline by ≥0.002 pre-to-post-quant BPB delta (look at `val_bpb` after the round-trip reload), and artifact size stays ≤16 MB.
 - **Correction:** an earlier entry described `CLIP_MULT_LOOP` as a *gradient*-clip multiplier — that was wrong. It affects GPTQ quantization only. Gradient clipping is global via `GRAD_CLIP_NORM` (no per-group form).
+- **Results (2026-04-22, on `pgm_loopat0_5` baseline; `MATRIX_CLIP_SIGMAS=14`, `ENABLE_LOOPING_AT=0.5`, `LOOP_EMBEDDINGS=1`, `HESSIAN_CLIP_LAMBDA=0.3`, varlen+TTT). Skipped 1.5 to halve the budget; 0.75 vs 1.25 is the informative pair.**
+
+  | Run | group | mult | sw_val_bpb | ttt_val_bpb | Δ vs baseline (1.06919) |
+  |-----|-------|------|------------|-------------|-------------------------|
+  | pgm_cliplate075 | LATE | 0.75 | **1.06955** | **1.06756** 🏆 | **−0.00163** |
+  | pgm_cliploop075 | LOOP | 0.75 | 1.06969 | 1.06770 | −0.00149 |
+  | pgm_clipearly075 | EARLY | 0.75 | 1.07049 | 1.06839 | −0.00080 |
+  | pgm_clipmid075 | MID | 0.75 | 1.07051 | 1.06844 | −0.00075 |
+  | pgm_clipearly125 | EARLY | 1.25 | 1.07238 | 1.07025 | +0.00106 |
+  | pgm_clipmid125 | MID | 1.25 | 1.07296 | 1.07082 | +0.00163 |
+  | pgm_cliploop125 | LOOP | 1.25 | 1.07353 | 1.07133 | +0.00214 |
+  | pgm_cliplate125 | LATE | 1.25 | 1.07382 | 1.07163 | +0.00244 |
+
+  **Conclusion:** every group prefers **tighter** clipping (0.75); every 1.25 regresses. Sensitivity ranking by (1.25 − 0.75) Δttt: **LATE 0.0041 > LOOP 0.0036 > MID 0.0024 > EARLY 0.0019**. New best absolute TTT BPB: **1.06756** (`pgm_cliplate075`, beats 1.06919 by 0.00163). The original hypothesis ("LOOP needs larger `cs`") is **inverted**. Next step: stack the two strongest signals (`CLIP_MULT_LATE=0.75 + CLIP_MULT_LOOP=0.75`) and probe sub-0.75 (e.g. 0.5 / 0.6) on LATE/LOOP since both still want tighter at the swept boundary.
 
 ### Loop-activation curriculum (`ENABLE_LOOPING_AT`)
 - **What it controls:** training-progress fraction at which `looping_active` flips from `False` to `True`. Before the switch the forward uses the non-looped 11-step graph; after, it uses the looped 17-step graph. `frac` is the same measure that drives `lr_mul`/`wd_mul` (elapsed-wallclock-based when `MAX_WALLCLOCK_SECONDS` is set).

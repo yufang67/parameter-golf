@@ -19,3 +19,35 @@ quantized_sliding_window val_loss:2.77304975 val_bpb:1.07353397 eval_time:134070
 quantized_ttt_lora val_loss:2.76734573 val_bpb:1.07132577 eval_time:1257148ms
 [pgm] SKIP pgm_cliploop15 (already done)
 [pgm] === pgm_clipmid075 === (train+eval)
+[pgm] pgm_clipmid075 exit=0
+quantized_sliding_window val_loss:2.76522769 val_bpb:1.07050581 eval_time:133886ms
+quantized_ttt_lora val_loss:2.75989488 val_bpb:1.06844132 eval_time:1243410ms
+[pgm] === pgm_clipmid125 === (train+eval)
+[pgm] pgm_clipmid125 exit=0
+quantized_sliding_window val_loss:2.77155875 val_bpb:1.07295676 eval_time:134383ms
+quantized_ttt_lora val_loss:2.76605053 val_bpb:1.07082436 eval_time:1236056ms
+[pgm] SKIP pgm_clipmid15 (already done)
+[pgm] === pgm_cliplate075 === (train+eval)
+[pgm] pgm_cliplate075 exit=0
+quantized_sliding_window val_loss:2.76276709 val_bpb:1.06955324 eval_time:134480ms
+quantized_ttt_lora val_loss:2.75762432 val_bpb:1.06756231 eval_time:1238365ms
+[pgm] === pgm_cliplate125 === (train+eval)
+[pgm] pgm_cliplate125 exit=0
+quantized_sliding_window val_loss:2.77378299 val_bpb:1.07381783 eval_time:133507ms
+quantized_ttt_lora val_loss:2.76813352 val_bpb:1.07163075 eval_time:1243477ms
+[pgm] SKIP pgm_cliplate15 (already done)
+[pgm-s3] === SECTION 3 LEADERBOARD ===
+name                                       dense    sw       ttt
+pgm_clipearly15                            - - -
+pgm_cliplate15                             - - -
+pgm_cliploop15                             - - -
+pgm_clipmid15                              - - -
+pgm_cliplate075                            - 1.06955324 1.06756231
+pgm_cliploop075                            - 1.06969467 1.06770158
+pgm_clipearly075                           - 1.07048700 1.06838888
+pgm_clipmid075                             - 1.07050581 1.06844132
+pgm_clipearly125                           - 1.07237703 1.07024737
+pgm_clipmid125                             - 1.07295676 1.07082436
+pgm_cliploop125                            - 1.07353397 1.07132577
+pgm_cliplate125                            - 1.07381783 1.07163075
+[pgm-s3] SECTION 3 COMPLETE
