@@ -1,0 +1,30 @@
+nohup: ignoring input
+[size] === size_lateloop07 === 2026-04-23T14:39:47+00:00
+[size] size_lateloop07 exit=0 at 2026-04-23T15:38:34+00:00
+compress:brotli 17591731 bytes (61.8s)
+compress:ans 17523570 bytes (15.1s)
+compress:lzma 18711028 bytes (20.1s)
+compress:using ans (17523570 bytes)
+Total submission size quantized+ans: 17566267 bytes
+quantized_sliding_window val_loss:2.77353529 val_bpb:1.07372194 eval_time:133871ms
+[size] === size_lateonly05 === 2026-04-23T15:38:34+00:00
+[size] size_lateonly05 exit=0 at 2026-04-23T16:37:14+00:00
+compress:brotli 17621122 bytes (60.8s)
+compress:ans 17499027 bytes (15.0s)
+compress:lzma 18578068 bytes (18.9s)
+compress:using ans (17499027 bytes)
+Total submission size quantized+ans: 17541724 bytes
+quantized_sliding_window val_loss:2.77547288 val_bpb:1.07447204 eval_time:133761ms
+[size] === size_lateloop05_mlp4 === 2026-04-23T16:37:14+00:00
+[size] size_lateloop05_mlp4 exit=0 at 2026-04-23T17:37:47+00:00
+compress:brotli 17742199 bytes (54.8s)
+compress:ans 17624573 bytes (14.6s)
+compress:lzma 18637304 bytes (17.4s)
+compress:using ans (17624573 bytes)
+Total submission size quantized+ans: 17667270 bytes
+quantized_sliding_window val_loss:2.78591246 val_bpb:1.07851353 eval_time:131183ms
+[size] === LEADERBOARD ===
+name                                 pre_bpb      sw_bpb     ttt_bpb  total_bytes
+size_lateonly05                   1.07275128  1.07447204           -    17541724
+size_lateloop07                   1.07305757  1.07372194           -    17566267
+size_lateloop05_mlp4              1.07920866  1.07851353           -    17667270
