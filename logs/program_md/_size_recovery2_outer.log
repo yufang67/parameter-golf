@@ -1,2 +1,11 @@
 nohup: ignoring input
-[size2] === size_loopint5 === 2026-04-23T17:45:45+00:00
+[size2] === size_loopint5 === 2026-04-23T17:46:48+00:00
+[size2] size_loopint5 exit=0 at 2026-04-23T18:45:37+00:00
+pre-quantization post-ema val_loss:2.77095742 val_bpb:1.07266803 eval_time:19283ms
+compress:brotli 15363216 bytes (63.6s)
+compress:ans 15199574 bytes (15.0s)
+compress:lzma 16366124 bytes (19.0s)
+compress:using ans (15199574 bytes)
+Total submission size quantized+ans: 15242271 bytes
+quantized_sliding_window val_loss:2.81610451 val_bpb:1.09020181 eval_time:133048ms
+/tmp/size_recovery2.sh: line 48: name: unbound variable

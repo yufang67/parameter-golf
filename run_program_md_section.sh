@@ -37,12 +37,21 @@ train_then_eval() {
         return
     fi
     echo "[pgm] === $name === (train+eval)"
+    {
+        echo "===== CODE SNAPSHOT: train_gpt_improved_04_16.py ====="
+        echo "git_head: $(git rev-parse HEAD 2>/dev/null || echo unknown)"
+        echo "sha256:   $(sha256sum train_gpt_improved_04_16.py | awk '{print $1}')"
+        echo "===== BEGIN train_gpt_improved_04_16.py ====="
+        cat train_gpt_improved_04_16.py
+        echo "===== END train_gpt_improved_04_16.py ====="
+        echo
+    } > "$log"
     env -i HOME=$HOME PATH=$PATH \
         RUN_ID="$name" \
         "${COMMON_TRAIN_ENV[@]}" \
         "$@" \
         torchrun --standalone --nproc_per_node=4 train_gpt_improved_04_16.py \
-        > "$log" 2>&1
+        >> "$log" 2>&1
     echo "[pgm] $name exit=$?"
     grep -E "quantized(_sliding_window|_ttt_lora)? val_loss" "$log" | tail -3
     if [ -f final_model.int6.ptz ]; then

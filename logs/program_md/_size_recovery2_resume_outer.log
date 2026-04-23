@@ -1,0 +1,46 @@
+nohup: ignoring input
+[size2] === size_loopint5_late05 === 2026-04-23T18:50:35+00:00
+[size2] size_loopint5_late05 exit=0 at 2026-04-23T19:49:22+00:00
+    log(f"compress:using {chosen} ({len(quant_blob)} bytes)")
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        timed_eval("pre-quantization post-ema", eval_val, h, device, val_data, compiled_model)
+pre-quantization post-ema val_loss:2.77106236 val_bpb:1.07270865 eval_time:19305ms
+compress:brotli 16509846 bytes (62.3s)
+compress:ans 16346963 bytes (15.1s)
+compress:lzma 17365948 bytes (17.2s)
+compress:using ans (16346963 bytes)
+Total submission size quantized+ans: 16389660 bytes
+quantized_sliding_window val_loss:2.80883753 val_bpb:1.08738854 eval_time:133789ms
+[size2] === size_late07_loop05 === 2026-04-23T19:49:22+00:00
+[size2] size_late07_loop05 exit=0 at 2026-04-23T20:47:58+00:00
+    log(f"compress:using {chosen} ({len(quant_blob)} bytes)")
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        timed_eval("pre-quantization post-ema", eval_val, h, device, val_data, compiled_model)
+pre-quantization post-ema val_loss:2.77053741 val_bpb:1.07250544 eval_time:19256ms
+compress:brotli 18183888 bytes (59.9s)
+compress:ans 18081050 bytes (15.1s)
+compress:lzma 19263976 bytes (19.1s)
+compress:using ans (18081050 bytes)
+Total submission size quantized+ans: 18123747 bytes
+quantized_sliding_window val_loss:2.77015452 val_bpb:1.07241314 eval_time:133575ms
+[size2] === size_lateloop05_embed6 === 2026-04-23T20:47:58+00:00
+[size2] size_lateloop05_embed6 exit=0 at 2026-04-23T21:46:44+00:00
+    log(f"compress:using {chosen} ({len(quant_blob)} bytes)")
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        timed_eval("pre-quantization post-ema", eval_val, h, device, val_data, compiled_model)
+pre-quantization post-ema val_loss:2.77185629 val_bpb:1.07301599 eval_time:19306ms
+compress:brotli 17732032 bytes (61.9s)
+compress:ans 17589047 bytes (14.8s)
+compress:lzma 18705648 bytes (18.4s)
+compress:using ans (17589047 bytes)
+Total submission size quantized+ans: 17631744 bytes
+quantized_sliding_window val_loss:2.83153437 val_bpb:1.09617519 eval_time:133059ms
+[size2] === LEADERBOARD (size_*) ===
+name                                 pre_bpb      sw_bpb   total_bytes
+size_loopint5                     1.07266803  1.09020181      15242271
+size_loopint5_late05              1.07270865  1.08738854      16389660
+size_lateonly05                   1.07275128  1.07447204      17541724
+size_lateloop07                   1.07305757  1.07372194      17566267
+size_lateloop05_embed6            1.07301599  1.09617519      17631744
+size_lateloop05_mlp4              1.07920866  1.07851353      17667270
+size_late07_loop05                1.07250544  1.07241314      18123747
