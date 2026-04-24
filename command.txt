@@ -111,8 +111,6 @@ RUN_ID=improved_test MATRIX_CLIP_SIGMAS=15 MLP_MULT=4.35 GPTQ_CALIBRATION_BATCHE
 torchrun --standalone --nproc_per_node=4 train_gpt.py
 
 MATRIX_CLIP_SIGMAS=15 MLP_MULT=4.35 GPTQ_CALIBRATION_BATCHES=128 torchrun --standalone --nproc_per_node=4 run_ttt.py
-# check best 23-04
-RUN_ID=best2304 MLP_MULT=4.35 MAX_WALLCLOCK_SECONDS=3000 VARLEN_ATTENTION=1 torchrun --standalone --nproc_per_node=4 train_gpt.py
 
 # improve2
 RUN_ID=improved2_GA BANK_ENABLED=1 FUSED_ROPE=1 GATED_ATTENTION=1 MAX_WALLCLOCK_SECONDS=3600 \
@@ -136,3 +134,9 @@ RUN_ID=pg10_moe79 MATRIX_CLIP_SIGMAS=15 MLP_MULT=4.35 GPTQ_CALIBRATION_BATCHES=1
 RUN_ID=pg11_varlen_gptq192 MATRIX_CLIP_SIGMAS=15 MLP_MULT=4.35 GPTQ_CALIBRATION_BATCHES=192 TTT_ENABLED=0 MAX_WALLCLOCK_SECONDS=3600 VARLEN_ATTENTION=1 torchrun --standalone --nproc_per_node=4 train_gpt.py
 RUN_ID=pg12_varlen_clip14 MATRIX_CLIP_SIGMAS=14 MLP_MULT=4.35 GPTQ_CALIBRATION_BATCHES=128 TTT_ENABLED=0 MAX_WALLCLOCK_SECONDS=3600 VARLEN_ATTENTION=1 torchrun --standalone --nproc_per_node=4 train_gpt.py
 RUN_ID=pg13_varlen_clip16 MATRIX_CLIP_SIGMAS=16 MLP_MULT=4.35 GPTQ_CALIBRATION_BATCHES=128 TTT_ENABLED=0 MAX_WALLCLOCK_SECONDS=3600 VARLEN_ATTENTION=1 torchrun --standalone --nproc_per_node=4 train_gpt.py
+
+# check best 23-04
+RUN_ID=best2304 MAX_WALLCLOCK_SECONDS=3000 VARLEN_ATTENTION=1 torchrun --standalone --nproc_per_node=4 train_gpt_improved_04_23.py
+
+RUN_ID=test_size MAX_WALLCLOCK_SECONDS=60 VARLEN_ATTENTION=1 torchrun --standalone --nproc_per_node=4 train_gpt.py
+RUN_ID=test_size CLIP_MULT_LATE=0.5 CLIP_MULT_LOOP=1.0 .venv/bin/python3 quant_only.py

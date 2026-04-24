@@ -348,17 +348,19 @@ class Hyperparameters():
     gptq_reserve_seconds = float(os.environ.get('GPTQ_RESERVE_SECONDS', 12.0))
     matrix_bits = int(os.environ.get('MATRIX_BITS', 6))
     embed_bits = int(os.environ.get('EMBED_BITS', 8))
-    matrix_clip_sigmas = float(os.environ.get('MATRIX_CLIP_SIGMAS', 14)) #12.85
+    matrix_clip_sigmas = float(os.environ.get('MATRIX_CLIP_SIGMAS', 14))
     embed_clip_sigmas = float(os.environ.get('EMBED_CLIP_SIGMAS', 20.0))
     # Hessian-aware SDClip: per-row clip modulation using GPTQ Hessian
     hessian_clip_lambda = float(os.environ.get('HESSIAN_CLIP_LAMBDA', 0.3))
     # Per-group clip multipliers (from 3-seed Hessian analysis)
     clip_mult_early = float(os.environ.get('CLIP_MULT_EARLY', 1.0))  # blocks 0-2
-    clip_mult_loop = float(os.environ.get('CLIP_MULT_LOOP', 0.5))    # blocks loop_start-loop_end (sec 7: 0.5+0.5 stack -> 1.06372 ttt)
+    clip_mult_loop = float(os.environ.get('CLIP_MULT_LOOP', 1.0))    # blocks loop_start-loop_end (sec 7: 0.5+0.5 stack -> 1.06372 ttt)
     clip_mult_mid = float(os.environ.get('CLIP_MULT_MID', 1.0))      # blocks 3,6,7
-    clip_mult_late = float(os.environ.get('CLIP_MULT_LATE', 0.5))    # blocks 8+ (sec 7: 0.5+0.5 stack -> 1.06372 ttt)
+    clip_mult_late = float(os.environ.get('CLIP_MULT_LATE', 1.0))    # blocks 8+ (sec 7: 0.5+0.5 stack -> 1.06372 ttt)
     # Per-layer quant for looped layers (different bits/clip for shared params)
     loop_layer_bits = int(os.environ.get('LOOP_LAYER_BITS', 0))  # 0 = use matrix_bits
+    loop_layer_keep_proj_int6 = bool(int(os.environ.get('LOOP_LAYER_KEEP_PROJ_INT6', '0')))
+    loop_layer_keep_last_int6 = bool(int(os.environ.get('LOOP_LAYER_KEEP_LAST_INT6', '0')))
     loop_layer_clip_sigmas = float(os.environ.get('LOOP_LAYER_CLIP_SIGMAS', 0))  # 0 = use matrix_clip_sigmas
     
     
@@ -1493,6 +1495,20 @@ def _is_loop_layer(name: str, h: Hyperparameters) -> bool:
         return h.loop_start <= idx <= h.loop_end
     return False
 
+def _loop_layer_keep_int6(name: str, h: Hyperparameters) -> bool:
+    """Carve-outs: weights inside the loop range that should stay at matrix_bits."""
+    m = re.search(r'blocks\.(\d+)\.', name)
+    if not m:
+        return False
+    idx = int(m.group(1))
+    if not (h.loop_start <= idx <= h.loop_end):
+        return False
+    if h.loop_layer_keep_last_int6 and idx == h.loop_end:
+        return True
+    if h.loop_layer_keep_proj_int6 and name.endswith("proj.weight"):
+        return True
+    return False
+
 def _get_group_clip_mult(name: str, h: Hyperparameters) -> float:
     """Get per-group clip multiplier for a weight matrix."""
     m = re.search(r'blocks\.(\d+)\.', name)
@@ -1527,7 +1543,7 @@ def gptq_mixed_quantize(
         if "tok_emb" in name:
             cs = h.embed_clip_sigmas
             bits = h.embed_bits
-        elif _is_loop_layer(name, h) and h.loop_layer_bits > 0:
+        elif _is_loop_layer(name, h) and h.loop_layer_bits > 0 and not _loop_layer_keep_int6(name, h):
             cs = h.loop_layer_clip_sigmas if h.loop_layer_clip_sigmas > 0 else h.matrix_clip_sigmas
             bits = h.loop_layer_bits
             log(f"  loop_layer_quant: {name} -> int{bits} clip={cs:.2f}")
@@ -3386,6 +3402,9 @@ def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
             b.attn.use_varlen = False
 
     # Dense eval (only when SW and TTT are both off)
+    if os.environ.get('SIZE_ONLY', '0') == '1':
+        log("SIZE_ONLY=1 — skipping eval")
+        return
     if not h.sliding_window_enabled and not h.ttt_enabled:
         compiled_eval = torch.compile(eval_model, dynamic=False, fullgraph=True)
         timed_eval("quantized", eval_val, h, device, val_data, compiled_eval)
