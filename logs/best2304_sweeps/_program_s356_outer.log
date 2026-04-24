@@ -1,0 +1,60 @@
+nohup: ignoring input
+
+You are currently in /mnt/azureml/cr/j/3e828348d9394b65adfde5daec2c4bba/exe/wd
+Job Executions run from here, your code snapshot and logs are here as well 🏡
+
+
+You are currently in /mnt/azureml/cr/j/3e828348d9394b65adfde5daec2c4bba/exe/wd
+Job Executions run from here, your code snapshot and logs are here as well 🏡
+
+Packed train_gpt_improved_04_23.py (167.0 KB) -> train_gpt.py (42.1 KB)
+[best2304] === best2304_s3_clipearly075 === 2026-04-24T04:30:38+00:00
+[best2304] best2304_s3_clipearly075 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        log("SIZE_ONLY=1 — skipping eval")
+Total submission size quantized+ans: 16843555 bytes
+quantized_sliding_window val_loss:2.78506961 val_bpb:1.07818724 eval_time:133913ms
+quantized_ttt_lora val_loss:2.77967802 val_bpb:1.07609998 eval_time:1256684ms
+[best2304] === best2304_s3_clipearly125 === 2026-04-24T05:50:42+00:00
+[best2304] best2304_s3_clipearly125 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        log("SIZE_ONLY=1 — skipping eval")
+Total submission size quantized+ans: 16009739 bytes
+quantized_sliding_window val_loss:2.78360178 val_bpb:1.07761900 eval_time:133626ms
+quantized_ttt_lora val_loss:2.77816876 val_bpb:1.07551570 eval_time:1244764ms
+[best2304] === best2304_s3_clipearly15 === 2026-04-24T07:10:22+00:00
+[best2304] best2304_s3_clipearly15 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        log("SIZE_ONLY=1 — skipping eval")
+Total submission size quantized+ans: 15718081 bytes
+quantized_sliding_window val_loss:2.78798148 val_bpb:1.07931451 eval_time:134278ms
+quantized_ttt_lora val_loss:2.78237323 val_bpb:1.07714338 eval_time:1243025ms
+[best2304] === best2304_s3_cliploop075 === 2026-04-24T08:30:00+00:00
+[best2304] best2304_s3_cliploop075 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        log("SIZE_ONLY=1 — skipping eval")
+Total submission size quantized+ans: 16844016 bytes
+quantized_sliding_window val_loss:2.77657874 val_bpb:1.07490016 eval_time:133909ms
+quantized_ttt_lora val_loss:2.77137418 val_bpb:1.07288531 eval_time:1248042ms
+[best2304] === best2304_s3_cliploop125 === 2026-04-24T09:49:45+00:00
+[best2304] best2304_s3_cliploop125 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        log("SIZE_ONLY=1 — skipping eval")
+Total submission size quantized+ans: 16009646 bytes
+quantized_sliding_window val_loss:2.78593683 val_bpb:1.07852296 eval_time:134372ms
+quantized_ttt_lora val_loss:2.78027420 val_bpb:1.07633078 eval_time:1241484ms
+[best2304] === best2304_s3_cliploop15 === 2026-04-24T11:09:24+00:00
+[best2304] best2304_s3_cliploop15 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        log("SIZE_ONLY=1 — skipping eval")
+Total submission size quantized+ans: 15718303 bytes
+quantized_sliding_window val_loss:2.79298701 val_bpb:1.08125231 eval_time:134302ms
+quantized_ttt_lora val_loss:2.78680506 val_bpb:1.07885908 eval_time:1238759ms
+[best2304] === best2304_s3_clipmid075 === 2026-04-24T12:28:59+00:00
+[best2304] best2304_s3_clipmid075 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        log("SIZE_ONLY=1 — skipping eval")
+Total submission size quantized+ans: 16686349 bytes
+quantized_sliding_window val_loss:2.77862923 val_bpb:1.07569397 eval_time:134504ms
+quantized_ttt_lora val_loss:2.77327171 val_bpb:1.07361990 eval_time:1250249ms
+[best2304] === best2304_s3_clipmid125 === 2026-04-24T13:48:50+00:00

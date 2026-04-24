@@ -294,6 +294,7 @@ class Hyperparameters():
     rope_force_base_seqlen = int(os.environ.get('ROPE_FORCE_BASE_SEQLEN', 0))
     # Legacy TTT-only fallback, used only when rope_force_base_seqlen == 0.
     ttt_rope_base_seqlen = int(os.environ.get('TTT_ROPE_BASE_SEQLEN', 0))
+    disable_ntk_rope = bool(int(os.environ.get('DISABLE_NTK_ROPE', '0')))
     ttt_batch_size = int(os.environ.get('TTT_BATCH_SIZE', 64))
     ttt_grad_steps = int(os.environ.get('TTT_GRAD_STEPS', 1))
     ttt_grad_clip = float(os.environ.get('TTT_GRAD_CLIP', 1.0))
@@ -351,7 +352,7 @@ class Hyperparameters():
     matrix_clip_sigmas = float(os.environ.get('MATRIX_CLIP_SIGMAS', 13))
     embed_clip_sigmas = float(os.environ.get('EMBED_CLIP_SIGMAS', 20.0))
     # Hessian-aware SDClip: per-row clip modulation using GPTQ Hessian
-    hessian_clip_lambda = float(os.environ.get('HESSIAN_CLIP_LAMBDA', 0.3))
+    hessian_clip_lambda = float(os.environ.get('HESSIAN_CLIP_LAMBDA', 0.0)) # 0.3
     # Per-group clip multipliers (from 3-seed Hessian analysis)
     clip_mult_early = float(os.environ.get('CLIP_MULT_EARLY', 1.0))  # blocks 0-2
     clip_mult_loop = float(os.environ.get('CLIP_MULT_LOOP', 1.0))    # blocks loop_start-loop_end (sec 7: 0.5+0.5 stack -> 1.06372 ttt)
@@ -374,6 +375,7 @@ class Hyperparameters():
     fused_rope = bool(int(os.environ.get('FUSED_ROPE', '1')))
     # VarLen attention (within-document-only)
     varlen_attention = bool(int(os.environ.get('VARLEN_ATTENTION', '0')))
+    size_only = bool(int(os.environ.get('SIZE_ONLY', '0')))
 
     # MoE MLP: mixture-of-experts with top-k routing
     moe_enabled = bool(int(os.environ.get('MOE_ENABLED', '0')))
@@ -701,7 +703,11 @@ class Rotary(nn.Module):
                 ntk_seq_len: int = 0) -> tuple[Tensor, Tensor]:
         # ntk_seq_len overrides the seq_len used to pick NTK base (positions still 0..seq_len-1).
         # ROPE_FORCE_BASE_SEQLEN env override wins over the kwarg.
-        force = int(os.environ.get('ROPE_FORCE_BASE_SEQLEN', '0'))
+        if bool(int(os.environ.get('DISABLE_NTK_ROPE', '0'))):
+            force = 0
+            ntk_seq_len = 0
+        else:
+            force = int(os.environ.get('ROPE_FORCE_BASE_SEQLEN', '0'))
         if force > 0:
             ntk_seq_len = force
         n = max(seq_len, ntk_seq_len) if ntk_seq_len > 0 else seq_len
@@ -2166,12 +2172,15 @@ def eval_val_sliding_varlen_perdoc(
     base_model.eval()
     run_forward_logits = base_model.forward_logits if forward_logits_fn is None else forward_logits_fn
     # Force RoPE NTK base to training buffer length. Auto-derived; override via EVAL_ROPE_NTK_SEQLEN.
-    env_ntk = os.environ.get('EVAL_ROPE_NTK_SEQLEN', '')
-    if env_ntk:
-        ntk_override = int(env_ntk)
+    if h.disable_ntk_rope:
+        ntk_override = 0
     else:
-        gas = max(1, getattr(h, 'grad_accum_steps', 1))
-        ntk_override = int(h.train_batch_tokens) // (max(1, h.world_size) * gas)
+        env_ntk = os.environ.get('EVAL_ROPE_NTK_SEQLEN', '')
+        if env_ntk:
+            ntk_override = int(env_ntk)
+        else:
+            gas = max(1, getattr(h, 'grad_accum_steps', 1))
+            ntk_override = int(h.train_batch_tokens) // (max(1, h.world_size) * gas)
     if ntk_override > 0:
         for blk in base_model.blocks:
             blk.attn.eval_ntk_seq_len = ntk_override
@@ -3330,7 +3339,10 @@ def _run_ttt_eval(h, device, val_data, ttt_model):
         return
     # LoRA TTT — optionally override RoPE base for ablations
     prev_rope_force = os.environ.get('ROPE_FORCE_BASE_SEQLEN', '0')
-    if h.ttt_rope_base_seqlen > 0:
+    if h.disable_ntk_rope:
+        os.environ['ROPE_FORCE_BASE_SEQLEN'] = '0'
+        log("ttt_lora: DISABLE_NTK_ROPE=1 — forcing ROPE_FORCE_BASE_SEQLEN=0")
+    elif h.ttt_rope_base_seqlen > 0:
         os.environ['ROPE_FORCE_BASE_SEQLEN'] = str(h.ttt_rope_base_seqlen)
         log(f"ttt_lora:rope_base_override ROPE_FORCE_BASE_SEQLEN={h.ttt_rope_base_seqlen}")
     else:
@@ -3405,6 +3417,9 @@ def train_and_eval(h: Hyperparameters, device: torch.device) -> None:
             b.attn.use_varlen = False
 
     # Dense eval (only when SW and TTT are both off)
+    if h.size_only:
+        log("SIZE_ONLY=1 — skipping eval")
+        return
     if not h.sliding_window_enabled and not h.ttt_enabled:
         compiled_eval = torch.compile(eval_model, dynamic=False, fullgraph=True)
         timed_eval("quantized", eval_val, h, device, val_data, compiled_eval)
@@ -3453,7 +3468,9 @@ def main():
     torch._dynamo.config.optimize_ddp = False
     h = Hyperparameters()
     # Globally publish RoPE base-seqlen so all eval paths see the same NTK base.
-    if h.rope_force_base_seqlen <= 0:
+    if h.disable_ntk_rope:
+        h.rope_force_base_seqlen = 0
+    elif h.rope_force_base_seqlen <= 0:
         h.rope_force_base_seqlen = max(
             h.train_seq_len + 1,
             h.train_batch_tokens // max(1, h.world_size * h.grad_accum_steps),

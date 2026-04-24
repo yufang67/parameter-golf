@@ -1,0 +1,17 @@
+nohup: ignoring input
+
+You are currently in /mnt/azureml/cr/j/3e828348d9394b65adfde5daec2c4bba/exe/wd
+Job Executions run from here, your code snapshot and logs are here as well 🏡
+
+
+You are currently in /mnt/azureml/cr/j/3e828348d9394b65adfde5daec2c4bba/exe/wd
+Job Executions run from here, your code snapshot and logs are here as well 🏡
+
+Packed train_gpt_improved_04_23.py (167.0 KB) -> train_gpt.py (42.1 KB)
+[best2304] === best2304_base_size60 === 2026-04-24T04:20:52+00:00
+[best2304] best2304_base_size60 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        log("SIZE_ONLY=1 — skipping eval")
+Total submission size quantized+ans: 16380503 bytes
+SIZE_ONLY=1 — skipping eval
+[best2304] === best2304_clip_late075_size60 === 2026-04-24T04:28:40+00:00
