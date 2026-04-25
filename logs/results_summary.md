@@ -164,6 +164,77 @@ Re-ran the section-3 winner with `MAX_WALLCLOCK_SECONDS=3000` (vs 3600).
 A 17% wallclock cut costs **+0.00603 TTT BPB** — the recipe is genuinely
 budget-hungry, not just bottlenecked on TTT eval.
 
+### `best2304` Baseline Sweeps (4×A100, 3000s wallclock, train_gpt_improved_04_23.py)
+
+New baseline `best2304` re-runs `program.md` sections **3 / 5 / 6** with
+`HESSIAN_CLIP_LAMBDA=0.0`, `MATRIX_CLIP_SIGMAS=14`, `MLP_MULT=4.35`,
+`VARLEN_ATTENTION=1`, `MAX_WALLCLOCK_SECONDS=3000`. Driver:
+`run_best2304_sweeps.sh` (`SECTION=program_s356`).
+
+Baseline `best2304` reference: pre **1.06840** · sw **1.08000** ·
+**ttt 1.07788** · 16,527,189 bytes ✅.
+
+#### Section 3 — `CLIP_MULT_*` (12 runs)
+
+Sorted by TTT BPB. ⚠️ = exceeds 16 MB submission budget.
+
+| run_id | sw_val_bpb | ttt_val_bpb | total_bytes | Δ ttt vs base |
+|---|---:|---:|---:|---:|
+| best2304_s3_cliploop075 | 1.07490 | **1.07289** | 16,844,016 ⚠️ | −0.00499 |
+| best2304_s3_cliplate075 | 1.07496 | **1.07293** | 16,843,607 ⚠️ | −0.00496 |
+| best2304_s3_clipmid075  | 1.07569 | 1.07362 | 16,686,349 ⚠️ | −0.00426 |
+| **best2304_s3_clipearly125** | **1.07762** | **1.07552** | **16,009,739** ✅ | **−0.00237** |
+| best2304_s3_clipmid125  | 1.07783 | 1.07571 | 16,131,142 ✅ | −0.00217 |
+| best2304_s3_clipearly075| 1.07819 | 1.07610 | 16,843,555 ⚠️ | −0.00178 |
+| best2304_s3_cliploop125 | 1.07852 | 1.07633 | 16,009,646 ✅ | −0.00155 |
+| best2304_s3_cliplate125 | 1.07882 | 1.07668 | 16,009,815 ✅ | −0.00120 |
+| best2304_s3_clipmid15   | 1.07922 | 1.07706 | 15,936,762 ✅ | −0.00082 |
+| best2304_s3_clipearly15 | 1.07931 | 1.07714 | 15,718,081 ✅ | −0.00074 |
+| best2304_s3_cliploop15  | 1.08125 | 1.07886 | 15,718,303 ✅ | +0.00098 |
+| best2304_s3_cliplate15  | 1.08161 | 1.07928 | 15,718,029 ✅ | +0.00140 |
+
+Takeaways:
+- All four groups prefer **smaller** `CLIP_MULT` (0.75) for BPB; **LATE** and
+  **LOOP** are the most sensitive (each gives ≈ −0.005 TTT) but bust budget.
+- Among under-budget configs, **EARLY=1.25** is the new winner (−0.00237 TTT,
+  drops size by 0.5 MB).
+
+#### Section 5 — `PARALLEL_RESIDUAL_START` (5 runs, baseline = 7)
+
+| run_id | sw_val_bpb | ttt_val_bpb | total_bytes |
+|---|---:|---:|---:|
+| **best2304_s5_pr9** | **1.07830** | **1.07624** | 16,372,792 ✅ |
+| best2304_s5_pr11 | 1.07874 | 1.07668 | 16,372,945 ✅ |
+| best2304_s5_pr5  | 1.08146 | 1.07941 | 16,373,900 ✅ |
+| best2304_s5_pr3  | 1.08516 | 1.08310 | 16,373,526 ✅ |
+| best2304_s5_pr0  | 1.09096 | 1.08884 | 16,376,004 ✅ |
+
+Takeaways:
+- `PARALLEL_RESIDUAL_START=9` is a marginal win over default 7 (−0.0016 TTT).
+- Anything ≤5 collapses fast (parallel-residual blocks dominate).
+- Size essentially constant (~16.37 MB) — pure architectural lever.
+
+#### Section 6 — `WINDOW_ATTN_SIZE` (3 runs, baseline = 0)
+
+| run_id | sw_val_bpb | ttt_val_bpb | total_bytes |
+|---|---:|---:|---:|
+| **best2304_s6_wattn512**  | **1.07647** | **1.07449** 🏆 | 16,373,469 ✅ |
+| best2304_s6_wattn1024 | 1.07656 | 1.07452 | 16,372,993 ✅ |
+| best2304_s6_wattn256  | 1.07651 | 1.07486 | 16,373,365 ✅ |
+
+Takeaways:
+- `WINDOW_ATTN_SIZE=512` is the best run across **all 20 sweep entries** at
+  TTT **1.07449** (−0.00339 vs `best2304` baseline), and it fits 16 MB.
+- 512 vs 1024 within noise; both decisively beat default (no window).
+- Size unchanged (parameter-free attention mask change).
+
+#### Pending follow-ups
+
+- `best2304_no_ntk_3000` (DISABLE_NTK_ROPE=1, full TTT eval) — running.
+- MoE size scout (`best2304_moe*_size60`) — queued after NTK run.
+- Open question: stack `wattn=512` + `pr=9` + `clipearly=1.25` — each is an
+  independent architectural / quant lever, expected to be ~additive.
+
 ### TTT-LoRA Sweep on `pg12_varlen_clip14` Checkpoint
 
 All runs below reload the same trained checkpoint (`pg12_eval_verify` confirms sliding-window

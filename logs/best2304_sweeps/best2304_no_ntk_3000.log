@@ -3688,3 +3688,4 @@ loop_warmup_step: 20/20
 3/20000 train_loss: 9.9837 train_time: 0.0m tok/s: 1689933
 4/20000 train_loss: 8.5436 train_time: 0.0m tok/s: 1684191
 5/20000 train_loss: 7.4973 train_time: 0.0m tok/s: 1680331
+500/20000 train_loss: 3.2972 train_time: 5.3m tok/s: 1236117
