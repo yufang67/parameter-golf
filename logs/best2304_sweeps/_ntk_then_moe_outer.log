@@ -9,3 +9,57 @@ Job Executions run from here, your code snapshot and logs are here as well 🏡
 
 Packed train_gpt_improved_04_23.py (167.0 KB) -> train_gpt.py (42.1 KB)
 [best2304] === best2304_no_ntk_3000 === 2026-04-25T11:07:33+00:00
+[best2304] best2304_no_ntk_3000 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        log("SIZE_ONLY=1 — skipping eval")
+Total submission size quantized+ans: 16372652 bytes
+quantized_sliding_window val_loss:2.78301111 val_bpb:1.07739033 eval_time:134945ms
+quantized_ttt_lora val_loss:3.10889995 val_bpb:1.20355205 eval_time:1404313ms
+[best2304] === ntk_eval evals ===
+name                                 sw_bpb    ttt_bpb    total_bytes
+best2304_no_ntk_3000             1.07739033 1.20355205       16372652
+Packed train_gpt_improved_04_23.py (167.0 KB) -> train_gpt.py (42.1 KB)
+[best2304] === best2304_moe79_e2_k1_size60 === 2026-04-25T12:31:10+00:00
+[best2304] best2304_moe79_e2_k1_size60 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        log("SIZE_ONLY=1 — skipping eval")
+Total submission size quantized+ans: 18225175 bytes
+SIZE_ONLY=1 — skipping eval
+[best2304] === best2304_moe79_e2_k2_size60 === 2026-04-25T12:39:18+00:00
+[best2304] best2304_moe79_e2_k2_size60 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        log("SIZE_ONLY=1 — skipping eval")
+Total submission size quantized+ans: 18222289 bytes
+SIZE_ONLY=1 — skipping eval
+[best2304] === best2304_moe79_e3_k1_size60 === 2026-04-25T12:47:45+00:00
+[best2304] best2304_moe79_e3_k1_size60 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        log("SIZE_ONLY=1 — skipping eval")
+Total submission size quantized+ans: 20079064 bytes
+SIZE_ONLY=1 — skipping eval
+[best2304] === best2304_moe79_e3_k2_size60 === 2026-04-25T12:56:05+00:00
+[best2304] best2304_moe79_e3_k2_size60 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        log("SIZE_ONLY=1 — skipping eval")
+Total submission size quantized+ans: 20075116 bytes
+SIZE_ONLY=1 — skipping eval
+[best2304] === best2304_moe9_e2_k1_size60 === 2026-04-25T13:05:02+00:00
+[best2304] best2304_moe9_e2_k1_size60 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        log("SIZE_ONLY=1 — skipping eval")
+Total submission size quantized+ans: 17296407 bytes
+SIZE_ONLY=1 — skipping eval
+[best2304] === best2304_moe579_e2_k1_size60 === 2026-04-25T13:12:49+00:00
+[best2304] best2304_moe579_e2_k1_size60 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+        log("SIZE_ONLY=1 — skipping eval")
+Total submission size quantized+ans: 19152699 bytes
+SIZE_ONLY=1 — skipping eval
+[best2304] === moe_scout sizes ===
+name                                total_bytes
+best2304_moe9_e2_k1_size60             17296407
+best2304_moe79_e2_k2_size60            18222289
+best2304_moe79_e2_k1_size60            18225175
+best2304_moe579_e2_k1_size60           19152699
+best2304_moe79_e3_k2_size60            20075116
+best2304_moe79_e3_k1_size60            20079064
