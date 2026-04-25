@@ -1,5 +1,5 @@
 ===== CODE SNAPSHOT: train_gpt_improved_04_23.py =====
-git_head: ba86d79f37cdc80dff506a9e3a1dbb2ff47a0fa0
+git_head: c6e0ee87cb347db0faae1d44435334553369c773
 sha256:   246ca3b6e9348c85f4ac58238ac17e0440bf1c8e40ce73346d053380748054d4
 ===== BEGIN train_gpt_improved_04_23.py =====
 import collections
@@ -3504,17 +3504,17 @@ if __name__ == "__main__":
     main()
 ===== END train_gpt_improved_04_23.py =====
 
-W0425 14:45:03.254000 612381 torch/distributed/run.py:851] 
-W0425 14:45:03.254000 612381 torch/distributed/run.py:851] *****************************************
-W0425 14:45:03.254000 612381 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
-W0425 14:45:03.254000 612381 torch/distributed/run.py:851] *****************************************
+W0425 16:12:37.489000 621345 torch/distributed/run.py:851] 
+W0425 16:12:37.489000 621345 torch/distributed/run.py:851] *****************************************
+W0425 16:12:37.489000 621345 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0425 16:12:37.489000 621345 torch/distributed/run.py:851] *****************************************
 Hyperparameters:
   adam_eps: 1e-08
   adam_wd: 0.02
   beta1: 0.9
   beta2: 0.95
   clip_mult_early: 1.25
-  clip_mult_late: 1.0
+  clip_mult_late: 0.85
   clip_mult_loop: 1.0
   clip_mult_mid: 1.0
   compress_ans: True
@@ -3524,7 +3524,7 @@ Hyperparameters:
   datasets_dir: ./data/datasets/fineweb10B_sp8192
   disable_ntk_rope: False
   distributed: True
-  effective_train_seq_len: <property object at 0x146108ba7f60>
+  effective_train_seq_len: <property object at 0x150b85ddc4a0>
   ema_decay: 0.9965
   embed_bits: 8
   embed_clip_sigmas: 20.0
@@ -3548,7 +3548,7 @@ Hyperparameters:
   iterations: 20000
   ln_scale: True
   local_rank: 0
-  logfile: logs/stack_control_scout.txt
+  logfile: logs/stack_late085_scout.txt
   logit_softcap: 20.0
   loop_embeddings: True
   loop_end: 5
@@ -3590,7 +3590,7 @@ Hyperparameters:
   rope_dims: 32
   rope_force_base_seqlen: 0
   rope_train_seq_len: 2048
-  run_id: stack_control_scout
+  run_id: stack_late085_scout
   scalar_lr: 0.022
   seed: 1337
   size_only: True
@@ -3683,28 +3683,28 @@ loop_warmup_step: 6/20
 loop_warmup_step: 10/20
 loop_warmup_step: 20/20
 0/20000 val_loss: 9.0079 val_bpb: 3.4871
-1/20000 train_loss: 9.0071 train_time: 0.0m tok/s: 1720398
-2/20000 train_loss: 11.3340 train_time: 0.0m tok/s: 1709615
-3/20000 train_loss: 9.9840 train_time: 0.0m tok/s: 1684655
-4/20000 train_loss: 8.5436 train_time: 0.0m tok/s: 1680089
-5/20000 train_loss: 7.4973 train_time: 0.0m tok/s: 1674912
-layer_loop:enabled step:51 frac:0.509 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
-84/20000 val_loss: 4.8134 val_bpb: 1.8633
-stopping_early: wallclock_cap train_time: 48182ms step: 84/20000
+1/20000 train_loss: 9.0071 train_time: 0.0m tok/s: 1700841
+2/20000 train_loss: 11.3340 train_time: 0.0m tok/s: 1694022
+3/20000 train_loss: 9.9839 train_time: 0.0m tok/s: 1672344
+4/20000 train_loss: 8.5436 train_time: 0.0m tok/s: 1666198
+5/20000 train_loss: 7.4973 train_time: 0.0m tok/s: 1663353
+layer_loop:enabled step:50 frac:0.502 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+83/20000 val_loss: 4.8219 val_bpb: 1.8666
+stopping_early: wallclock_cap train_time: 48021ms step: 83/20000
 peak memory allocated: 38978 MiB reserved: 39064 MiB
 ema:applying EMA weights
-pre-quantization post-ema val_loss:8.06420972 val_bpb:3.12174409 eval_time:19250ms
+pre-quantization post-ema val_loss:8.04845244 val_bpb:3.11564427 eval_time:19362ms
 Serialized model: 144276071 bytes
 Code size: 43100 bytes
 GPTQ:collecting Hessians from calibration data...
-GPTQ:collected 67 Hessians in 51.2s
+GPTQ:collected 67 Hessians in 51.3s
 Quantized weights:
   gptq (int6): blocks.attn.c_k.weight, blocks.attn.c_q.weight, blocks.attn.c_v.weight, blocks.attn.proj.weight, blocks.mlp.fc.weight, blocks.mlp.proj.weight
   gptq (int8): tok_emb.weight
   passthrough (float16): blocks.attn.gate_proj.bias, blocks.attn.gate_proj.weight, blocks.attn.q_gain, blocks.attn_scale, blocks.mlp_scale, blocks.resid_mix, loop_embs, skip_gates, skip_weights
-compress:ans 15967362 bytes (14.7s)
-  ans: model=15967362 total=16010462
-compress:using ans (15967362 bytes)
-Serialized model quantized+ans: 15967362 bytes
-Total submission size quantized+ans: 16010462 bytes
+compress:ans 16230456 bytes (15.1s)
+  ans: model=16230456 total=16273556
+compress:using ans (16230456 bytes)
+Serialized model quantized+ans: 16230456 bytes
+Total submission size quantized+ans: 16273556 bytes
 SIZE_ONLY=1 — skipping eval

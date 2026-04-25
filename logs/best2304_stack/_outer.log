@@ -1,2 +1,53 @@
 Packed train_gpt_improved_04_23.py (167.0 KB) -> train_gpt.py (42.1 KB)
 [stack] === scout stack_control === 2026-04-25T14:45:01+00:00
+[stack] scout stack_control exit=0
+[stack] stack_control scout_size=16010462  budget=16777216
+[stack] === full stack_control === 2026-04-25T14:50:50+00:00
+[stack] full stack_control exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+Total submission size quantized+ans: 16009495 bytes
+quantized_ttt_lora val_loss:2.77737164 val_bpb:1.07520711 eval_time:1422084ms
+[stack] === scout stack_late085 === 2026-04-25T16:12:36+00:00
+[stack] scout stack_late085 exit=0
+[stack] stack_late085 scout_size=16273556  budget=16777216
+[stack] === full stack_late085 === 2026-04-25T16:18:19+00:00
+[stack] full stack_late085 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+Total submission size quantized+ans: 16274621 bytes
+quantized_ttt_lora val_loss:2.77495200 val_bpb:1.07427039 eval_time:1388156ms
+[stack] === scout stack_late09 === 2026-04-25T17:38:08+00:00
+[stack] scout stack_late09 exit=0
+[stack] stack_late09 scout_size=16181243  budget=16777216
+[stack] === full stack_late09 === 2026-04-25T17:43:53+00:00
+[stack] full stack_late09 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+Total submission size quantized+ans: 16181099 bytes
+quantized_ttt_lora val_loss:2.77556516 val_bpb:1.07450777 eval_time:1378986ms
+[stack] === scout stack_loop085 === 2026-04-25T19:03:35+00:00
+[stack] scout stack_loop085 exit=0
+[stack] stack_loop085 scout_size=16272655  budget=16777216
+[stack] === full stack_loop085 === 2026-04-25T19:09:18+00:00
+[stack] full stack_loop085 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+Total submission size quantized+ans: 16275179 bytes
+quantized_ttt_lora val_loss:2.77473085 val_bpb:1.07418478 eval_time:1370506ms
+[stack] === scout stack_loop09 === 2026-04-25T20:28:53+00:00
+[stack] scout stack_loop09 exit=0
+[stack] stack_loop09 scout_size=16181019  budget=16777216
+[stack] === full stack_loop09 === 2026-04-25T20:34:36+00:00
+[stack] full stack_loop09 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+Total submission size quantized+ans: 16180912 bytes
+quantized_ttt_lora val_loss:2.77572122 val_bpb:1.07456818 eval_time:1379721ms
+[stack] === scout stack_sigmas13 === 2026-04-25T21:54:15+00:00
+[stack] scout stack_sigmas13 exit=0
+[stack] stack_sigmas13 scout_size=16450497  budget=16777216
+[stack] === full stack_sigmas13 === 2026-04-25T22:00:00+00:00
+[stack] full stack_sigmas13 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+Total submission size quantized+ans: 16451868 bytes
+quantized_ttt_lora val_loss:2.77242970 val_bpb:1.07329394 eval_time:1382115ms
+[stack] === scout stack_sigmas15 === 2026-04-25T23:19:39+00:00
+[stack] scout stack_sigmas15 exit=0
+[stack] stack_sigmas15 scout_size=15603629  budget=16777216
+[stack] === full stack_sigmas15 === 2026-04-25T23:25:22+00:00
