@@ -234,7 +234,7 @@ class Hyperparameters():
     val_batch_tokens = int(os.environ.get('VAL_BATCH_TOKENS', 2048 * 32 * 8))
     eval_seq_len = int(os.environ.get('EVAL_SEQ_LEN', 2048))
     val_loss_every = int(os.environ.get('VAL_LOSS_EVERY', 4000))
-    sliding_window_enabled = bool(int(os.environ.get('SLIDING_WINDOW_ENABLED', '1')))
+    sliding_window_enabled = bool(int(os.environ.get('SLIDING_WINDOW_ENABLED', '0')))
     eval_stride = int(os.environ.get('EVAL_STRIDE', 64))
     # Model architecture
     vocab_size = int(os.environ.get('VOCAB_SIZE', 8192))
@@ -349,7 +349,7 @@ class Hyperparameters():
     gptq_reserve_seconds = float(os.environ.get('GPTQ_RESERVE_SECONDS', 12.0))
     matrix_bits = int(os.environ.get('MATRIX_BITS', 6))
     embed_bits = int(os.environ.get('EMBED_BITS', 8))
-    matrix_clip_sigmas = float(os.environ.get('MATRIX_CLIP_SIGMAS', 13))
+    matrix_clip_sigmas = float(os.environ.get('MATRIX_CLIP_SIGMAS', 14))
     embed_clip_sigmas = float(os.environ.get('EMBED_CLIP_SIGMAS', 20.0))
     # Hessian-aware SDClip: per-row clip modulation using GPTQ Hessian
     hessian_clip_lambda = float(os.environ.get('HESSIAN_CLIP_LAMBDA', 0.0)) # 0.3
@@ -374,7 +374,7 @@ class Hyperparameters():
     # Fused Triton QK-norm + RoPE + gain kernel
     fused_rope = bool(int(os.environ.get('FUSED_ROPE', '1')))
     # VarLen attention (within-document-only)
-    varlen_attention = bool(int(os.environ.get('VARLEN_ATTENTION', '0')))
+    varlen_attention = bool(int(os.environ.get('VARLEN_ATTENTION', '1')))
     size_only = bool(int(os.environ.get('SIZE_ONLY', '0')))
 
     # MoE MLP: mixture-of-experts with top-k routing

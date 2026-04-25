@@ -230,10 +230,45 @@ Takeaways:
 
 #### Pending follow-ups
 
-- `best2304_no_ntk_3000` (DISABLE_NTK_ROPE=1, full TTT eval) — running.
-- MoE size scout (`best2304_moe*_size60`) — queued after NTK run.
+- (done) `best2304_no_ntk_3000` — see NTK section below.
+- (done) MoE size scout — see MoE section below.
 - Open question: stack `wattn=512` + `pr=9` + `clipearly=1.25` — each is an
   independent architectural / quant lever, expected to be ~additive.
+
+#### NTK-RoPE Disabled (1 run, 3000s, full TTT eval)
+
+| run_id | sw_val_bpb | ttt_val_bpb | total_bytes |
+|---|---:|---:|---:|
+| best2304_no_ntk_3000 | 1.07739 | **1.20355** ❌ | 16,372,652 ✅ |
+| baseline `best2304`  | 1.08000 | **1.07788** | 16,527,189 ✅ |
+
+Takeaways:
+- `DISABLE_NTK_ROPE=1` (no eval-time NTK base override + skip TTT base override)
+  marginally **helps SW** (−0.00261 BPB).
+- It **destroys TTT-LoRA** (+0.12567 BPB; TTT becomes much worse than SW).
+- Verdict: TTT-LoRA depends on the NTK base override; cannot be disabled
+  without redesigning TTT.
+
+#### MoE Size Scout (6 runs, 60s `SIZE_ONLY=1`)
+
+All MoE variants exceed the 16 MB budget. Sorted by total bytes.
+
+| run_id | layers | experts | top_k | total_bytes | over budget |
+|---|---|---:|---:|---:|---:|
+| best2304_moe9_e2_k1_size60   | 9      | 2 | 1 | 17,296,407 | +519 KB |
+| best2304_moe79_e2_k2_size60  | 7,9    | 2 | 2 | 18,222,289 | +1.45 MB |
+| best2304_moe79_e2_k1_size60  | 7,9    | 2 | 1 | 18,225,175 | +1.45 MB |
+| best2304_moe579_e2_k1_size60 | 5,7,9  | 2 | 1 | 19,152,699 | +2.38 MB |
+| best2304_moe79_e3_k2_size60  | 7,9    | 3 | 2 | 20,075,116 | +3.30 MB |
+| best2304_moe79_e3_k1_size60  | 7,9    | 3 | 1 | 20,079,064 | +3.30 MB |
+
+Takeaways:
+- **MoE adds ~1 MB per added MoE layer** and ~1.85 MB per extra expert.
+- The cheapest variant (single MoE layer at depth 9, 2 experts, top-1) is
+  +519 KB over budget. To fit MoE you must combine it with size-recovery
+  levers (e.g. `LOOP_LAYER_BITS=5`, smaller `CLIP_MULT_LATE/LOOP`).
+- `top_k` is essentially free for size (k=1 vs k=2 differs by ≤4 KB);
+  it changes routing/eval BPB only.
 
 ### TTT-LoRA Sweep on `pg12_varlen_clip14` Checkpoint
 
