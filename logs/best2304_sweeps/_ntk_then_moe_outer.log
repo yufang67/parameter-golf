@@ -1,0 +1,11 @@
+nohup: ignoring input
+
+You are currently in /mnt/azureml/cr/j/3e828348d9394b65adfde5daec2c4bba/exe/wd
+Job Executions run from here, your code snapshot and logs are here as well 🏡
+
+
+You are currently in /mnt/azureml/cr/j/3e828348d9394b65adfde5daec2c4bba/exe/wd
+Job Executions run from here, your code snapshot and logs are here as well 🏡
+
+Packed train_gpt_improved_04_23.py (167.0 KB) -> train_gpt.py (42.1 KB)
+[best2304] === best2304_no_ntk_3000 === 2026-04-25T11:07:33+00:00
