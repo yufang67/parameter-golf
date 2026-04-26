@@ -3692,3 +3692,9 @@ loop_warmup_step: 20/20
 1000/20000 train_loss: 3.1332 train_time: 9.4m tok/s: 1399700
 1500/20000 train_loss: 2.9994 train_time: 13.4m tok/s: 1465889
 2000/20000 train_loss: 2.9780 train_time: 17.5m tok/s: 1501694
+2500/20000 train_loss: 2.3677 train_time: 21.5m tok/s: 1523628
+layer_loop:enabled step:2919 frac:0.500 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+3000/20000 train_loss: 2.9246 train_time: 26.2m tok/s: 1498873
+3500/20000 train_loss: 2.9116 train_time: 33.0m tok/s: 1388504
+4000/20000 train_loss: 2.8851 train_time: 39.5m tok/s: 1328698
+4000/20000 val_loss: 2.8629 val_bpb: 1.1083
