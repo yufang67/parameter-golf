@@ -3504,10 +3504,10 @@ if __name__ == "__main__":
     main()
 ===== END train_gpt_improved_04_23.py =====
 
-W0426 20:03:38.393000 7262 torch/distributed/run.py:851] 
-W0426 20:03:38.393000 7262 torch/distributed/run.py:851] *****************************************
-W0426 20:03:38.393000 7262 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
-W0426 20:03:38.393000 7262 torch/distributed/run.py:851] *****************************************
+W0426 20:02:42.314000 5753 torch/distributed/run.py:851] 
+W0426 20:02:42.314000 5753 torch/distributed/run.py:851] *****************************************
+W0426 20:02:42.314000 5753 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0426 20:02:42.314000 5753 torch/distributed/run.py:851] *****************************************
 Hyperparameters:
   adam_eps: 1e-08
   adam_wd: 0.02
@@ -3524,7 +3524,7 @@ Hyperparameters:
   datasets_dir: ./data/datasets/fineweb10B_sp8192
   disable_ntk_rope: False
   distributed: True
-  effective_train_seq_len: <property object at 0x1462a8fdc130>
+  effective_train_seq_len: <property object at 0x1543443dc360>
   ema_decay: 0.9965
   embed_bits: 8
   embed_clip_sigmas: 20.0
@@ -3543,12 +3543,12 @@ Hyperparameters:
   grad_accum_steps: 2
   grad_clip_norm: 0.3
   head_lr: 0.008
-  hessian_clip_lambda: 0.0
+  hessian_clip_lambda: 0.1
   is_main_process: True
   iterations: 20000
   ln_scale: True
   local_rank: 0
-  logfile: logs/stack_sigmas15.txt
+  logfile: logs/stack_hcl01_scout.txt
   logit_softcap: 20.0
   loop_embeddings: True
   loop_end: 5
@@ -3558,9 +3558,9 @@ Hyperparameters:
   loop_layer_keep_proj_int6: False
   loop_start: 3
   matrix_bits: 6
-  matrix_clip_sigmas: 15.0
+  matrix_clip_sigmas: 14.0
   matrix_lr: 0.022
-  max_wallclock_seconds: 3000.0
+  max_wallclock_seconds: 60.0
   min_lr: 0.0
   mixed_seq_gpu_frac: 0.375
   mixed_seq_len: 0
@@ -3590,10 +3590,10 @@ Hyperparameters:
   rope_dims: 32
   rope_force_base_seqlen: 0
   rope_train_seq_len: 2048
-  run_id: stack_sigmas15
+  run_id: stack_hcl01_scout
   scalar_lr: 0.022
   seed: 1337
-  size_only: False
+  size_only: True
   skip_gates_enabled: True
   skip_training: False
   sliding_window_enabled: False
@@ -3624,7 +3624,7 @@ Hyperparameters:
   ttt_beta1: 0.9
   ttt_beta2: 0.99
   ttt_chunk_size: 64
-  ttt_enabled: True
+  ttt_enabled: False
   ttt_eval_seq_len: 2048
   ttt_fp_chunk_tokens: 32768
   ttt_fp_epochs: 3
@@ -3664,14 +3664,37 @@ Hyperparameters:
 train_shards: 80
 val_tokens: 40540160
 model_params:38153904
-gptq:reserving 12s, effective=2988000ms
-warmup_step: 1/20
-warmup_step: 2/20
-warmup_step: 3/20
-warmup_step: 4/20
-warmup_step: 5/20
-warmup_step: 6/20
-warmup_step: 10/20
-warmup_step: 20/20
-loop_warmup:enabled encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
-loop_warmup_step: 1/20
+gptq:reserving 12s, effective=48000ms
+W0426 20:03:20.726000 5753 torch/distributed/elastic/agent/server/api.py:739] Received 15 death signal, shutting down workers
+W0426 20:03:20.727000 5753 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 5827 closing signal SIGTERM
+W0426 20:03:20.730000 5753 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 5828 closing signal SIGTERM
+W0426 20:03:20.731000 5753 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 5829 closing signal SIGTERM
+W0426 20:03:20.734000 5753 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 5830 closing signal SIGTERM
+Traceback (most recent call last):
+  File "/root/parameter-golf/.venv/bin/torchrun", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/run.py", line 990, in main
+    run(args)
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/run.py", line 981, in run
+    elastic_launch(
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 170, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 308, in launch_agent
+    result = agent.run()
+             ^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/elastic/metrics/api.py", line 134, in wrapper
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/elastic/agent/server/api.py", line 731, in run
+    result = self._invoke_run(role)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/elastic/agent/server/api.py", line 908, in _invoke_run
+    time.sleep(monitor_interval)
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/api.py", line 86, in _terminate_process_handler
+    raise SignalException(f"Process {os.getpid()} got signal: {sigval}", sigval=sigval)
+torch.distributed.elastic.multiprocessing.api.SignalException: Process 5753 got signal: 15

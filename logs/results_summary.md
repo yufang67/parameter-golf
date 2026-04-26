@@ -270,43 +270,34 @@ Takeaways:
 - `top_k` is essentially free for size (k=1 vs k=2 differs by ≤4 KB);
   it changes routing/eval BPB only.
 
-#### Stacked-Winners Sweep (`logs/best2304_stack/`, in progress 2026-04-25)
+#### Stacked-Winners Sweep (`logs/best2304_stack/`, in progress 2026-04-26T20:03Z)
 
 Stack the three independent winners (`WINDOW_ATTN_SIZE=512`,
 `PARALLEL_RESIDUAL_START=9`, `CLIP_MULT_EARLY=1.25`) on the best2304
 baseline and sweep extra knobs. Per-variant: 60s `SIZE_ONLY=1` size scout
-→ if `< 16 MB`, full 3000s TTT-only run. Driver:
+-> if `< 16 MB`, full 3000s TTT-only run. Driver:
 `run_best2304_stack.sh`. Resumable plan: `logs/best2304_stack/PLAN.md`.
 
 Common env: `VARLEN_ATTENTION=1 MATRIX_CLIP_SIGMAS=14 MLP_MULT=4.35
 HESSIAN_CLIP_LAMBDA=0.0 WINDOW_ATTN_SIZE=512 PARALLEL_RESIDUAL_START=9
 CLIP_MULT_EARLY=1.25`.
 
-| variant         | TTT bpb       | bytes        | Δ vs best2304 (1.07788) |
-|-----------------|---------------|--------------|-------------------------|
-| stack_sigmas13  | **1.07329** 🏆 | 16,451,868 ✅ | −0.00459                |
-| stack_loop085   | 1.07418       | 16,275,179 ✅ | −0.00370                |
-| stack_late085   | 1.07427       | 16,274,621 ✅ | −0.00361                |
-| stack_late09    | 1.07451       | 16,181,099 ✅ | −0.00337                |
-| stack_loop09    | 1.07457       | 16,180,912 ✅ | −0.00331                |
-| stack_control   | 1.07521       | 16,009,495 ✅ | −0.00267                |
-| stack_sigmas15  | RUNNING (scout 15.60 MB) | – |                         |
-| stack_hcl01     | queued        |              |                         |
-| stack_hcl02     | queued        |              |                         |
-| stack_hcl045    | queued        |              |                         |
-| stack_early2    | queued        |              |                         |
+| variant         | TTT bpb       | bytes        | delta vs best2304 (1.07788) |
+|-----------------|---------------|--------------|-----------------------------|
+| stack_sigmas13  | **1.07329** best | 16,451,868 OK | -0.00459                    |
+| stack_loop085   | 1.07418       | 16,275,179 OK | -0.00370                    |
+| stack_late085   | 1.07427       | 16,274,621 OK | -0.00361                    |
+| stack_late09    | 1.07451       | 16,181,099 OK | -0.00337                    |
+| stack_loop09    | 1.07457       | 16,180,912 OK | -0.00331                    |
+| stack_control   | 1.07521       | 16,009,495 OK | -0.00267                    |
+| stack_sigmas15  | running/incomplete (scout 15.60 MB) | -            |                             |
+| stack_hcl01     | queued        |              |                             |
+| stack_hcl02     | queued        |              |                             |
+| stack_hcl045    | queued        |              |                             |
+| stack_early2    | queued        |              |                             |
 
-Observations so far:
-- **Stacking the 3 winners alone regresses vs best individual**:
-  `stack_control` 1.07521 vs `s6_wattn512` 1.07449 — winners interact
-  subadditively (likely PR=9 + wattn=512 overlap).
-- **`MATRIX_CLIP_SIGMAS=13`** is the strongest single knob so far
-  (−0.0019 vs control), at the cost of ~440 KB of headroom; still under
-  budget by 320 KB.
-- LATE/LOOP at 0.85 ≈ 0.9 in BPB; both beat control by ~0.001 with
-  ~270 KB / ~170 KB extra size respectively.
-- Budget is **not currently binding** — every variant has ≥320 KB headroom.
-  → opportunity to stack `sigmas13` with `late/loop=0.85` if both fit.
+Observations: best completed variant is `stack_sigmas13` at **1.07329** TTT BPB (16,451,868 bytes), -0.00459 vs best2304.
+
 
 ### TTT-LoRA Sweep on `pg12_varlen_clip14` Checkpoint
 

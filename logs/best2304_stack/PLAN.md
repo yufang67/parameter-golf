@@ -76,26 +76,22 @@ tail -40 logs/best2304_stack/_outer.log
 - Driver prints final eval board to `_outer.log`.
 - Update `logs/results_summary.md` with a "best2304 Stacked Winners" table.
 
-## Live results (updated 2026-04-25T23:46Z)
+## Live results
 
-Baseline to beat: best2304 TTT **1.07788** (16,527,189 B).
-All variants under budget so far; no `.skip`.
+Updated 2026-04-26T20:03Z.
 
-| # | variant         | TTT bpb       | bytes        | Δ vs best2304 |
-|---|-----------------|---------------|--------------|---------------|
-| 6 | stack_sigmas13  | **1.07329** 🏆 | 16,451,868   | −0.00459      |
-| 4 | stack_loop085   | 1.07418       | 16,275,179   | −0.00370      |
-| 2 | stack_late085   | 1.07427       | 16,274,621   | −0.00361      |
-| 3 | stack_late09    | 1.07451       | 16,181,099   | −0.00337      |
-| 5 | stack_loop09    | 1.07457       | 16,180,912   | −0.00331      |
-| 1 | stack_control   | 1.07521       | 16,009,495   | −0.00267      |
-| 7 | stack_sigmas15  | RUNNING (started 23:25Z; scout=15.60 MB) |
-| 8–11 | hcl01 / hcl02 / hcl045 / early2 | queued      |               |
+| variant         | TTT bpb       | bytes        | delta vs best2304 (1.07788) |
+|-----------------|---------------|--------------|-----------------------------|
+| stack_sigmas13  | **1.07329** best | 16,451,868 OK | -0.00459                    |
+| stack_loop085   | 1.07418       | 16,275,179 OK | -0.00370                    |
+| stack_late085   | 1.07427       | 16,274,621 OK | -0.00361                    |
+| stack_late09    | 1.07451       | 16,181,099 OK | -0.00337                    |
+| stack_loop09    | 1.07457       | 16,180,912 OK | -0.00331                    |
+| stack_control   | 1.07521       | 16,009,495 OK | -0.00267                    |
+| stack_sigmas15  | running/incomplete (scout 15.60 MB) | -            |                             |
+| stack_hcl01     | queued        |              |                             |
+| stack_hcl02     | queued        |              |                             |
+| stack_hcl045    | queued        |              |                             |
+| stack_early2    | queued        |              |                             |
 
-Observations:
-- **Stacking the 3 winners actually regresses vs best individual** (control 1.07521 vs s6_wattn512 1.07449 alone) — winners interact subadditively.
-- **MATRIX_CLIP_SIGMAS=13** is the strongest knob so far (−0.0019 vs control), at the cost of ~440 KB extra.
-- LATE/LOOP at 0.85 ≈ 0.9 in BPB; both beat control by ~0.001.
-- All variants well under 16 MB; the budget is not currently binding.
-
-ETA for remaining 5 variants (sigmas15 + 4): ~6.5 h from 23:25Z (≈06:00Z next day).
+Observations: best completed variant is `stack_sigmas13` at **1.07329** TTT BPB (16,451,868 bytes), -0.00459 vs best2304.
