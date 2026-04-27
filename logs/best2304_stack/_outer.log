@@ -76,3 +76,58 @@ Packed train_gpt_improved_04_23.py (167.0 KB) -> train_gpt.py (42.1 KB)
 [stack] SKIP stack_sigmas13 (already finalized)
 [stack] stack_sigmas15 scout_size=15603629  budget=16777216
 [stack] === full stack_sigmas15 === 2026-04-26T20:03:37+00:00
+[stack] full stack_sigmas15 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+Total submission size quantized+ans: 15599622 bytes
+quantized_ttt_lora val_loss:2.78826515 val_bpb:1.07942433 eval_time:1573635ms
+[stack] === scout stack_hcl01 === 2026-04-26T21:30:03+00:00
+[stack] scout stack_hcl01 exit=0
+[stack] stack_hcl01 scout_size=16013972  budget=16777216
+[stack] === full stack_hcl01 === 2026-04-26T21:35:41+00:00
+[stack] full stack_hcl01 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+Total submission size quantized+ans: 16013460 bytes
+quantized_ttt_lora val_loss:2.77662131 val_bpb:1.07491664 eval_time:1363503ms
+[stack] === scout stack_hcl02 === 2026-04-26T22:54:56+00:00
+[stack] scout stack_hcl02 exit=0
+[stack] stack_hcl02 scout_size=16017191  budget=16777216
+[stack] === full stack_hcl02 === 2026-04-26T23:00:35+00:00
+[stack] full stack_hcl02 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+Total submission size quantized+ans: 16021047 bytes
+quantized_ttt_lora val_loss:2.77661291 val_bpb:1.07491339 eval_time:1368200ms
+[stack] === scout stack_hcl045 === 2026-04-27T00:19:58+00:00
+[stack] scout stack_hcl045 exit=0
+[stack] stack_hcl045 scout_size=16032856  budget=16777216
+[stack] === full stack_hcl045 === 2026-04-27T00:25:36+00:00
+[stack] full stack_hcl045 exit=0
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+Total submission size quantized+ans: 16059546 bytes
+quantized_ttt_lora val_loss:2.77701673 val_bpb:1.07506972 eval_time:1369107ms
+[stack] === scout stack_early2 === 2026-04-27T01:44:56+00:00
+[stack] scout stack_early2 exit=0
+[stack] stack_early2 scout_size=15278966  budget=16777216
+[stack] === full stack_early2 === 2026-04-27T01:50:33+00:00
+[stack] full stack_early2 exit=1
+        log(f"Total submission size quantized+{chosen}: {bytes_total} bytes")
+[stack] === results ===
+name                                 sw_bpb      ttt_bpb    total_bytes
+stack_early2                              -            -              -
+stack_sigmas13                            -   1.07329394       16451868
+stack_loop085                             -   1.07418478       16275179
+stack_late085                             -   1.07427039       16274621
+stack_late09                              -   1.07450777       16181099
+stack_loop09                              -   1.07456818       16180912
+stack_hcl02                               -   1.07491339       16021047
+stack_hcl01                               -   1.07491664       16013460
+_outer                                    -   1.07506972       16059546
+stack_hcl045                              -   1.07506972       16059546
+stack_control                             -   1.07520711       16009495
+stack_sigmas15                            -   1.07942433       15599622
+[stack] all done 2026-04-27T02:00:41+00:00
+===== DRIVER EXIT rc=0 2026-04-27T02:00:41+00:00 =====
+/root/.copilot/session-state/d67081b3-038c-4183-a12b-62f2829d4fc7/files/update_best2304_stack_summary.py:72: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  f"#### Stacked-Winners Sweep (`logs/best2304_stack/`, {status} {datetime.utcnow().strftime('%Y-%m-%dT%H:%MZ')})",
+/root/.copilot/session-state/d67081b3-038c-4183-a12b-62f2829d4fc7/files/update_best2304_stack_summary.py:131: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  plan_block = ["## Live results", "", f"Updated {datetime.utcnow().strftime('%Y-%m-%dT%H:%MZ')}.", ""]
+updated /root/parameter-golf/logs/results_summary.md and /root/parameter-golf/logs/best2304_stack/PLAN.md

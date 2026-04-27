@@ -270,7 +270,7 @@ Takeaways:
 - `top_k` is essentially free for size (k=1 vs k=2 differs by ≤4 KB);
   it changes routing/eval BPB only.
 
-#### Stacked-Winners Sweep (`logs/best2304_stack/`, in progress 2026-04-26T20:03Z)
+#### Stacked-Winners Sweep (`logs/best2304_stack/`, driver finished; one failed 2026-04-27T12:51Z)
 
 Stack the three independent winners (`WINDOW_ATTN_SIZE=512`,
 `PARALLEL_RESIDUAL_START=9`, `CLIP_MULT_EARLY=1.25`) on the best2304
@@ -289,14 +289,15 @@ CLIP_MULT_EARLY=1.25`.
 | stack_late085   | 1.07427       | 16,274,621 OK | -0.00361                    |
 | stack_late09    | 1.07451       | 16,181,099 OK | -0.00337                    |
 | stack_loop09    | 1.07457       | 16,180,912 OK | -0.00331                    |
+| stack_hcl02     | 1.07491       | 16,021,047 OK | -0.00297                    |
+| stack_hcl01     | 1.07492       | 16,013,460 OK | -0.00296                    |
+| stack_hcl045    | 1.07507       | 16,059,546 OK | -0.00281                    |
 | stack_control   | 1.07521       | 16,009,495 OK | -0.00267                    |
-| stack_sigmas15  | running/incomplete (scout 15.60 MB) | -            |                             |
-| stack_hcl01     | queued        |              |                             |
-| stack_hcl02     | queued        |              |                             |
-| stack_hcl045    | queued        |              |                             |
-| stack_early2    | queued        |              |                             |
+| stack_sigmas15  | 1.07942       | 15,599,622 OK | +0.00154                    |
+| stack_early2    | FAILED        | scout 15,278,966 OK | NCCL init timeout; no full result |
 
 Observations: best completed variant is `stack_sigmas13` at **1.07329** TTT BPB (16,451,868 bytes), -0.00459 vs best2304.
+The driver reached its final board at 2026-04-27T02:00:41Z and no torch jobs are currently running. `stack_early2` passed the size scout but the full run failed during distributed/NCCL initialization (`wait timeout after 600000ms`), so it has no valid TTT result and should be rerun if that variant is still needed.
 
 
 ### TTT-LoRA Sweep on `pg12_varlen_clip14` Checkpoint

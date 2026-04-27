@@ -1,5 +1,5 @@
 ===== CODE SNAPSHOT: train_gpt_improved_04_23.py =====
-git_head: 898eaf8e007ccd93b77b47a14f5ad0041b8b7ee0
+git_head: 2ead6f3b71c250ec48473dea537031a31c247ab6
 sha256:   246ca3b6e9348c85f4ac58238ac17e0440bf1c8e40ce73346d053380748054d4
 ===== BEGIN train_gpt_improved_04_23.py =====
 import collections
@@ -3504,399 +3504,220 @@ if __name__ == "__main__":
     main()
 ===== END train_gpt_improved_04_23.py =====
 
-W0426 20:03:38.393000 7262 torch/distributed/run.py:851] 
-W0426 20:03:38.393000 7262 torch/distributed/run.py:851] *****************************************
-W0426 20:03:38.393000 7262 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
-W0426 20:03:38.393000 7262 torch/distributed/run.py:851] *****************************************
-Hyperparameters:
-  adam_eps: 1e-08
-  adam_wd: 0.02
-  beta1: 0.9
-  beta2: 0.95
-  clip_mult_early: 1.25
-  clip_mult_late: 1.0
-  clip_mult_loop: 1.0
-  clip_mult_mid: 1.0
-  compress_ans: True
-  compress_brotli: False
-  compress_lzma: False
-  data_dir: ./data/
-  datasets_dir: ./data/datasets/fineweb10B_sp8192
-  disable_ntk_rope: False
-  distributed: True
-  effective_train_seq_len: <property object at 0x1462a8fdc130>
-  ema_decay: 0.9965
-  embed_bits: 8
-  embed_clip_sigmas: 20.0
-  embed_lr: 0.6
-  embed_wd: 0.085
-  embedding_dim: 512
-  enable_looping_at: 0.5
-  eval_seq_len: 2048
-  eval_stride: 64
-  force_dense_eval: False
-  fused_mlp: True
-  fused_rope: True
-  gated_attention: True
-  gptq_calibration_batches: 128
-  gptq_reserve_seconds: 12.0
-  grad_accum_steps: 2
-  grad_clip_norm: 0.3
-  head_lr: 0.008
-  hessian_clip_lambda: 0.0
-  is_main_process: True
-  iterations: 20000
-  ln_scale: True
-  local_rank: 0
-  logfile: logs/stack_sigmas15.txt
-  logit_softcap: 20.0
-  loop_embeddings: True
-  loop_end: 5
-  loop_layer_bits: 0
-  loop_layer_clip_sigmas: 0.0
-  loop_layer_keep_last_int6: False
-  loop_layer_keep_proj_int6: False
-  loop_start: 3
-  matrix_bits: 6
-  matrix_clip_sigmas: 15.0
-  matrix_lr: 0.022
-  max_wallclock_seconds: 3000.0
-  min_lr: 0.0
-  mixed_seq_gpu_frac: 0.375
-  mixed_seq_len: 0
-  mlp_mult: 4.35
-  model_dim: 512
-  model_path: final_model.pt
-  moe_enabled: False
-  moe_layers: 3,5,7,9
-  moe_num_experts: 3
-  moe_top_k: 2
-  muon_backend_steps: 5
-  muon_beta2: 0.95
-  muon_momentum: 0.97
-  muon_momentum_warmup_start: 0.92
-  muon_momentum_warmup_steps: 1500
-  muon_row_normalize: True
-  muon_wd: 0.095
-  num_heads: 8
-  num_kv_heads: 4
-  num_layers: 11
-  num_loops: 2
-  parallel_residual_start: 9
-  qk_gain_init: 5.25
-  quantized_model_path: final_model.int6.ptz
-  rank: 0
-  rope_base: 10000.0
-  rope_dims: 32
-  rope_force_base_seqlen: 0
-  rope_train_seq_len: 2048
-  run_id: stack_sigmas15
-  scalar_lr: 0.022
-  seed: 1337
-  size_only: False
-  skip_gates_enabled: True
-  skip_training: False
-  sliding_window_enabled: False
-  slot_enabled: False
-  slot_in_ttt: False
-  slot_in_ttt_lr: 0.01
-  slot_in_ttt_steps: 4
-  slot_in_ttt_wd: 0.001
-  slot_lr: 0.01
-  slot_max_windows: 0
-  slot_steps: 4
-  slot_train_mode: context
-  slot_wd: 0.01
-  tie_embeddings: True
-  tied_embed_init_std: 0.005
-  tied_embed_lr: 0.03
-  tokenizer_path: ./data/tokenizers/fineweb_8192_bpe.model
-  train_batch_tokens: 786432
-  train_files: ./data/datasets/fineweb10B_sp8192/fineweb_train_*.bin
-  train_log_every: 500
-  train_seq_len: 2048
-  ttt_adapt_ema: 0.95
-  ttt_adapt_max_scale: 2.0
-  ttt_adapt_min_scale: 0.5
-  ttt_adapt_power: 1.0
-  ttt_adaptive_lr: False
-  ttt_batch_size: 64
-  ttt_beta1: 0.9
-  ttt_beta2: 0.99
-  ttt_chunk_size: 64
-  ttt_enabled: True
-  ttt_eval_seq_len: 2048
-  ttt_fp_chunk_tokens: 32768
-  ttt_fp_epochs: 3
-  ttt_fp_lr: 0.001
-  ttt_grad_clip: 1.0
-  ttt_grad_steps: 1
-  ttt_k_lora: True
-  ttt_lora_lr: 0.0001
-  ttt_lora_rank: 48
-  ttt_max_docs: 0
-  ttt_min_doc_len: 0
-  ttt_mlp_lora: True
-  ttt_nan_guard: True
-  ttt_o_lora: True
-  ttt_phase_sgd_batch: 8
-  ttt_phase_sgd_epochs: 1
-  ttt_phase_sgd_lr: 0.0005
-  ttt_phase_sgd_momentum: 0.9
-  ttt_phase_sgd_optimizer: sgd
-  ttt_phase_sgd_seq_len: 1024
-  ttt_phase_sgd_wd: 0.0
-  ttt_phases: 3
-  ttt_rope_base_seqlen: 0
-  ttt_weight_decay: 0.2
-  val_batch_tokens: 524288
-  val_files: ./data/datasets/fineweb10B_sp8192/fineweb_val_*.bin
-  val_loss_every: 4000
-  varlen_attention: True
-  vocab_size: 8192
-  warmdown_frac: 0.85
-  warmdown_wd_mult: 1.0
-  warmup_steps: 20
-  window_attn_layers: 
-  window_attn_size: 512
-  world_size: 4
-  xsa_last_n: 9
-train_shards: 80
-val_tokens: 40540160
-model_params:38153904
-gptq:reserving 12s, effective=2988000ms
-warmup_step: 1/20
-warmup_step: 2/20
-warmup_step: 3/20
-warmup_step: 4/20
-warmup_step: 5/20
-warmup_step: 6/20
-warmup_step: 10/20
-warmup_step: 20/20
-loop_warmup:enabled encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
-loop_warmup_step: 1/20
-loop_warmup_step: 2/20
-loop_warmup_step: 3/20
-loop_warmup_step: 4/20
-loop_warmup_step: 5/20
-loop_warmup_step: 6/20
-loop_warmup_step: 10/20
-loop_warmup_step: 20/20
-0/20000 val_loss: 9.0079 val_bpb: 3.4871
-1/20000 train_loss: 9.0071 train_time: 0.0m tok/s: 1754648
-2/20000 train_loss: 11.3340 train_time: 0.0m tok/s: 1733129
-3/20000 train_loss: 9.9840 train_time: 0.0m tok/s: 1708347
-4/20000 train_loss: 8.5437 train_time: 0.0m tok/s: 1701173
-5/20000 train_loss: 7.4973 train_time: 0.0m tok/s: 1698038
-500/20000 train_loss: 3.2991 train_time: 6.6m tok/s: 988336
-1000/20000 train_loss: 3.1302 train_time: 10.6m tok/s: 1231693
-1500/20000 train_loss: 2.9976 train_time: 14.7m tok/s: 1340918
-2000/20000 train_loss: 2.9735 train_time: 18.7m tok/s: 1403168
-2500/20000 train_loss: 2.3533 train_time: 22.7m tok/s: 1442950
-layer_loop:enabled step:2773 frac:0.500 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
-3000/20000 train_loss: 2.8990 train_time: 28.4m tok/s: 1385721
-3500/20000 train_loss: 2.8975 train_time: 35.9m tok/s: 1278257
-4000/20000 train_loss: 2.8638 train_time: 42.6m tok/s: 1230137
-4000/20000 val_loss: 2.8387 val_bpb: 1.0989
-4500/20000 train_loss: 2.7701 train_time: 49.4m tok/s: 1194970
-4537/20000 val_loss: 2.7760 val_bpb: 1.0746
-stopping_early: wallclock_cap train_time: 2988033ms step: 4537/20000
-peak memory allocated: 38978 MiB reserved: 39064 MiB
-ema:applying EMA weights
-pre-quantization post-ema val_loss:2.77586478 val_bpb:1.07456772 eval_time:19102ms
-Serialized model: 144276071 bytes
-Code size: 43100 bytes
-GPTQ:collecting Hessians from calibration data...
-GPTQ:collected 67 Hessians in 50.8s
-Quantized weights:
-  gptq (int6): blocks.attn.c_k.weight, blocks.attn.c_q.weight, blocks.attn.c_v.weight, blocks.attn.proj.weight, blocks.mlp.fc.weight, blocks.mlp.proj.weight
-  gptq (int8): tok_emb.weight
-  passthrough (float16): blocks.attn.gate_proj.bias, blocks.attn.gate_proj.weight, blocks.attn.q_gain, blocks.attn_scale, blocks.mlp_scale, blocks.resid_mix, loop_embs, skip_gates, skip_weights
-compress:ans 15556522 bytes (14.7s)
-  ans: model=15556522 total=15599622
-compress:using ans (15556522 bytes)
-Serialized model quantized+ans: 15556522 bytes
-Total submission size quantized+ans: 15599622 bytes
-ttt_lora:rope_base inherited ROPE_FORCE_BASE_SEQLEN=98304
-ttt_lora:warming up compile
-ttt_lora:compile warmup done (169.8s)
-ttt_lora:docs:50000 rank:48 lr:0.0001 chunk:64
-ttt_lora:phased_sgd enabled phases=3 boundaries=[0, 261, 521, 782] sgd_lr=0.0005 sgd_epochs=1 sgd_opt=sgd
-[rank0]:W0426 21:09:48.113000 7342 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] torch._dynamo hit config.recompile_limit (8)
-[rank0]:W0426 21:09:48.113000 7342 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    function: '_fwd_ttt_inner' (/root/parameter-golf/_train.py:3354)
-[rank0]:W0426 21:09:48.113000 7342 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    last reason: 0/7: tensor 'input_ids' size mismatch at index 1. expected 384, actual 448
-[rank0]:W0426 21:09:48.113000 7342 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To log all recompilation reasons, use TORCH_LOGS="recompiles".
-[rank0]:W0426 21:09:48.113000 7342 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
-[rank3]:W0426 21:09:51.080000 7345 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] torch._dynamo hit config.recompile_limit (8)
-[rank3]:W0426 21:09:51.080000 7345 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    function: '_fwd_ttt_inner' (/root/parameter-golf/_train.py:3354)
-[rank3]:W0426 21:09:51.080000 7345 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    last reason: 0/7: tensor 'input_ids' size mismatch at index 1. expected 384, actual 448
-[rank3]:W0426 21:09:51.080000 7345 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To log all recompilation reasons, use TORCH_LOGS="recompiles".
-[rank3]:W0426 21:09:51.080000 7345 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
-[rank1]:W0426 21:09:54.562000 7343 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] torch._dynamo hit config.recompile_limit (8)
-[rank1]:W0426 21:09:54.562000 7343 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    function: '_fwd_ttt_inner' (/root/parameter-golf/_train.py:3354)
-[rank1]:W0426 21:09:54.562000 7343 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    last reason: 0/7: tensor 'input_ids' size mismatch at index 1. expected 384, actual 448
-[rank1]:W0426 21:09:54.562000 7343 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To log all recompilation reasons, use TORCH_LOGS="recompiles".
-[rank1]:W0426 21:09:54.562000 7343 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
-[rank2]:W0426 21:09:57.030000 7344 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] torch._dynamo hit config.recompile_limit (8)
-[rank2]:W0426 21:09:57.030000 7344 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    function: '_fwd_ttt_inner' (/root/parameter-golf/_train.py:3354)
-[rank2]:W0426 21:09:57.030000 7344 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8]    last reason: 0/7: tensor 'input_ids' size mismatch at index 1. expected 384, actual 448
-[rank2]:W0426 21:09:57.030000 7344 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To log all recompilation reasons, use TORCH_LOGS="recompiles".
-[rank2]:W0426 21:09:57.030000 7344 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1743] [0/8] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
-ttt_progress: batch 782/782 batch_loss:2.5943 batch_bpb:1.0474 running_loss:2.5943 running_bpb:1.0474 doc_len:26524-79464
-ttt_progress: batch 774/782 batch_loss:2.7471 batch_bpb:1.0849 running_loss:2.6477 running_bpb:1.0607 doc_len:5552-5852
-ttt_progress: batch 770/782 batch_loss:2.6802 batch_bpb:1.0606 running_loss:2.6549 running_bpb:1.0607 doc_len:4479-4698
-ttt_progress: batch 766/782 batch_loss:2.5844 batch_bpb:1.0118 running_loss:2.6438 running_bpb:1.0529 doc_len:3846-3962
-ttt_progress: batch 762/782 batch_loss:2.8450 batch_bpb:1.0829 running_loss:2.6686 running_bpb:1.0567 doc_len:3431-3533
-ttt_progress: batch 758/782 batch_loss:2.8929 batch_bpb:1.0916 running_loss:2.6910 running_bpb:1.0604 doc_len:3108-3187
-ttt_progress: batch 754/782 batch_loss:2.7060 batch_bpb:1.0618 running_loss:2.6923 running_bpb:1.0605 doc_len:2839-2899
-ttt_progress: batch 750/782 batch_loss:2.8457 batch_bpb:1.0736 running_loss:2.7033 running_bpb:1.0615 doc_len:2638-2688
-ttt_progress: batch 746/782 batch_loss:2.6919 batch_bpb:1.0599 running_loss:2.7026 running_bpb:1.0614 doc_len:2459-2501
-ttt_progress: batch 742/782 batch_loss:2.8038 batch_bpb:1.0739 running_loss:2.7083 running_bpb:1.0621 doc_len:2319-2353
-ttt_progress: batch 738/782 batch_loss:2.7654 batch_bpb:1.0610 running_loss:2.7111 running_bpb:1.0620 doc_len:2194-2227
-ttt_progress: batch 734/782 batch_loss:2.7883 batch_bpb:1.0633 running_loss:2.7147 running_bpb:1.0621 doc_len:2091-2115
-ttt_progress: batch 730/782 batch_loss:2.7823 batch_bpb:1.0953 running_loss:2.7175 running_bpb:1.0635 doc_len:1995-2016
-ttt_progress: batch 726/782 batch_loss:2.8155 batch_bpb:1.0715 running_loss:2.7213 running_bpb:1.0638 doc_len:1915-1936
-ttt_progress: batch 722/782 batch_loss:2.7878 batch_bpb:1.0659 running_loss:2.7236 running_bpb:1.0639 doc_len:1846-1861
-ttt_progress: batch 718/782 batch_loss:2.7931 batch_bpb:1.0767 running_loss:2.7259 running_bpb:1.0643 doc_len:1773-1792
-ttt_progress: batch 714/782 batch_loss:2.8211 batch_bpb:1.0738 running_loss:2.7289 running_bpb:1.0646 doc_len:1711-1725
-ttt_progress: batch 710/782 batch_loss:2.7727 batch_bpb:1.0750 running_loss:2.7302 running_bpb:1.0649 doc_len:1661-1673
-ttt_progress: batch 706/782 batch_loss:2.7342 batch_bpb:1.0511 running_loss:2.7303 running_bpb:1.0645 doc_len:1617-1627
-ttt_progress: batch 702/782 batch_loss:2.8130 batch_bpb:1.0700 running_loss:2.7325 running_bpb:1.0647 doc_len:1572-1581
-ttt_progress: batch 698/782 batch_loss:2.7985 batch_bpb:1.0372 running_loss:2.7341 running_bpb:1.0639 doc_len:1534-1543
-ttt_progress: batch 694/782 batch_loss:2.7798 batch_bpb:1.0729 running_loss:2.7352 running_bpb:1.0641 doc_len:1494-1504
-ttt_progress: batch 690/782 batch_loss:2.8491 batch_bpb:1.0676 running_loss:2.7377 running_bpb:1.0642 doc_len:1458-1467
-ttt_progress: batch 686/782 batch_loss:2.8198 batch_bpb:1.0594 running_loss:2.7395 running_bpb:1.0641 doc_len:1422-1432
-ttt_progress: batch 682/782 batch_loss:2.8207 batch_bpb:1.0775 running_loss:2.7412 running_bpb:1.0644 doc_len:1393-1400
-ttt_progress: batch 678/782 batch_loss:2.7997 batch_bpb:1.0539 running_loss:2.7424 running_bpb:1.0642 doc_len:1361-1368
-ttt_progress: batch 674/782 batch_loss:2.7976 batch_bpb:1.0616 running_loss:2.7434 running_bpb:1.0641 doc_len:1334-1341
-ttt_progress: batch 670/782 batch_loss:2.8463 batch_bpb:1.0643 running_loss:2.7453 running_bpb:1.0641 doc_len:1308-1315
-ttt_progress: batch 666/782 batch_loss:2.8373 batch_bpb:1.0664 running_loss:2.7469 running_bpb:1.0642 doc_len:1282-1288
-ttt_progress: batch 662/782 batch_loss:2.8215 batch_bpb:1.0766 running_loss:2.7482 running_bpb:1.0644 doc_len:1258-1263
-ttt_progress: batch 658/782 batch_loss:2.8257 batch_bpb:1.0816 running_loss:2.7495 running_bpb:1.0647 doc_len:1234-1239
-ttt_progress: batch 654/782 batch_loss:2.7458 batch_bpb:1.0423 running_loss:2.7494 running_bpb:1.0643 doc_len:1209-1215
-ttt_progress: batch 650/782 batch_loss:2.8034 batch_bpb:1.0794 running_loss:2.7502 running_bpb:1.0646 doc_len:1188-1193
-ttt_progress: batch 646/782 batch_loss:2.7865 batch_bpb:1.0790 running_loss:2.7508 running_bpb:1.0648 doc_len:1166-1171
-ttt_progress: batch 642/782 batch_loss:2.7973 batch_bpb:1.0882 running_loss:2.7514 running_bpb:1.0651 doc_len:1144-1150
-ttt_progress: batch 638/782 batch_loss:2.8569 batch_bpb:1.0537 running_loss:2.7529 running_bpb:1.0649 doc_len:1123-1129
-ttt_progress: batch 632/782 batch_loss:2.7509 batch_bpb:1.0333 running_loss:2.7529 running_bpb:1.0645 doc_len:1096-1101
-ttt_progress: batch 627/782 batch_loss:2.7491 batch_bpb:1.0406 running_loss:2.7528 running_bpb:1.0642 doc_len:1073-1077
-ttt_progress: batch 623/782 batch_loss:2.8033 batch_bpb:1.0789 running_loss:2.7534 running_bpb:1.0644 doc_len:1055-1060
-ttt_progress: batch 619/782 batch_loss:2.8098 batch_bpb:1.0645 running_loss:2.7541 running_bpb:1.0644 doc_len:1037-1041
-ttt_progress: batch 615/782 batch_loss:2.8512 batch_bpb:1.0705 running_loss:2.7553 running_bpb:1.0644 doc_len:1020-1023
-ttt_progress: batch 611/782 batch_loss:2.7746 batch_bpb:1.0741 running_loss:2.7555 running_bpb:1.0646 doc_len:1004-1007
-ttt_progress: batch 607/782 batch_loss:2.7014 batch_bpb:1.0411 running_loss:2.7549 running_bpb:1.0643 doc_len:986-990
-ttt_progress: batch 603/782 batch_loss:2.8431 batch_bpb:1.0891 running_loss:2.7559 running_bpb:1.0646 doc_len:971-974
-ttt_progress: batch 599/782 batch_loss:2.7499 batch_bpb:1.0562 running_loss:2.7558 running_bpb:1.0645 doc_len:954-958
-ttt_progress: batch 595/782 batch_loss:2.7448 batch_bpb:1.0612 running_loss:2.7557 running_bpb:1.0644 doc_len:940-943
-ttt_progress: batch 591/782 batch_loss:2.6860 batch_bpb:1.0149 running_loss:2.7550 running_bpb:1.0639 doc_len:927-930
-ttt_progress: batch 587/782 batch_loss:2.7955 batch_bpb:1.0675 running_loss:2.7554 running_bpb:1.0640 doc_len:914-917
-ttt_progress: batch 583/782 batch_loss:2.8129 batch_bpb:1.0972 running_loss:2.7559 running_bpb:1.0643 doc_len:901-904
-ttt_progress: batch 576/782 batch_loss:2.7946 batch_bpb:1.0525 running_loss:2.7563 running_bpb:1.0642 doc_len:877-880
-ttt_progress: batch 572/782 batch_loss:2.9559 batch_bpb:1.1249 running_loss:2.7581 running_bpb:1.0647 doc_len:865-868
-ttt_progress: batch 568/782 batch_loss:2.8094 batch_bpb:1.0597 running_loss:2.7585 running_bpb:1.0647 doc_len:852-855
-ttt_progress: batch 564/782 batch_loss:2.8822 batch_bpb:1.1151 running_loss:2.7596 running_bpb:1.0651 doc_len:840-843
-ttt_progress: batch 560/782 batch_loss:2.8249 batch_bpb:1.0940 running_loss:2.7602 running_bpb:1.0654 doc_len:828-831
-ttt_progress: batch 556/782 batch_loss:2.8417 batch_bpb:1.0864 running_loss:2.7608 running_bpb:1.0655 doc_len:815-818
-ttt_progress: batch 552/782 batch_loss:2.8130 batch_bpb:1.0483 running_loss:2.7612 running_bpb:1.0654 doc_len:804-806
-ttt_progress: batch 548/782 batch_loss:2.7762 batch_bpb:1.0527 running_loss:2.7614 running_bpb:1.0653 doc_len:793-795
-ttt_progress: batch 542/782 batch_loss:2.8472 batch_bpb:1.0785 running_loss:2.7620 running_bpb:1.0654 doc_len:777-779
-ttt_progress: batch 537/782 batch_loss:2.7216 batch_bpb:1.0291 running_loss:2.7617 running_bpb:1.0651 doc_len:764-767
-ttt_progress: batch 533/782 batch_loss:2.7861 batch_bpb:1.0406 running_loss:2.7619 running_bpb:1.0649 doc_len:754-757
-ttt_progress: batch 529/782 batch_loss:2.7893 batch_bpb:1.0624 running_loss:2.7621 running_bpb:1.0649 doc_len:745-747
-ttt_progress: batch 525/782 batch_loss:2.7943 batch_bpb:1.0751 running_loss:2.7623 running_bpb:1.0650 doc_len:735-737
-ttt_phase_sgd[phase=1]:docs=16656 windows/rank=9013 lr=0.0005 epochs=1 bsz=8 seq_len=1024 opt=sgd
-ttt_phase_sgd[phase=1]:epoch 1/1 loss=2.8457 steps=1127 t=112.6s
-ttt_progress: batch 521/782 batch_loss:2.7840 batch_bpb:1.0563 running_loss:2.7625 running_bpb:1.0649 doc_len:725-727
-ttt_progress: batch 514/782 batch_loss:2.9263 batch_bpb:1.1037 running_loss:2.7636 running_bpb:1.0652 doc_len:707-710
-ttt_progress: batch 510/782 batch_loss:2.7712 batch_bpb:1.0249 running_loss:2.7636 running_bpb:1.0649 doc_len:698-700
-ttt_progress: batch 506/782 batch_loss:2.8205 batch_bpb:1.0805 running_loss:2.7640 running_bpb:1.0650 doc_len:688-690
-ttt_progress: batch 502/782 batch_loss:2.8401 batch_bpb:1.0665 running_loss:2.7645 running_bpb:1.0650 doc_len:680-682
-ttt_progress: batch 498/782 batch_loss:2.6879 batch_bpb:1.0406 running_loss:2.7640 running_bpb:1.0649 doc_len:671-673
-ttt_progress: batch 492/782 batch_loss:2.8228 batch_bpb:1.0616 running_loss:2.7643 running_bpb:1.0649 doc_len:657-659
-ttt_progress: batch 487/782 batch_loss:2.8267 batch_bpb:1.0799 running_loss:2.7647 running_bpb:1.0649 doc_len:647-649
-ttt_progress: batch 483/782 batch_loss:2.7561 batch_bpb:1.0540 running_loss:2.7647 running_bpb:1.0649 doc_len:639-641
-ttt_progress: batch 479/782 batch_loss:2.7258 batch_bpb:1.0403 running_loss:2.7644 running_bpb:1.0647 doc_len:630-632
-ttt_progress: batch 475/782 batch_loss:2.7392 batch_bpb:1.0270 running_loss:2.7643 running_bpb:1.0645 doc_len:622-623
-ttt_progress: batch 469/782 batch_loss:2.8108 batch_bpb:1.1177 running_loss:2.7645 running_bpb:1.0648 doc_len:610-611
-ttt_progress: batch 464/782 batch_loss:2.7345 batch_bpb:1.0837 running_loss:2.7644 running_bpb:1.0649 doc_len:600-602
-ttt_progress: batch 460/782 batch_loss:2.8009 batch_bpb:1.0624 running_loss:2.7646 running_bpb:1.0649 doc_len:593-595
-ttt_progress: batch 456/782 batch_loss:2.8252 batch_bpb:1.0730 running_loss:2.7649 running_bpb:1.0649 doc_len:586-587
-ttt_progress: batch 451/782 batch_loss:2.7850 batch_bpb:1.0669 running_loss:2.7650 running_bpb:1.0649 doc_len:576-579
-ttt_progress: batch 445/782 batch_loss:2.7874 batch_bpb:1.0717 running_loss:2.7651 running_bpb:1.0650 doc_len:566-568
-ttt_progress: batch 441/782 batch_loss:2.7268 batch_bpb:1.0497 running_loss:2.7649 running_bpb:1.0649 doc_len:559-560
-ttt_progress: batch 434/782 batch_loss:2.7382 batch_bpb:1.0463 running_loss:2.7648 running_bpb:1.0648 doc_len:545-547
-ttt_progress: batch 430/782 batch_loss:2.7760 batch_bpb:1.0538 running_loss:2.7648 running_bpb:1.0648 doc_len:539-540
-ttt_progress: batch 426/782 batch_loss:2.7418 batch_bpb:1.0730 running_loss:2.7647 running_bpb:1.0648 doc_len:532-533
-ttt_progress: batch 422/782 batch_loss:2.7593 batch_bpb:1.0522 running_loss:2.7647 running_bpb:1.0647 doc_len:524-526
-ttt_progress: batch 415/782 batch_loss:2.8561 batch_bpb:1.0851 running_loss:2.7651 running_bpb:1.0648 doc_len:513-514
-ttt_progress: batch 411/782 batch_loss:2.8251 batch_bpb:1.0771 running_loss:2.7654 running_bpb:1.0649 doc_len:507-508
-ttt_progress: batch 405/782 batch_loss:2.8373 batch_bpb:1.0724 running_loss:2.7657 running_bpb:1.0649 doc_len:497-498
-ttt_progress: batch 400/782 batch_loss:2.8044 batch_bpb:1.0697 running_loss:2.7658 running_bpb:1.0649 doc_len:489-490
-ttt_progress: batch 396/782 batch_loss:2.7720 batch_bpb:1.0607 running_loss:2.7658 running_bpb:1.0649 doc_len:482-484
-ttt_progress: batch 389/782 batch_loss:2.8005 batch_bpb:1.0667 running_loss:2.7660 running_bpb:1.0649 doc_len:471-473
-ttt_progress: batch 385/782 batch_loss:2.8946 batch_bpb:1.1030 running_loss:2.7665 running_bpb:1.0651 doc_len:466-467
-ttt_progress: batch 381/782 batch_loss:2.9047 batch_bpb:1.0908 running_loss:2.7670 running_bpb:1.0652 doc_len:460-461
-ttt_progress: batch 374/782 batch_loss:2.7714 batch_bpb:1.0769 running_loss:2.7670 running_bpb:1.0652 doc_len:450-452
-ttt_progress: batch 370/782 batch_loss:2.6995 batch_bpb:1.0503 running_loss:2.7668 running_bpb:1.0652 doc_len:444-446
-ttt_progress: batch 363/782 batch_loss:2.7514 batch_bpb:1.0972 running_loss:2.7667 running_bpb:1.0653 doc_len:434-436
-ttt_progress: batch 359/782 batch_loss:2.8048 batch_bpb:1.0840 running_loss:2.7668 running_bpb:1.0653 doc_len:429-430
-ttt_progress: batch 352/782 batch_loss:2.7659 batch_bpb:1.0995 running_loss:2.7668 running_bpb:1.0654 doc_len:419-420
-ttt_progress: batch 347/782 batch_loss:2.8767 batch_bpb:1.0965 running_loss:2.7672 running_bpb:1.0655 doc_len:413-414
-ttt_progress: batch 341/782 batch_loss:2.8852 batch_bpb:1.1046 running_loss:2.7676 running_bpb:1.0657 doc_len:404-406
-ttt_progress: batch 336/782 batch_loss:2.9535 batch_bpb:1.1671 running_loss:2.7682 running_bpb:1.0660 doc_len:398-399
-ttt_progress: batch 330/782 batch_loss:2.8771 batch_bpb:1.0969 running_loss:2.7685 running_bpb:1.0661 doc_len:390-392
-ttt_progress: batch 325/782 batch_loss:2.8595 batch_bpb:1.0984 running_loss:2.7688 running_bpb:1.0662 doc_len:384-385
-ttt_progress: batch 319/782 batch_loss:2.8408 batch_bpb:1.1145 running_loss:2.7690 running_bpb:1.0663 doc_len:376-377
-ttt_progress: batch 315/782 batch_loss:2.7335 batch_bpb:1.0748 running_loss:2.7689 running_bpb:1.0663 doc_len:370-371
-ttt_progress: batch 308/782 batch_loss:2.8027 batch_bpb:1.0888 running_loss:2.7690 running_bpb:1.0664 doc_len:362-363
-ttt_progress: batch 302/782 batch_loss:2.8450 batch_bpb:1.1034 running_loss:2.7692 running_bpb:1.0665 doc_len:354-355
-ttt_progress: batch 297/782 batch_loss:2.8121 batch_bpb:1.0654 running_loss:2.7693 running_bpb:1.0665 doc_len:348-349
-ttt_progress: batch 290/782 batch_loss:2.8778 batch_bpb:1.0903 running_loss:2.7696 running_bpb:1.0666 doc_len:340-341
-ttt_progress: batch 284/782 batch_loss:2.8921 batch_bpb:1.0903 running_loss:2.7699 running_bpb:1.0666 doc_len:333-334
-ttt_progress: batch 280/782 batch_loss:2.8375 batch_bpb:1.1013 running_loss:2.7701 running_bpb:1.0667 doc_len:329-329
-ttt_progress: batch 273/782 batch_loss:2.7807 batch_bpb:1.0651 running_loss:2.7701 running_bpb:1.0667 doc_len:321-322
-ttt_progress: batch 266/782 batch_loss:2.8559 batch_bpb:1.0982 running_loss:2.7703 running_bpb:1.0668 doc_len:313-314
-ttt_phase_sgd[phase=2]:docs=33296 windows/rank=13173 lr=0.0005 epochs=1 bsz=8 seq_len=1024 opt=sgd
-ttt_phase_sgd[phase=2]:epoch 1/1 loss=2.8469 steps=1647 t=168.1s
-ttt_progress: batch 261/782 batch_loss:2.8802 batch_bpb:1.1266 running_loss:2.7706 running_bpb:1.0669 doc_len:308-309
-ttt_progress: batch 254/782 batch_loss:2.9147 batch_bpb:1.1481 running_loss:2.7709 running_bpb:1.0671 doc_len:299-300
-ttt_progress: batch 247/782 batch_loss:2.7963 batch_bpb:1.0804 running_loss:2.7710 running_bpb:1.0671 doc_len:292-293
-ttt_progress: batch 242/782 batch_loss:2.9179 batch_bpb:1.1156 running_loss:2.7713 running_bpb:1.0673 doc_len:287-288
-ttt_progress: batch 236/782 batch_loss:2.8542 batch_bpb:1.1093 running_loss:2.7715 running_bpb:1.0673 doc_len:281-282
-ttt_progress: batch 229/782 batch_loss:2.9036 batch_bpb:1.1422 running_loss:2.7718 running_bpb:1.0675 doc_len:274-275
-ttt_progress: batch 224/782 batch_loss:2.8319 batch_bpb:1.1124 running_loss:2.7719 running_bpb:1.0676 doc_len:269-270
-ttt_progress: batch 218/782 batch_loss:2.7646 batch_bpb:1.1117 running_loss:2.7719 running_bpb:1.0677 doc_len:263-264
-ttt_progress: batch 211/782 batch_loss:2.8999 batch_bpb:1.1553 running_loss:2.7721 running_bpb:1.0678 doc_len:256-257
-ttt_progress: batch 208/782 batch_loss:2.8286 batch_bpb:1.1169 running_loss:2.7722 running_bpb:1.0679 doc_len:254-254
-ttt_progress: batch 199/782 batch_loss:2.9613 batch_bpb:1.1350 running_loss:2.7726 running_bpb:1.0681 doc_len:246-247
-ttt_progress: batch 194/782 batch_loss:2.9171 batch_bpb:1.1071 running_loss:2.7728 running_bpb:1.0681 doc_len:241-242
-ttt_progress: batch 188/782 batch_loss:2.9239 batch_bpb:1.1583 running_loss:2.7731 running_bpb:1.0683 doc_len:236-237
-ttt_progress: batch 182/782 batch_loss:2.8597 batch_bpb:1.1376 running_loss:2.7732 running_bpb:1.0684 doc_len:230-231
-ttt_progress: batch 176/782 batch_loss:2.8228 batch_bpb:1.1074 running_loss:2.7733 running_bpb:1.0685 doc_len:225-226
-ttt_progress: batch 169/782 batch_loss:2.9223 batch_bpb:1.1676 running_loss:2.7736 running_bpb:1.0686 doc_len:219-220
-ttt_progress: batch 164/782 batch_loss:2.9699 batch_bpb:1.1485 running_loss:2.7739 running_bpb:1.0687 doc_len:215-216
-ttt_progress: batch 157/782 batch_loss:2.8333 batch_bpb:1.1167 running_loss:2.7740 running_bpb:1.0688 doc_len:209-210
-ttt_progress: batch 151/782 batch_loss:2.8131 batch_bpb:1.1086 running_loss:2.7740 running_bpb:1.0689 doc_len:204-205
-ttt_progress: batch 145/782 batch_loss:2.8998 batch_bpb:1.1377 running_loss:2.7742 running_bpb:1.0690 doc_len:200-200
-ttt_progress: batch 138/782 batch_loss:2.9272 batch_bpb:1.1651 running_loss:2.7744 running_bpb:1.0691 doc_len:194-195
-ttt_progress: batch 130/782 batch_loss:3.1498 batch_bpb:1.2381 running_loss:2.7750 running_bpb:1.0693 doc_len:187-188
-ttt_progress: batch 124/782 batch_loss:2.8876 batch_bpb:1.1551 running_loss:2.7751 running_bpb:1.0694 doc_len:183-184
-ttt_progress: batch 118/782 batch_loss:2.9620 batch_bpb:1.1572 running_loss:2.7754 running_bpb:1.0696 doc_len:178-179
-ttt_progress: batch 112/782 batch_loss:3.0083 batch_bpb:1.1636 running_loss:2.7757 running_bpb:1.0697 doc_len:174-175
-ttt_progress: batch 105/782 batch_loss:3.0740 batch_bpb:1.2314 running_loss:2.7760 running_bpb:1.0699 doc_len:169-170
-ttt_progress: batch 97/782 batch_loss:3.0205 batch_bpb:1.1800 running_loss:2.7763 running_bpb:1.0700 doc_len:163-164
-ttt_progress: batch 91/782 batch_loss:3.0336 batch_bpb:1.2141 running_loss:2.7766 running_bpb:1.0702 doc_len:158-159
-ttt_progress: batch 85/782 batch_loss:2.9966 batch_bpb:1.2031 running_loss:2.7769 running_bpb:1.0703 doc_len:154-154
-ttt_progress: batch 78/782 batch_loss:2.9213 batch_bpb:1.1334 running_loss:2.7770 running_bpb:1.0704 doc_len:148-149
-ttt_progress: batch 73/782 batch_loss:3.0612 batch_bpb:1.2110 running_loss:2.7773 running_bpb:1.0705 doc_len:144-145
-ttt_progress: batch 66/782 batch_loss:3.1113 batch_bpb:1.2744 running_loss:2.7777 running_bpb:1.0707 doc_len:139-140
-ttt_progress: batch 58/782 batch_loss:2.9887 batch_bpb:1.2327 running_loss:2.7779 running_bpb:1.0709 doc_len:133-134
-ttt_progress: batch 52/782 batch_loss:3.0603 batch_bpb:1.1974 running_loss:2.7781 running_bpb:1.0710 doc_len:128-129
-ttt_progress: batch 47/782 batch_loss:2.9519 batch_bpb:1.1797 running_loss:2.7783 running_bpb:1.0711 doc_len:124-125
-ttt_progress: batch 39/782 batch_loss:3.1433 batch_bpb:1.2422 running_loss:2.7786 running_bpb:1.0712 doc_len:118-119
-ttt_progress: batch 33/782 batch_loss:3.1035 batch_bpb:1.2149 running_loss:2.7789 running_bpb:1.0713 doc_len:113-114
-ttt_progress: batch 25/782 batch_loss:3.3151 batch_bpb:1.3139 running_loss:2.7793 running_bpb:1.0715 doc_len:106-107
-ttt_progress: batch 19/782 batch_loss:3.1503 batch_bpb:1.2304 running_loss:2.7795 running_bpb:1.0716 doc_len:100-101
-ttt_progress: batch 13/782 batch_loss:3.1563 batch_bpb:1.2704 running_loss:2.7798 running_bpb:1.0718 doc_len:93-94
-ttt_progress: batch 6/782 batch_loss:3.2964 batch_bpb:1.2861 running_loss:2.7801 running_bpb:1.0719 doc_len:82-84
-quantized_ttt_lora val_loss:2.78826515 val_bpb:1.07942433 eval_time:1573635ms
+W0427 01:50:35.174000 38144 torch/distributed/run.py:851] 
+W0427 01:50:35.174000 38144 torch/distributed/run.py:851] *****************************************
+W0427 01:50:35.174000 38144 torch/distributed/run.py:851] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0427 01:50:35.174000 38144 torch/distributed/run.py:851] *****************************************
+[W427 02:00:39.552111355 socket.cpp:469] [c10d] waitForInput: poll for socket SocketImpl(fd=69, addr=[3df0b9bcca334799a3c55b331b37621b000000.internal.cloudapp.net]:57210, remote=[3df0b9bcca334799a3c55b331b37621b000000.internal.cloudapp.net]:34357) returned 0, likely a timeout
+[W427 02:00:39.564195102 socket.cpp:494] [c10d] waitForInput: socket SocketImpl(fd=69, addr=[3df0b9bcca334799a3c55b331b37621b000000.internal.cloudapp.net]:57210, remote=[3df0b9bcca334799a3c55b331b37621b000000.internal.cloudapp.net]:34357) timed out after 600000ms
+Traceback (most recent call last):
+  File "/root/parameter-golf/train_gpt.py", line 6, in <module>
+    sys.argv[0]=_d;runpy.run_path(_d,run_name="__main__")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 286, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "/root/parameter-golf/_train.py", line 3500, in <module>
+    main()
+  File "/root/parameter-golf/_train.py", line 3457, in main
+    dist.init_process_group(backend="nccl", device_id=device)
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py", line 97, in wrapper
+    func_return = func(*args, **kwargs)
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py", line 1838, in init_process_group
+    default_pg, _ = _new_process_group_helper(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py", line 2253, in _new_process_group_helper
+    eager_backend.eager_connect_single_device(device_id)
+torch.distributed.DistBackendError: [1] is setting up NCCL communicator and retrieving ncclUniqueId from [0] via c10d key-value store by key '0', but store->get('0') got error: wait timeout after 600000ms, keys: /default_pg/0//cuda//0
+Exception raised from doWait at /pytorch/torch/csrc/distributed/c10d/TCPStore.cpp:603 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x15442e38905d in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x16cf01d (0x154392cf001d in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #2: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x2a (0x1543980ac77a in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #3: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x112 (0x1543980ac912 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::PrefixStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x36e (0x154398043fbe in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::ProcessGroupNCCL::broadcastUniqueNCCLID(ncclUniqueId*, bool, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) + 0x744 (0x15437a8ad614 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::initNCCLComm(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, c10::Device&, c10d::OpType, int, bool) + 0x845 (0x15437a8aee55 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: c10d::ProcessGroupNCCL::eagerConnectSingleDevice(c10::Device) + 0x253 (0x15437a8b1013 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #8: <unknown function> + 0xf4e686 (0x1543a7c02686 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x411060 (0x1543a70c5060 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #10: /root/parameter-golf/.venv/bin/python3() [0x581e9f]
+frame #11: _PyObject_MakeTpCall + 0x75 (0x548f75 in /root/parameter-golf/.venv/bin/python3)
+frame #12: _PyEval_EvalFrameDefault + 0xa89 (0x5d6f09 in /root/parameter-golf/.venv/bin/python3)
+frame #13: PyEval_EvalCode + 0x15b (0x5d543b in /root/parameter-golf/.venv/bin/python3)
+frame #14: /root/parameter-golf/.venv/bin/python3() [0x5d322c]
+frame #15: /root/parameter-golf/.venv/bin/python3() [0x581d1d]
+frame #16: PyObject_Vectorcall + 0x35 (0x549975 in /root/parameter-golf/.venv/bin/python3)
+frame #17: _PyEval_EvalFrameDefault + 0xa89 (0x5d6f09 in /root/parameter-golf/.venv/bin/python3)
+frame #18: PyEval_EvalCode + 0x15b (0x5d543b in /root/parameter-golf/.venv/bin/python3)
+frame #19: /root/parameter-golf/.venv/bin/python3() [0x6085d2]
+frame #20: /root/parameter-golf/.venv/bin/python3() [0x6b4d03]
+frame #21: _PyRun_SimpleFileObject + 0x1aa (0x6b4a6a in /root/parameter-golf/.venv/bin/python3)
+frame #22: _PyRun_AnyFileObject + 0x4f (0x6b489f in /root/parameter-golf/.venv/bin/python3)
+frame #23: Py_RunMain + 0x3b5 (0x6bc905 in /root/parameter-golf/.venv/bin/python3)
+frame #24: Py_BytesMain + 0x2d (0x6bc3ed in /root/parameter-golf/.venv/bin/python3)
+frame #25: <unknown function> + 0x2a1ca (0x154435e831ca in /lib/x86_64-linux-gnu/libc.so.6)
+frame #26: __libc_start_main + 0x8b (0x154435e8328b in /lib/x86_64-linux-gnu/libc.so.6)
+frame #27: _start + 0x25 (0x6576c5 in /root/parameter-golf/.venv/bin/python3)
+. This may indicate a possible application crash on rank 0 or a network set up issue.
+[W427 02:00:39.579135672 socket.cpp:469] [c10d] waitForInput: poll for socket SocketImpl(fd=69, addr=[3df0b9bcca334799a3c55b331b37621b000000.internal.cloudapp.net]:57196, remote=[3df0b9bcca334799a3c55b331b37621b000000.internal.cloudapp.net]:34357) returned 0, likely a timeout
+[W427 02:00:39.580963833 socket.cpp:494] [c10d] waitForInput: socket SocketImpl(fd=69, addr=[3df0b9bcca334799a3c55b331b37621b000000.internal.cloudapp.net]:57196, remote=[3df0b9bcca334799a3c55b331b37621b000000.internal.cloudapp.net]:34357) timed out after 600000ms
+Traceback (most recent call last):
+  File "/root/parameter-golf/train_gpt.py", line 6, in <module>
+    sys.argv[0]=_d;runpy.run_path(_d,run_name="__main__")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 286, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "/root/parameter-golf/_train.py", line 3500, in <module>
+    main()
+  File "/root/parameter-golf/_train.py", line 3457, in main
+    dist.init_process_group(backend="nccl", device_id=device)
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py", line 97, in wrapper
+    func_return = func(*args, **kwargs)
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py", line 1838, in init_process_group
+    default_pg, _ = _new_process_group_helper(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py", line 2253, in _new_process_group_helper
+    eager_backend.eager_connect_single_device(device_id)
+torch.distributed.DistBackendError: [2] is setting up NCCL communicator and retrieving ncclUniqueId from [0] via c10d key-value store by key '0', but store->get('0') got error: wait timeout after 600000ms, keys: /default_pg/0//cuda//0
+Exception raised from doWait at /pytorch/torch/csrc/distributed/c10d/TCPStore.cpp:603 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x15028a77305d in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x16cf01d (0x1501ef4f001d in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #2: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x2a (0x1501f48ac77a in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #3: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x112 (0x1501f48ac912 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::PrefixStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x36e (0x1501f4843fbe in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::ProcessGroupNCCL::broadcastUniqueNCCLID(ncclUniqueId*, bool, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) + 0x744 (0x1501d70ad614 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::initNCCLComm(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, c10::Device&, c10d::OpType, int, bool) + 0x845 (0x1501d70aee55 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: c10d::ProcessGroupNCCL::eagerConnectSingleDevice(c10::Device) + 0x253 (0x1501d70b1013 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #8: <unknown function> + 0xf4e686 (0x150204402686 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x411060 (0x1502038c5060 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #10: /root/parameter-golf/.venv/bin/python3() [0x581e9f]
+frame #11: _PyObject_MakeTpCall + 0x75 (0x548f75 in /root/parameter-golf/.venv/bin/python3)
+frame #12: _PyEval_EvalFrameDefault + 0xa89 (0x5d6f09 in /root/parameter-golf/.venv/bin/python3)
+frame #13: PyEval_EvalCode + 0x15b (0x5d543b in /root/parameter-golf/.venv/bin/python3)
+frame #14: /root/parameter-golf/.venv/bin/python3() [0x5d322c]
+frame #15: /root/parameter-golf/.venv/bin/python3() [0x581d1d]
+frame #16: PyObject_Vectorcall + 0x35 (0x549975 in /root/parameter-golf/.venv/bin/python3)
+frame #17: _PyEval_EvalFrameDefault + 0xa89 (0x5d6f09 in /root/parameter-golf/.venv/bin/python3)
+frame #18: PyEval_EvalCode + 0x15b (0x5d543b in /root/parameter-golf/.venv/bin/python3)
+frame #19: /root/parameter-golf/.venv/bin/python3() [0x6085d2]
+frame #20: /root/parameter-golf/.venv/bin/python3() [0x6b4d03]
+frame #21: _PyRun_SimpleFileObject + 0x1aa (0x6b4a6a in /root/parameter-golf/.venv/bin/python3)
+frame #22: _PyRun_AnyFileObject + 0x4f (0x6b489f in /root/parameter-golf/.venv/bin/python3)
+frame #23: Py_RunMain + 0x3b5 (0x6bc905 in /root/parameter-golf/.venv/bin/python3)
+frame #24: Py_BytesMain + 0x2d (0x6bc3ed in /root/parameter-golf/.venv/bin/python3)
+frame #25: <unknown function> + 0x2a1ca (0x1502925f91ca in /lib/x86_64-linux-gnu/libc.so.6)
+frame #26: __libc_start_main + 0x8b (0x1502925f928b in /lib/x86_64-linux-gnu/libc.so.6)
+frame #27: _start + 0x25 (0x6576c5 in /root/parameter-golf/.venv/bin/python3)
+. This may indicate a possible application crash on rank 0 or a network set up issue.
+[W427 02:00:39.621041797 socket.cpp:469] [c10d] waitForInput: poll for socket SocketImpl(fd=69, addr=[3df0b9bcca334799a3c55b331b37621b000000.internal.cloudapp.net]:57208, remote=[3df0b9bcca334799a3c55b331b37621b000000.internal.cloudapp.net]:34357) returned 0, likely a timeout
+[W427 02:00:39.624124166 socket.cpp:494] [c10d] waitForInput: socket SocketImpl(fd=69, addr=[3df0b9bcca334799a3c55b331b37621b000000.internal.cloudapp.net]:57208, remote=[3df0b9bcca334799a3c55b331b37621b000000.internal.cloudapp.net]:34357) timed out after 600000ms
+Traceback (most recent call last):
+  File "/root/parameter-golf/train_gpt.py", line 6, in <module>
+    sys.argv[0]=_d;runpy.run_path(_d,run_name="__main__")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 286, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "/root/parameter-golf/_train.py", line 3500, in <module>
+    main()
+  File "/root/parameter-golf/_train.py", line 3457, in main
+    dist.init_process_group(backend="nccl", device_id=device)
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py", line 97, in wrapper
+    func_return = func(*args, **kwargs)
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py", line 1838, in init_process_group
+    default_pg, _ = _new_process_group_helper(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py", line 2253, in _new_process_group_helper
+    eager_backend.eager_connect_single_device(device_id)
+torch.distributed.DistBackendError: [3] is setting up NCCL communicator and retrieving ncclUniqueId from [0] via c10d key-value store by key '0', but store->get('0') got error: wait timeout after 600000ms, keys: /default_pg/0//cuda//0
+Exception raised from doWait at /pytorch/torch/csrc/distributed/c10d/TCPStore.cpp:603 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x14932117305d in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x16cf01d (0x149285ef001d in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #2: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x2a (0x14928b2ac77a in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #3: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x112 (0x14928b2ac912 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::PrefixStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x36e (0x14928b243fbe in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::ProcessGroupNCCL::broadcastUniqueNCCLID(ncclUniqueId*, bool, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) + 0x744 (0x14926daad614 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: c10d::ProcessGroupNCCL::initNCCLComm(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, c10::Device&, c10d::OpType, int, bool) + 0x845 (0x14926daaee55 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #7: c10d::ProcessGroupNCCL::eagerConnectSingleDevice(c10::Device) + 0x253 (0x14926dab1013 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #8: <unknown function> + 0xf4e686 (0x14929ae02686 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x411060 (0x14929a2c5060 in /root/parameter-golf/.venv/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #10: /root/parameter-golf/.venv/bin/python3() [0x581e9f]
+frame #11: _PyObject_MakeTpCall + 0x75 (0x548f75 in /root/parameter-golf/.venv/bin/python3)
+frame #12: _PyEval_EvalFrameDefault + 0xa89 (0x5d6f09 in /root/parameter-golf/.venv/bin/python3)
+frame #13: PyEval_EvalCode + 0x15b (0x5d543b in /root/parameter-golf/.venv/bin/python3)
+frame #14: /root/parameter-golf/.venv/bin/python3() [0x5d322c]
+frame #15: /root/parameter-golf/.venv/bin/python3() [0x581d1d]
+frame #16: PyObject_Vectorcall + 0x35 (0x549975 in /root/parameter-golf/.venv/bin/python3)
+frame #17: _PyEval_EvalFrameDefault + 0xa89 (0x5d6f09 in /root/parameter-golf/.venv/bin/python3)
+frame #18: PyEval_EvalCode + 0x15b (0x5d543b in /root/parameter-golf/.venv/bin/python3)
+frame #19: /root/parameter-golf/.venv/bin/python3() [0x6085d2]
+frame #20: /root/parameter-golf/.venv/bin/python3() [0x6b4d03]
+frame #21: _PyRun_SimpleFileObject + 0x1aa (0x6b4a6a in /root/parameter-golf/.venv/bin/python3)
+frame #22: _PyRun_AnyFileObject + 0x4f (0x6b489f in /root/parameter-golf/.venv/bin/python3)
+frame #23: Py_RunMain + 0x3b5 (0x6bc905 in /root/parameter-golf/.venv/bin/python3)
+frame #24: Py_BytesMain + 0x2d (0x6bc3ed in /root/parameter-golf/.venv/bin/python3)
+frame #25: <unknown function> + 0x2a1ca (0x14932905f1ca in /lib/x86_64-linux-gnu/libc.so.6)
+frame #26: __libc_start_main + 0x8b (0x14932905f28b in /lib/x86_64-linux-gnu/libc.so.6)
+frame #27: _start + 0x25 (0x6576c5 in /root/parameter-golf/.venv/bin/python3)
+. This may indicate a possible application crash on rank 0 or a network set up issue.
+W0427 02:00:40.257000 38144 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 38213 closing signal SIGTERM
+W0427 02:00:40.258000 38144 torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 38215 closing signal SIGTERM
+E0427 02:00:40.386000 38144 torch/distributed/elastic/multiprocessing/api.py:986] failed (exitcode: 1) local_rank: 2 (pid: 38214) of binary: /root/parameter-golf/.venv/bin/python3
+Traceback (most recent call last):
+  File "/root/parameter-golf/.venv/bin/torchrun", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/run.py", line 990, in main
+    run(args)
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/run.py", line 981, in run
+    elastic_launch(
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 170, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/parameter-golf/.venv/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 317, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+train_gpt.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-04-27_02:00:40
+  host      : 3df0b9bcca334799a3c55b331b37621b000000.internal.cloudapp.net
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 38213)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[2]:
+  time      : 2026-04-27_02:00:40
+  host      : 3df0b9bcca334799a3c55b331b37621b000000.internal.cloudapp.net
+  rank      : 3 (local_rank: 3)
+  exitcode  : 1 (pid: 38215)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-04-27_02:00:40
+  host      : 3df0b9bcca334799a3c55b331b37621b000000.internal.cloudapp.net
+  rank      : 2 (local_rank: 2)
+  exitcode  : 1 (pid: 38214)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
