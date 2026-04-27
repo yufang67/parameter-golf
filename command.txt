@@ -140,3 +140,6 @@ RUN_ID=best2304 MAX_WALLCLOCK_SECONDS=3000 VARLEN_ATTENTION=1 torchrun --standal
 
 RUN_ID=test_size MAX_WALLCLOCK_SECONDS=60 VARLEN_ATTENTION=1 torchrun --standalone --nproc_per_node=4 train_gpt.py
 RUN_ID=test_size CLIP_MULT_LATE=0.5 CLIP_MULT_LOOP=1.0 .venv/bin/python3 quant_only.py
+
+# check for submission
+RUN_ID=test_size MAX_WALLCLOCK_SECONDS=60 torchrun --standalone --nproc_per_node=4 train_gpt.py

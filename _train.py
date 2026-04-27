@@ -349,11 +349,11 @@ class Hyperparameters():
     gptq_reserve_seconds = float(os.environ.get('GPTQ_RESERVE_SECONDS', 12.0))
     matrix_bits = int(os.environ.get('MATRIX_BITS', 6))
     embed_bits = int(os.environ.get('EMBED_BITS', 8))
-    matrix_clip_sigmas = float(os.environ.get('MATRIX_CLIP_SIGMAS', 14))
+    matrix_clip_sigmas = float(os.environ.get('MATRIX_CLIP_SIGMAS', 14)) #TODO
     embed_clip_sigmas = float(os.environ.get('EMBED_CLIP_SIGMAS', 20.0))
     # Hessian-aware SDClip: per-row clip modulation using GPTQ Hessian
-    hessian_clip_lambda = float(os.environ.get('HESSIAN_CLIP_LAMBDA', 0.0)) # 0.3
-    # Per-group clip multipliers (from 3-seed Hessian analysis)
+    hessian_clip_lambda = float(os.environ.get('HESSIAN_CLIP_LAMBDA', 0.3)) #TODO
+    # Per-group clip multipliers (from 3-seed Hessian analysis) # TODO
     clip_mult_early = float(os.environ.get('CLIP_MULT_EARLY', 1.0))  # blocks 0-2
     clip_mult_loop = float(os.environ.get('CLIP_MULT_LOOP', 1.0))    # blocks loop_start-loop_end (sec 7: 0.5+0.5 stack -> 1.06372 ttt)
     clip_mult_mid = float(os.environ.get('CLIP_MULT_MID', 1.0))      # blocks 3,6,7
@@ -366,7 +366,7 @@ class Hyperparameters():
     
     
     # Parallel residuals (GPT-J style) from layer N onwards
-    parallel_residual_start = int(os.environ.get('PARALLEL_RESIDUAL_START', 7))
+    parallel_residual_start = int(os.environ.get('PARALLEL_RESIDUAL_START', 9))
     # Gated attention: per-head sigmoid gate (NeurIPS 2025)
     gated_attention = bool(int(os.environ.get('GATED_ATTENTION', '1')))
     # Fused Triton MLP kernel

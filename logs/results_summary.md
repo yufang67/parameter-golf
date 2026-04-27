@@ -284,19 +284,19 @@ CLIP_MULT_EARLY=1.25`.
 
 | variant         | TTT bpb       | bytes        | delta vs best2304 (1.07788) |
 |-----------------|---------------|--------------|-----------------------------|
-| stack_sigmas13  | **1.07329** best | 16,451,868 OK | -0.00459                    |
-| stack_loop085   | 1.07418       | 16,275,179 OK | -0.00370                    |
-| stack_late085   | 1.07427       | 16,274,621 OK | -0.00361                    |
-| stack_late09    | 1.07451       | 16,181,099 OK | -0.00337                    |
-| stack_loop09    | 1.07457       | 16,180,912 OK | -0.00331                    |
-| stack_hcl02     | 1.07491       | 16,021,047 OK | -0.00297                    |
-| stack_hcl01     | 1.07492       | 16,013,460 OK | -0.00296                    |
-| stack_hcl045    | 1.07507       | 16,059,546 OK | -0.00281                    |
-| stack_control   | 1.07521       | 16,009,495 OK | -0.00267                    |
-| stack_sigmas15  | 1.07942       | 15,599,622 OK | +0.00154                    |
+| stack_sigmas13  | **1.07329** best | 16,451,868 over +451,868 | -0.00459                    |
+| stack_loop085   | 1.07418       | 16,275,179 over +275,179 | -0.00370                    |
+| stack_late085   | 1.07427       | 16,274,621 over +274,621 | -0.00361                    |
+| stack_late09    | 1.07451       | 16,181,099 over +181,099 | -0.00337                    |
+| stack_loop09    | 1.07457       | 16,180,912 over +180,912 | -0.00331                    |
+| stack_hcl02     | 1.07491       | 16,021,047 over +21,047 | -0.00297                    |
+| stack_hcl01     | 1.07492       | 16,013,460 over +13,460 | -0.00296                    |
+| stack_hcl045    | 1.07507       | 16,059,546 over +59,546 | -0.00281                    |
+| stack_control   | 1.07521       | 16,009,495 over +9,495 | -0.00267                    |
+| stack_sigmas15  | **1.07942** valid | 15,599,622 OK | +0.00154                    |
 | stack_early2    | FAILED        | scout 15,278,966 OK | NCCL init timeout; no full result |
 
-Observations: best completed variant is `stack_sigmas13` at **1.07329** TTT BPB (16,451,868 bytes), -0.00459 vs best2304.
+Observations: best completed variant by BPB is `stack_sigmas13` at **1.07329** TTT BPB, but it is **451,868 bytes over** the 16,000,000-byte limit. The best completed decimal-size-valid variant is `stack_sigmas15` at **1.07942** TTT BPB (15,599,622 bytes), which is worse than the `best2304` baseline by +0.00154.
 The driver reached its final board at 2026-04-27T02:00:41Z and no torch jobs are currently running. `stack_early2` passed the size scout but the full run failed during distributed/NCCL initialization (`wait timeout after 600000ms`), so it has no valid TTT result and should be rerun if that variant is still needed.
 
 
