@@ -143,3 +143,8 @@ RUN_ID=test_size CLIP_MULT_LATE=0.5 CLIP_MULT_LOOP=1.0 .venv/bin/python3 quant_o
 
 # check for submission
 RUN_ID=test_size MAX_WALLCLOCK_SECONDS=60 torchrun --standalone --nproc_per_node=4 train_gpt.py
+RUN_ID=log77  SEED=77 MAX_WALLCLOCK_SECONDS=3000 CLIP_MULT_EARLY=1.25 CLIP_MULT_LATE=0.88 torchrun --standalone --nproc_per_node=4 train_gpt.py
+# submission
+RUN_ID=log77  SEED=77 CLIP_MULT_EARLY=1.25 CLIP_MULT_LATE=0.88 torchrun --standalone --nproc_per_node=8 train_gpt.py
+RUN_ID=log1337  SEED=1337 CLIP_MULT_EARLY=1.25 CLIP_MULT_LATE=0.88 torchrun --standalone --nproc_per_node=8 train_gpt.py
+RUN_ID=log99  SEED=99 CLIP_MULT_EARLY=1.25 CLIP_MULT_LATE=0.88 torchrun --standalone --nproc_per_node=8 train_gpt.py

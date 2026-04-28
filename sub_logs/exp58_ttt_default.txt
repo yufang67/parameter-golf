@@ -96,3 +96,31 @@ train_shards: 80
 val_tokens: 40540160
 model_params:38152368
 gptq:reserving 12s, effective=2988000ms
+0/20000 val_loss: 9.0079 val_bpb: 3.4872
+1/20000 train_loss: 9.0084 train_time: 0.0m tok/s: 1658759
+2/20000 train_loss: 11.3331 train_time: 0.0m tok/s: 1611565
+3/20000 train_loss: 9.9802 train_time: 0.0m tok/s: 1591674
+4/20000 train_loss: 8.3805 train_time: 0.0m tok/s: 1580218
+5/20000 train_loss: 7.4278 train_time: 0.0m tok/s: 1572015
+500/20000 train_loss: 3.3272 train_time: 4.3m tok/s: 1518974
+1000/20000 train_loss: 3.2185 train_time: 8.7m tok/s: 1513628
+1500/20000 train_loss: 3.0981 train_time: 13.0m tok/s: 1511556
+2000/20000 train_loss: 3.0951 train_time: 17.4m tok/s: 1510741
+2500/20000 train_loss: 3.0985 train_time: 21.7m tok/s: 1510338
+layer_loop:enabled step:2869 frac:0.500 encoder:[0, 1, 2, 3, 4, 5, 3, 4] decoder:[5, 3, 4, 5, 6, 7, 8, 9, 10]
+3000/20000 train_loss: 3.0307 train_time: 26.6m tok/s: 1476370
+3500/20000 train_loss: 2.9857 train_time: 33.2m tok/s: 1379813
+4000/20000 train_loss: 2.9080 train_time: 39.9m tok/s: 1315434
+4000/20000 val_loss: 2.8782 val_bpb: 1.1142
+4500/20000 train_loss: 2.8100 train_time: 46.5m tok/s: 1269550
+4751/20000 val_loss: 2.7926 val_bpb: 1.0811
+stopping_early: wallclock_cap train_time: 2988094ms step: 4751/20000
+peak memory allocated: 38569 MiB reserved: 38754 MiB
+pre-quantization post-ema val_loss:2.79196520 val_bpb:1.08085674 eval_time:30745ms
+Serialized model: 144269669 bytes
+Code size: 81177 bytes
+Serialized model quantized+ans: 15906771 bytes
+Total submission size quantized+ans: 15987948 bytes
+quantized val_loss:2.82837367 val_bpb:1.09495159 eval_time:12400ms
+ttt:start chunks=1238 ttt_lr=0.005 ttt_epochs=3
+quantized_ttt val_loss:2.78113316 val_bpb:1.07666331 eval_time:848005ms
